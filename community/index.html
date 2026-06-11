@@ -1,0 +1,354 @@
+<!DOCTYPE html><html lang="ru"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Сообщество - β→α Bookatier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#6d6259",
+                        "on-secondary-fixed-variant": "#4f453c",
+                        "surface": "#FFFDF8",
+                        "on-surface-variant": "#56423d",
+                        "primary-fixed-dim": "#ffb4a2",
+                        "tertiary-fixed": "#94f2f0",
+                        "chip-amber": "#C98A3C",
+                        "tertiary-container": "#007e7d",
+                        "error": "#ba1a1a",
+                        "surface-container": "#f3ede2",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#006362",
+                        "on-error": "#ffffff",
+                        "chip-sage": "#4C6B5E",
+                        "on-background": "#1d1c15",
+                        "text-main": "#241F1B",
+                        "on-primary-fixed": "#3d0700",
+                        "outline": "#8a726c",
+                        "on-primary-fixed-variant": "#812913",
+                        "secondary-container": "#efe0d4",
+                        "inverse-surface": "#333029",
+                        "inverse-on-surface": "#f6f0e5",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#00504f",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#dfd9cf",
+                        "secondary-fixed-dim": "#d2c4b9",
+                        "primary-container": "#b85138",
+                        "primary-fixed": "#ffdad2",
+                        "primary": "#b85138",
+                        "surface-container-low": "#f9f3e8",
+                        "surface-variant": "#e8e2d7",
+                        "inverse-primary": "#ffb4a2",
+                        "on-primary": "#ffffff",
+                        "border-hairline": "#E4D9C6",
+                        "on-tertiary-container": "#d2fffd",
+                        "on-tertiary-fixed": "#002020",
+                        "on-primary-container": "#fff4f1",
+                        "secondary": "#675d53",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#ddc0ba",
+                        "chip-slate": "#3E5C73",
+                        "surface-tint": "#a03f28",
+                        "on-secondary-fixed": "#211a13",
+                        "secondary-fixed": "#efe0d4",
+                        "surface-container-high": "#ede8dd",
+                        "surface-bright": "#fff9ee",
+                        "tertiary-fixed-dim": "#78d6d4",
+                        "surface-container-highest": "#e8e2d7",
+                        "on-surface": "#1d1c15",
+                        "error-container": "#ffdad6",
+                        "background": "#fff9ee" // Overridden to match prompt's #fff9ee requirement for background
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "max-width": "1200px",
+                        "stack-lg": "64px",
+                        "gutter": "24px",
+                        "stack-md": "32px",
+                        "margin-page": "40px",
+                        "stack-sm": "16px"
+                    },
+                    "fontFamily": {
+                        "metadata": ["Inter"],
+                        "ui-label-lg": ["Inter"],
+                        "headline-h2": ["Source Serif 4"],
+                        "display-serif": ["Source Serif 4"],
+                        "body-reading": ["Source Serif 4"],
+                        "ui-label-sm": ["Inter"],
+                        "headline-h1": ["Source Serif 4"],
+                        "body-standard": ["Source Serif 4"],
+                        "quote-text": ["Source Serif 4"]
+                    },
+                    "fontSize": {
+                        "metadata": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "ui-label-lg": ["15px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-h2": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
+                        "display-serif": ["42px", { "lineHeight": "52px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-reading": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "ui-label-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "headline-h1": ["30px", { "lineHeight": "38px", "fontWeight": "600" }],
+                        "body-standard": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "quote-text": ["20px", { "lineHeight": "30px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+    
+        /* Paper texture — replaces inline SVG noise */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url('../assets/backgrounds/manuscript.png');
+            background-repeat: repeat;
+            background-size: 300px;
+            opacity: 0.045;
+            pointer-events: none;
+            z-index: 0;
+        }
+        </style>
+</head>
+<body class="bg-background text-text-main font-body-standard min-h-screen flex flex-col antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<header class="bg-surface border-b border-border-hairline shadow-[0px_4px_20px_rgba(36,31,27,0.04)] sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-20">
+<!-- Brand Logo -->
+<div class="flex items-center gap-2">
+<span class="font-display-serif text-headline-h2 text-text-main tracking-tight">β<span class="text-primary">→</span>α Bookatier</span>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-secondary hover:text-text-main font-ui-label-lg text-ui-label-lg transition-colors duration-200" href="../home-anon/index.html">Главная</a>
+<span class="text-border-hairline">•</span>
+<a class="text-secondary hover:text-text-main font-ui-label-lg text-ui-label-lg transition-colors duration-200" href="../catalog/index.html">Каталог</a>
+<span class="text-border-hairline">•</span>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-ui-label-lg text-ui-label-lg opacity-90 transition-all duration-300" href="../community/index.html">Сообщество</a>
+</nav>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border-hairline bg-surface hover:bg-surface-container-lowest transition-colors duration-200 cursor-pointer">
+<span class="material-symbols-outlined text-[16px] text-chip-amber" data-weight="fill">verified</span>
+<span class="font-metadata text-metadata text-text-main">Эксперт · 215</span>
+</div>
+<button aria-label="Notifications" class="w-10 h-10 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container-lowest transition-colors duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-surface-container border border-border-hairline overflow-hidden flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">person</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-max-width mx-auto px-margin-page py-stack-lg">
+<!-- Page Header -->
+<header class="mb-stack-lg border-b border-border-hairline pb-stack-md">
+<h1 class="font-display-serif text-display-serif text-text-main mb-4">Сообщество</h1>
+<p class="font-body-reading text-body-reading text-secondary max-w-2xl">Пространство для глубокого обмена опытом и профессиональных дискуссий.</p>
+</header>
+<!-- Featured Discussion -->
+<section class="mb-stack-lg">
+<div class="bg-surface border border-border-hairline p-10 rounded shadow-[0px_8px_32px_rgba(36,31,27,0.03)] hover:shadow-[0px_12px_48px_rgba(36,31,27,0.05)] transition-shadow duration-300 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden group">
+<!-- Decorative subtle texture/gradient -->
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-700 pointer-events-none"></div>
+<div class="flex-grow z-10">
+<div class="flex items-center gap-3 mb-6">
+<span class="px-3 py-1 rounded-full bg-chip-amber/10 text-chip-amber font-ui-label-sm text-ui-label-sm">Дискуссия недели</span>
+<span class="text-secondary font-metadata text-metadata flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">group</span>
+                            42 участника
+                        </span>
+</div>
+<h2 class="font-headline-h1 text-headline-h1 text-text-main mb-6 leading-tight">Этика молчания в современном психоанализе</h2>
+<blockquote class="font-quote-text text-quote-text text-on-surface-variant italic border-l-2 border-primary/30 pl-6 mb-8 max-w-3xl">
+                        "Молчание аналитика — это не отсутствие речи, а создание пространства, где речь анализанта обретает вес. Как мы выдерживаем это напряжение в эпоху немедленных ответов?"
+                    </blockquote>
+<button class="bg-primary hover:bg-surface-tint text-on-primary font-ui-label-lg text-ui-label-lg px-8 py-3 rounded transition-colors duration-200 inline-flex items-center gap-2">
+                        Присоединиться
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Two Column Layout for Groups and Activity -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Left Column: Topic Groups -->
+<div class="lg:col-span-2">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-h2 text-headline-h2 text-text-main">Рабочие группы</h3>
+<a class="text-secondary hover:text-primary font-ui-label-sm text-ui-label-sm flex items-center gap-1 transition-colors" href="#">Смотреть все <span class="material-symbols-outlined text-[16px]">chevron_right</span></a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Group Card 1 -->
+<a class="block bg-surface border border-border-hairline p-6 rounded hover:border-primary/30 hover:bg-surface-bright transition-colors group" href="#">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded bg-surface-container flex items-center justify-center flex-shrink-0 text-secondary group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-weight="fill">psychology</span>
+</div>
+<div>
+<h4 class="font-headline-h2 text-[20px] leading-tight text-text-main mb-2 group-hover:text-primary transition-colors">Лакановский психоанализ</h4>
+<p class="font-metadata text-metadata text-secondary mb-3 line-clamp-2">Чтение семинаров, обсуждение топологии и клиники реального.</p>
+<div class="flex items-center gap-2 font-metadata text-metadata text-secondary">
+<span class="material-symbols-outlined text-[14px]">group</span>
+                                    128 участников
+                                </div>
+</div>
+</div>
+</a>
+<!-- Group Card 2 -->
+<a class="block bg-surface border border-border-hairline p-6 rounded hover:border-chip-sage/30 hover:bg-surface-bright transition-colors group" href="#">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded bg-surface-container flex items-center justify-center flex-shrink-0 text-secondary group-hover:text-chip-sage transition-colors">
+<span class="material-symbols-outlined" data-weight="fill">clinical_notes</span>
+</div>
+<div>
+<h4 class="font-headline-h2 text-[20px] leading-tight text-text-main mb-2 group-hover:text-chip-sage transition-colors">Клинические случаи</h4>
+<p class="font-metadata text-metadata text-secondary mb-3 line-clamp-2">Закрытая группа для разбора сложных случаев (требуется подтверждение).</p>
+<div class="flex items-center gap-2 font-metadata text-metadata text-secondary">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+                                    56 участников
+                                </div>
+</div>
+</div>
+</a>
+<!-- Group Card 3 -->
+<a class="block bg-surface border border-border-hairline p-6 rounded hover:border-chip-slate/30 hover:bg-surface-bright transition-colors group" href="#">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded bg-surface-container flex items-center justify-center flex-shrink-0 text-secondary group-hover:text-chip-slate transition-colors">
+<span class="material-symbols-outlined" data-weight="fill">forum</span>
+</div>
+<div>
+<h4 class="font-headline-h2 text-[20px] leading-tight text-text-main mb-2 group-hover:text-chip-slate transition-colors">Группа супервизии</h4>
+<p class="font-metadata text-metadata text-secondary mb-3 line-clamp-2">Регулярные онлайн-встречи. Поддержка коллег.</p>
+<div class="flex items-center gap-2 font-metadata text-metadata text-secondary">
+<span class="material-symbols-outlined text-[14px]">group</span>
+                                    24 участника
+                                </div>
+</div>
+</div>
+</a>
+<!-- Group Card 4 -->
+<a class="block bg-surface border border-border-hairline p-6 rounded hover:border-chip-amber/30 hover:bg-surface-bright transition-colors group flex items-center justify-center border-dashed" href="#">
+<div class="text-center">
+<div class="w-10 h-10 rounded-full bg-surface-container mx-auto flex items-center justify-center text-secondary mb-2 group-hover:bg-chip-amber/10 group-hover:text-chip-amber transition-colors">
+<span class="material-symbols-outlined">add</span>
+</div>
+<span class="font-ui-label-sm text-ui-label-sm text-secondary group-hover:text-text-main">Предложить группу</span>
+</div>
+</a>
+</div>
+</div>
+<!-- Right Column: Recent Activity -->
+<div>
+<h3 class="font-headline-h2 text-headline-h2 text-text-main mb-6 border-b border-border-hairline pb-2">Лента активности</h3>
+<div class="space-y-6">
+<!-- Activity Item 1 -->
+<div class="group cursor-pointer">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-8 h-8 rounded-full bg-surface-container border border-border-hairline flex items-center justify-center text-secondary font-ui-label-sm">
+                                АИ
+                            </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-ui-label-sm text-ui-label-sm text-text-main">Анна Иванова</span>
+<span class="text-[10px] text-secondary">• 2 ч назад</span>
+</div>
+<div class="flex items-center gap-1 text-[10px] text-chip-amber">
+<span class="material-symbols-outlined text-[12px]" data-weight="fill">verified</span>
+<span>Эксперт · 142</span>
+</div>
+</div>
+</div>
+<h4 class="font-headline-h2 text-[18px] text-text-main group-hover:text-primary transition-colors leading-snug mb-1">О границах сеттинга при онлайн-работе</h4>
+<p class="font-metadata text-metadata text-secondary line-clamp-2">Коллеги, как вы обходитесь с запросами клиентов на перенос сессий в формате онлайн, когда...</p>
+</div>
+<hr class="border-border-hairline">
+<!-- Activity Item 2 -->
+<div class="group cursor-pointer">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-8 h-8 rounded-full bg-surface-container border border-border-hairline flex items-center justify-center text-secondary font-ui-label-sm">
+                                ДП
+                            </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-ui-label-sm text-ui-label-sm text-text-main">Дмитрий Петров</span>
+<span class="text-[10px] text-secondary">• 5 ч назад</span>
+</div>
+<div class="flex items-center gap-1 text-[10px] text-secondary">
+<span>Участник · 18</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2 items-start">
+<span class="material-symbols-outlined text-[16px] text-secondary mt-1 rotate-180">reply</span>
+<div>
+<span class="font-metadata text-metadata text-secondary mb-1 block">в теме <span class="italic">"Травма поколений"</span></span>
+<p class="font-body-standard text-[14px] leading-relaxed text-text-main group-hover:text-primary transition-colors">Согласен с предыдущим комментатором. Важно не торопиться с интерпретациями на этом этапе.</p>
+</div>
+</div>
+</div>
+<hr class="border-border-hairline">
+<!-- Activity Item 3 -->
+<div class="group cursor-pointer">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-8 h-8 rounded-full bg-surface-container border border-border-hairline flex items-center justify-center text-secondary font-ui-label-sm">
+                                ЕВ
+                            </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-ui-label-sm text-ui-label-sm text-text-main">Елена Волкова</span>
+<span class="text-[10px] text-secondary">• Вчера</span>
+</div>
+<div class="flex items-center gap-1 text-[10px] text-chip-sage">
+<span class="material-symbols-outlined text-[12px]" data-weight="fill">verified</span>
+<span>Ментор · 310</span>
+</div>
+</div>
+</div>
+<h4 class="font-headline-h2 text-[18px] text-text-main group-hover:text-primary transition-colors leading-snug mb-1">Новая статья по психосоматике</h4>
+<p class="font-metadata text-metadata text-secondary line-clamp-2">Опубликовала перевод статьи французских коллег о символизации телесного симптома.</p>
+</div>
+</div>
+<button class="w-full mt-6 py-2 border border-border-hairline rounded text-secondary hover:text-text-main hover:bg-surface-container-lowest font-ui-label-sm text-ui-label-sm transition-colors text-center">
+                    Загрузить еще
+                </button>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-border-hairline py-stack-lg w-full mt-auto">
+<div class="flex flex-col items-center w-full px-margin-page max-w-max-width mx-auto gap-stack-sm">
+<div class="font-display-serif text-headline-h2 text-secondary opacity-80 hover:opacity-100 transition-opacity">
+                β<span class="text-primary/50">→</span>α
+            </div>
+<nav class="flex flex-wrap justify-center gap-6 mb-4">
+<a class="text-on-surface-variant font-body-standard text-body-standard hover:text-primary transition-colors" href="#">Об издательстве β→α</a>
+<a class="text-on-surface-variant font-body-standard text-body-standard hover:text-primary transition-colors" href="#">Помощь</a>
+<a class="text-on-surface-variant font-body-standard text-body-standard hover:text-primary transition-colors" href="#">Конфиденциальность</a>
+<a class="text-on-surface-variant font-body-standard text-body-standard hover:text-primary transition-colors" href="#">Контакты</a>
+</nav>
+<div class="text-secondary font-metadata text-metadata opacity-80">
+                © 2024 Bookatier. v1.0.4-alpha
+            </div>
+</div>
+</footer>
+</body></html>

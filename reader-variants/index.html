@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bookatier - Читалка</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&amp;display=swap" rel="stylesheet"/>
+
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#ffb4a2",
+                        "tertiary": "#006362",
+                        "background": "#fff9ee",
+                        "outline": "#8a726c",
+                        "primary-fixed": "#ffdad2",
+                        "primary": "#b85138",
+                        "on-tertiary-fixed": "#002020",
+                        "chip-amber": "#C98A3C",
+                        "on-secondary-fixed": "#211a13",
+                        "tertiary-container": "#007e7d",
+                        "on-surface": "#1d1c15",
+                        "chip-sage": "#4C6B5E",
+                        "on-secondary": "#ffffff",
+                        "text-main": "#241F1B",
+                        "surface-dim": "#dfd9cf",
+                        "on-tertiary-fixed-variant": "#00504f",
+                        "on-secondary-container": "#6d6259",
+                        "surface-container-high": "#ede8dd",
+                        "tertiary-fixed": "#94f2f0",
+                        "on-error-container": "#93000a",
+                        "chip-slate": "#3E5C73",
+                        "on-background": "#1d1c15",
+                        "inverse-primary": "#ffb4a2",
+                        "surface-tint": "#a03f28",
+                        "surface": "#FFFDF8",
+                        "tertiary-fixed-dim": "#78d6d4",
+                        "outline-variant": "#ddc0ba",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#d2fffd",
+                        "on-primary-fixed": "#3d0700",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#56423d",
+                        "secondary-container": "#efe0d4",
+                        "secondary": "#675d53",
+                        "border-hairline": "#E4D9C6",
+                        "on-primary-fixed-variant": "#812913",
+                        "surface-bright": "#fff9ee",
+                        "primary-container": "#b85138",
+                        "on-secondary-fixed-variant": "#4f453c",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f9f3e8",
+                        "inverse-on-surface": "#f6f0e5",
+                        "on-primary-container": "#fff4f1",
+                        "inverse-surface": "#333029",
+                        "secondary-fixed-dim": "#d2c4b9",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e8e2d7",
+                        "surface-container": "#f3ede2",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#efe0d4",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e8e2d7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "max-width": "1200px",
+                        "gutter": "24px",
+                        "stack-sm": "16px",
+                        "stack-md": "32px",
+                        "stack-lg": "64px",
+                        "margin-page": "40px"
+                    },
+                    "fontFamily": {
+                        "ui-label-lg": ["Inter"],
+                        "body-standard": ["Source Serif 4"],
+                        "ui-label-sm": ["Inter"],
+                        "quote-text": ["Source Serif 4"],
+                        "headline-h1": ["Source Serif 4"],
+                        "body-reading": ["Source Serif 4"],
+                        "metadata": ["Inter"],
+                        "headline-h2": ["Source Serif 4"],
+                        "display-serif": ["Source Serif 4"]
+                    },
+                    "fontSize": {
+                        "ui-label-lg": ["15px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-standard": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "ui-label-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "quote-text": ["20px", { "lineHeight": "30px", "fontWeight": "400" }],
+                        "headline-h1": ["30px", { "lineHeight": "38px", "fontWeight": "600" }],
+                        "body-reading": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "metadata": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "headline-h2": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
+                        "display-serif": ["42px", { "lineHeight": "52px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #fff9ee; /* Layer 0: The Cream background */
+            color: #241F1B;
+        }
+        .reader-content {
+            column-count: 1;
+            column-gap: 2rem;
+            text-align: justify;
+        }
+        @media (min-width: 1024px) {
+            .reader-content {
+                column-count: 2;
+                column-gap: 4rem;
+            }
+        }
+        .reader-p {
+            text-indent: 1.5em;
+            margin-bottom: 0;
+            margin-top: 0;
+        }
+        .reader-p:first-of-type, .reader-p.no-indent {
+            text-indent: 0;
+        }
+    
+        /* Paper texture — replaces inline SVG noise */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url('../assets/backgrounds/manuscript.png');
+            background-repeat: repeat;
+            background-size: 300px;
+            opacity: 0.045;
+            pointer-events: none;
+            z-index: 0;
+        }
+        </style>
+</head>
+<body class="min-h-screen font-body-standard overflow-hidden flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="bg-surface dark:bg-on-background w-full border-b border-border-hairline shadow-[0_4px_20px_rgba(36,31,27,0.04)] z-50 sticky top-0 flex-none h-16">
+<div class="flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-full">
+<div class="flex items-center gap-4">
+<button class="text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<a class="font-headline-h2 text-headline-h2 text-text-main dark:text-surface-bright flex items-center gap-1" href="#">
+                    β<span class="text-primary text-sm">→</span>α Bookatier
+                </a>
+</div>
+<!-- Contextual Nav for Reader -->
+<nav class="hidden md:flex gap-6 items-center">
+<span class="text-secondary dark:text-secondary-fixed-dim font-metadata text-metadata">
+                    Антонино Ферро · Техника психоанализа
+                </span>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="format_size">format_size</span>
+</button>
+<button class="text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="bookmark_border">bookmark_border</span>
+</button>
+<button class="text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Reader Layout -->
+<main class="flex-1 flex overflow-hidden max-w-max-width mx-auto w-full w-full relative">
+<!-- Sidebar: Table of Contents (Subtle) -->
+<aside class="w-64 border-r border-border-hairline bg-surface/50 hidden lg:flex flex-col h-full overflow-y-auto pt-8 pb-8 px-6 flex-none">
+<h3 class="font-ui-label-sm text-ui-label-sm text-secondary uppercase tracking-wider mb-6">Оглавление</h3>
+<ul class="space-y-4 font-ui-label-lg text-ui-label-lg">
+<li><a class="text-secondary hover:text-primary transition-colors duration-200 block" href="#">Предисловие</a></li>
+<li><a class="text-primary font-bold border-l-2 border-primary pl-3 -ml-3 block" href="#">Глава 1. Сновидения и трансформации</a></li>
+<ul class="pl-4 mt-2 space-y-3 font-metadata text-metadata text-secondary border-l border-border-hairline ml-1">
+<li><a class="hover:text-primary transition-colors duration-200" href="#">1.1 Альфа-функция</a></li>
+<li><a class="text-primary" href="#">1.2 Повествовательные производные</a></li>
+<li><a class="hover:text-primary transition-colors duration-200" href="#">1.3 Персонажи сессии</a></li>
+</ul>
+<li><a class="text-secondary hover:text-primary transition-colors duration-200 block" href="#">Глава 2. Поле и его динамика</a></li>
+<li><a class="text-secondary hover:text-primary transition-colors duration-200 block" href="#">Глава 3. Интерпретация и ее судьбы</a></li>
+<li><a class="text-secondary hover:text-primary transition-colors duration-200 block" href="#">Глава 4. Игра и творчество в анализе</a></li>
+</ul>
+</aside>
+<!-- Book Canvas -->
+<div class="flex-1 overflow-y-auto relative bg-[#fff9ee] scroll-smooth" id="reader-scroll-container">
+<!-- Content Area -->
+<div class="max-w-4xl mx-auto px-8 md:px-16 py-12 lg:py-24 font-body-reading text-body-reading text-text-main">
+<header class="mb-16 text-center">
+<h1 class="font-display-serif text-display-serif text-text-main mb-4">Сновидения и трансформации</h1>
+<p class="font-ui-label-lg text-ui-label-lg text-secondary">Глава 1</p>
+</header>
+<div class="reader-content text-[#241F1B]">
+<p class="reader-p no-indent mb-6 font-quote-text text-quote-text italic text-secondary border-l-2 border-primary/30 pl-4">
+                        «Аналитик — это не тот, кто знает, а тот, кто способен переносить незнание достаточно долго, чтобы позволить возникнуть новому смыслу».
+                    </p>
+<p class="reader-p mb-4">
+                        Когда пациент приходит на сессию и рассказывает историю о своей собаке, о соседке по лестничной клетке или о фильме, который он посмотрел накануне, мы стоим перед выбором. Мы можем рассматривать этот рассказ как историческую справку, как сообщение о внешних событиях, имеющих значение сами по себе. Это путь, который часто приводит к бесплодным дискуссиям о реальности и объективности.
+                    </p>
+<p class="reader-p mb-4">
+                        Но есть и другой путь. Мы можем слушать этот рассказ как <span class="font-bold">повествовательную производную (narrative derivative)</span> бодрствующего сновидения, которое пациент видит прямо сейчас, в моменте сессии, в присутствии аналитика. В этой перспективе соседка или собака становятся персонажами пьесы, которая разыгрывается в аналитическом поле.
+                    </p>
+<p class="reader-p mb-4">
+                        Это смещение перспективы радикально меняет технику. Мы больше не ищем скрытый смысл за явным текстом; мы смотрим на сам текст как на продукт постоянной трансформации сырых сенсорных данных (бета-элементов) в пиктограммы (альфа-элементы), из которых строится мысль.
+                    </p>
+<h3 class="font-headline-h2 text-headline-h2 text-text-main mt-10 mb-6">1.2 Повествовательные производные</h3>
+<p class="reader-p mb-4">
+                        У. Бион предложил концепцию бодрствующего сновидения (waking dream thought), согласно которой мы непрерывно «видим сны» о нашем эмоциональном опыте, даже находясь в состоянии бодрствования. Однако этот процесс обычно скрыт от нас, как звезды скрыты светом дня.
+                    </p>
+<p class="reader-p mb-4">
+                        В аналитической сессии пациент предоставляет нам доступ к этому непрерывному сновидению через свои рассказы. Персонажи этих рассказов — это не просто исторические фигуры, это аффективные голограммы, проекции эмоциональных состояний, возникающих в поле между аналитиком и пациентом.
+                    </p>
+<p class="reader-p mb-4">
+                        Например, если пациент рассказывает о жестоком начальнике, мы не спешим интерпретировать это как перенос образа строгого отца. Мы сначала задаем себе вопрос: «Что в нашем взаимодействии прямо сейчас, в микроклимате сессии, заставило пациента вызвать на сцену этого персонажа?» Возможно, моя предыдущая интерпретация была воспринята как слишком авторитарная, как вторжение?
+                    </p>
+<p class="reader-p mb-4">
+                        Таким образом, рассказ пациента становится постоянной обратной связью (feedback), компасом, который показывает нам температуру и давление в аналитическом поле. Это требует от аналитика способности к «негативной способности» (Дж. Китс) — умению пребывать в сомнении, неопределенности и незнании, не пытаясь немедленно схватиться за факты или спасительные теории.
+                    </p>
+<p class="reader-p mb-4">
+                       Переход от исторической реконструкции к работе в «здесь и сейчас» аналитического поля требует мужества отказаться от роли всезнающего эксперта и стать со-участником творческого процесса создания смыслов.
+                    </p>
+</div>
+<div class="mt-24 border-t border-border-hairline pt-8 flex justify-between items-center text-secondary font-ui-label-sm text-ui-label-sm">
+<button class="flex items-center gap-2 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+                        Предыдущая глава
+                    </button>
+<button class="flex items-center gap-2 hover:text-primary transition-colors">
+                        Следующая глава
+                        <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Progress Bar -->
+<div class="bg-surface border-t border-border-hairline h-12 flex items-center justify-between px-8 w-full z-40 flex-none">
+<span class="font-metadata text-metadata text-secondary">
+            Стр. 84 из 286
+        </span>
+<div class="flex-1 mx-8 max-w-md hidden sm:block">
+<div class="w-full bg-surface-variant h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 29%;"></div>
+</div>
+</div>
+<span class="font-metadata text-metadata text-secondary">
+            29% прочитано
+        </span>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-on-background full-width py-stack-lg border-t border-border-hairline flat no shadows flex-none">
+<div class="flex flex-col items-center justify-center gap-stack-sm w-full max-w-max-width mx-auto text-center Transition-all duration-300">
+<div class="font-ui-label-sm text-ui-label-sm text-text-main dark:text-surface-bright mb-2">
+                β<span class="text-primary">→</span>α
+            </div>
+<div class="flex gap-4 font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim">
+<a class="hover:text-primary underline decoration-primary/30" href="../about/index.html">О проекте</a>
+<a class="hover:text-primary underline decoration-primary/30" href="#">Помощь</a>
+<a class="hover:text-primary underline decoration-primary/30" href="#">Библиотека</a>
+<a class="hover:text-primary underline decoration-primary/30" href="#">Контакты</a>
+</div>
+<div class="font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim mt-2">
+                © Bookatier β→α · v1.0.4-alpha
+            </div>
+</div>
+</footer>
+</body></html>

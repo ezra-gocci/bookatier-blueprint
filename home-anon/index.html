@@ -1,0 +1,315 @@
+<!DOCTYPE html><html lang="ru"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Bookatier - Читальный зал профессионального сообщества</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed-variant": "#00504f",
+                      "inverse-surface": "#333029",
+                      "tertiary": "#006362",
+                      "on-surface-variant": "#56423d",
+                      "surface-dim": "#dfd9cf",
+                      "surface-bright": "#fff9ee",
+                      "primary": "#b85138",
+                      "surface": "#FFFDF8",
+                      "on-secondary-container": "#6d6259",
+                      "chip-slate": "#3E5C73",
+                      "surface-container-low": "#f9f3e8",
+                      "border-hairline": "#E4D9C6",
+                      "tertiary-fixed-dim": "#78d6d4",
+                      "on-primary-fixed": "#3d0700",
+                      "secondary-fixed-dim": "#d2c4b9",
+                      "text-main": "#241F1B",
+                      "error-container": "#ffdad6",
+                      "surface-variant": "#e8e2d7",
+                      "surface-container-lowest": "#ffffff",
+                      "chip-amber": "#C98A3C",
+                      "primary-container": "#b85138",
+                      "on-secondary-fixed": "#211a13",
+                      "background": "#fff9ee",
+                      "surface-container": "#f3ede2",
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed": "#efe0d4",
+                      "secondary-container": "#efe0d4",
+                      "tertiary-fixed": "#94f2f0",
+                      "tertiary-container": "#007e7d",
+                      "surface-container-high": "#ede8dd",
+                      "on-surface": "#1d1c15",
+                      "outline-variant": "#ddc0ba",
+                      "on-error-container": "#93000a",
+                      "primary-fixed": "#ffdad2",
+                      "on-tertiary-container": "#d2fffd",
+                      "surface-tint": "#a03f28",
+                      "on-primary": "#ffffff",
+                      "on-secondary-fixed-variant": "#4f453c",
+                      "on-error": "#ffffff",
+                      "inverse-primary": "#ffb4a2",
+                      "outline": "#8a726c",
+                      "primary-fixed-dim": "#ffb4a2",
+                      "surface-container-highest": "#e8e2d7",
+                      "on-primary-fixed-variant": "#812913",
+                      "on-background": "#1d1c15",
+                      "chip-sage": "#4C6B5E",
+                      "inverse-on-surface": "#f6f0e5",
+                      "on-primary-container": "#fff4f1",
+                      "secondary": "#675d53",
+                      "error": "#ba1a1a",
+                      "on-tertiary-fixed": "#002020",
+                      "on-secondary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-lg": "64px",
+                      "gutter": "24px",
+                      "stack-sm": "16px",
+                      "stack-md": "32px",
+                      "max-width": "1200px",
+                      "margin-page": "40px"
+              },
+              "fontFamily": {
+                      "ui-label-sm": [
+                              "Inter"
+                      ],
+                      "body-standard": [
+                              "Source Serif 4"
+                      ],
+                      "display-serif": [
+                              "Source Serif 4"
+                      ],
+                      "body-reading": [
+                              "Source Serif 4"
+                      ],
+                      "metadata": [
+                              "Inter"
+                      ],
+                      "headline-h2": [
+                              "Source Serif 4"
+                      ],
+                      "ui-label-lg": [
+                              "Inter"
+                      ],
+                      "quote-text": [
+                              "Source Serif 4"
+                      ],
+                      "headline-h1": [
+                              "Source Serif 4"
+                      ]
+              },
+              "fontSize": {
+                      "ui-label-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "0.03em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-standard": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-serif": [
+                              "42px",
+                              {
+                                      "lineHeight": "52px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-reading": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "metadata": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-h2": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "ui-label-lg": [
+                              "15px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "quote-text": [
+                              "20px",
+                              {
+                                      "lineHeight": "30px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-h1": [
+                              "30px",
+                              {
+                                      "lineHeight": "38px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #fff9ee; /* Fallback */
+            color: #241F1B;
+        }
+        .text-balance {
+            text-wrap: balance;
+        }
+        .texture-bg {
+             background-color: #f9f3e8;
+             /* paper texture → body::before */
+        }
+    </style>
+</head>
+<body class="bg-background text-text-main font-body-standard min-h-screen flex flex-col">
+<!-- Header -->
+<header class="bg-background flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-20 border-b border-border-hairline sticky top-0 z-50">
+<div class="flex items-center gap-gutter">
+<a class="font-display-serif text-headline-h1 text-text-main flex items-center gap-1" href="#">
+                Bookatier
+                <span class="font-ui-label-sm text-ui-label-sm text-primary flex items-center bg-surface-container rounded-full px-2 py-0.5 ml-2 border border-border-hairline">β<span class="material-symbols-outlined text-[10px] mx-0.5">arrow_forward</span>α</span>
+</a>
+</div>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-ui-label-lg text-ui-label-lg" href="../home-anon/index.html">Главная</a>
+<a class="text-secondary hover:text-primary transition-colors duration-200 font-ui-label-lg text-ui-label-lg" href="../catalog/index.html">Каталог</a>
+<a class="text-secondary hover:text-primary transition-colors duration-200 font-ui-label-lg text-ui-label-lg" href="../community/index.html">Сообщество</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">search</span>
+</button>
+<a class="font-ui-label-lg text-ui-label-lg text-secondary hover:text-primary transition-colors hidden sm:block" href="../login/index.html">Войти</a>
+<button class="bg-primary-container text-on-primary-container font-ui-label-lg text-ui-label-lg px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">Запросить доступ</button>
+<button class="md:hidden text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+</div>
+</header>
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="texture-bg py-stack-lg border-b border-border-hairline relative overflow-hidden">
+<div class="max-w-max-width mx-auto px-margin-page text-center relative z-10 py-12">
+<h1 class="font-display-serif text-display-serif text-text-main mb-stack-sm text-balance mx-auto max-w-4xl">Читальный зал профессионального сообщества</h1>
+<p class="font-body-reading text-body-reading text-secondary max-w-2xl mx-auto mb-stack-md text-balance">Психотерапия и психоанализ: читаем, обсуждаем и цитируем — вместе.</p>
+<button class="bg-primary-container text-on-primary-container font-ui-label-lg text-ui-label-lg px-6 py-3 rounded-lg hover:opacity-90 transition-opacity shadow-sm">Запросить доступ</button>
+</div>
+</section>
+<!-- Featured Books Grid -->
+<section class="py-stack-lg max-w-max-width mx-auto px-margin-page">
+<h2 class="font-display-serif text-headline-h2 text-text-main mb-stack-md border-b border-border-hairline pb-4 flex justify-between items-end">
+<span>Избранные книги</span>
+<a class="font-ui-label-sm text-ui-label-sm text-primary hover:underline flex items-center" href="#">Смотреть все <span class="material-symbols-outlined text-[16px] ml-1">arrow_forward</span></a>
+</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Book Card 1 -->
+<article class="bg-surface rounded-lg border border-border-hairline p-4 flex flex-col gap-4 hover:shadow-[0_8px_30px_rgba(36,31,27,0.04)] transition-shadow duration-300 group">
+<div class="relative w-full aspect-[3/4] rounded shadow-sm overflow-hidden bg-surface-variant">
+<img alt="Book cover" class="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLvoTsnzV_1b1UYHyDjU1S2JlDPns9f3lBiSaa_SBuy_mG7LXeKbxOCGxOqrToeaX7deALriyVXuFDzdMW-u4OLAql593Dvlj3PThWIvTZqRRhzn9u7MhGWL1mSJANuMCMh1ZvdnO0uMTb88COEjv0avUPBQUSCKKUy09zcTFLCiqJ8NCTvikxCBx51kmm28eIFHYzU6VpmJ32EJ7Qi5Gd6IZzeTi8oKqsALf6fiYJVgO9Z57JhVZqTT8is">
+</div>
+<div class="flex-grow flex flex-col">
+<div class="flex items-center gap-2 mb-2 flex-wrap">
+<span class="bg-surface-container-high text-chip-slate font-metadata text-metadata px-2 py-0.5 rounded-full">Психоанализ</span>
+<div class="flex items-center text-chip-amber text-[14px]">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star_half</span>
+</div>
+</div>
+<h3 class="font-display-serif text-[20px] leading-tight text-text-main mb-1 line-clamp-2">Теория привязанности и психоанализ</h3>
+<p class="font-metadata text-metadata text-secondary mb-4">Питер Фонаги</p>
+</div>
+</article>
+<!-- Book Card 2 -->
+<article class="bg-surface rounded-lg border border-border-hairline p-4 flex flex-col gap-4 hover:shadow-[0_8px_30px_rgba(36,31,27,0.04)] transition-shadow duration-300 group">
+<div class="relative w-full aspect-[3/4] rounded shadow-sm overflow-hidden bg-surface-variant">
+<img alt="Book cover" class="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLvvc-IHjFfgfIrqKz5mUArfcftNaW7Jg5-0fZ6EpeI249fK71ama2yv_-oflq0ftyCS5f7bonNPXIUYqaH23fEoOXgTmc3MdZCFYGaP-oBlUQ0IuFqpXG561HOoromV6iKBJC-i6f_7_ESdMImCou8TF_JOVO89s4TKmOWQe2h8YfV7hf5C8w6IyUy1At2QB23-xiS0NLyzE3S-4rgnKscEb1bb7PFzGEZEj5fQAf1-czT0k-x1EPSoT74U">
+</div>
+<div class="flex-grow flex flex-col">
+<div class="flex items-center gap-2 mb-2 flex-wrap">
+<span class="bg-surface-container-high text-chip-amber font-metadata text-metadata px-2 py-0.5 rounded-full">Психотерапия</span>
+<div class="flex items-center text-chip-amber text-[14px]">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 0;">star</span>
+</div>
+</div>
+<h3 class="font-display-serif text-[20px] leading-tight text-text-main mb-1 line-clamp-2">Избегание эмоций, проживание эмоций</h3>
+<p class="font-metadata text-metadata text-secondary mb-4">Антонино Ферро</p>
+</div>
+</article>
+<!-- Book Card 3 -->
+<article class="bg-surface rounded-lg border border-border-hairline p-4 flex flex-col gap-4 hover:shadow-[0_8px_30px_rgba(36,31,27,0.04)] transition-shadow duration-300 group">
+<div class="relative w-full aspect-[3/4] rounded shadow-sm overflow-hidden bg-surface-variant">
+<img alt="Book cover" class="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AP1WRLteUoLPio-Lj5P7DZgtuPDQWQW00DHKcMPPFgji_ZbMvBvfsSFRbOuQBCJJtXQQCkbHbmW-Xdr7X6iLgPtZKVsRuJgoGPxQrEIc66izlL6_XzoesXOhjEyVWq6x1DoefUC31QvvR_n28Och2RJVfbTuTHYnkDiXevG3aW4OdIOvF0N23kTLrXjEpdkm1HWzXb9eOiaR_b82oJWgpNt9vkbxmN47zOvoH9xpMlczeXaJc7dvREgYZOykRis">
+</div>
+<div class="flex-grow flex flex-col">
+<div class="flex items-center gap-2 mb-2 flex-wrap">
+<span class="bg-surface-container-high text-chip-sage font-metadata text-metadata px-2 py-0.5 rounded-full">Клиническая практика</span>
+<div class="flex items-center text-chip-amber text-[14px]">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<h3 class="font-display-serif text-[20px] leading-tight text-text-main mb-1 line-clamp-2">Гореть вместе: близость, истина и уязвимость</h3>
+<p class="font-metadata text-metadata text-secondary mb-4">Лука Николи</p>
+</div>
+</article>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-background flex flex-col items-center justify-center py-stack-md w-full border-t border-border-hairline mt-stack-lg">
+<div class="font-display-serif text-text-main text-[24px] mb-4 flex items-center">
+            β<span class="material-symbols-outlined text-primary mx-1 text-[20px]">arrow_forward</span>α
+        </div>
+<p class="font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim mb-4 text-center">
+            © 2024 Bookatier. β→α Издание для психотерапевтов.
+        </p>
+<nav class="flex gap-4">
+<a class="font-metadata text-metadata text-secondary hover:text-text-main underline transition-all" href="../about/index.html">О проекте</a>
+<a class="font-metadata text-metadata text-secondary hover:text-text-main underline transition-all" href="#">Этика</a>
+<a class="font-metadata text-metadata text-secondary hover:text-text-main underline transition-all" href="#">Контакты</a>
+<span class="font-metadata text-metadata text-secondary">v1.0.4-alpha</span>
+</nav>
+</footer>
+</body></html>

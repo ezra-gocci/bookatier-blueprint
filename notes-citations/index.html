@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Мои заметки и цитаты - Bookatier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&amp;display=swap" rel="stylesheet"/>
+
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#78d6d4",
+                        "surface-bright": "#fff9ee",
+                        "surface-container-high": "#ede8dd",
+                        "secondary-fixed": "#efe0d4",
+                        "background": "#fff9ee",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#e8e2d7",
+                        "on-surface": "#1d1c15",
+                        "outline-variant": "#ddc0ba",
+                        "secondary": "#675d53",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#fff4f1",
+                        "on-tertiary-fixed": "#002020",
+                        "surface-tint": "#a03f28",
+                        "on-secondary-fixed": "#211a13",
+                        "chip-slate": "#3E5C73",
+                        "primary-fixed": "#ffdad2",
+                        "primary": "#b85138",
+                        "primary-container": "#b85138",
+                        "on-tertiary-container": "#d2fffd",
+                        "border-hairline": "#E4D9C6",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e8e2d7",
+                        "inverse-primary": "#ffb4a2",
+                        "surface-container-low": "#f9f3e8",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#00504f",
+                        "secondary-fixed-dim": "#d2c4b9",
+                        "surface-dim": "#dfd9cf",
+                        "on-primary-fixed-variant": "#812913",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#333029",
+                        "inverse-on-surface": "#f6f0e5",
+                        "secondary-container": "#efe0d4",
+                        "on-background": "#1d1c15",
+                        "chip-sage": "#4C6B5E",
+                        "on-error": "#ffffff",
+                        "tertiary": "#006362",
+                        "outline": "#8a726c",
+                        "text-main": "#241F1B",
+                        "on-primary-fixed": "#3d0700",
+                        "surface-container": "#f3ede2",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#007e7d",
+                        "surface": "#FFFDF8",
+                        "on-surface-variant": "#56423d",
+                        "on-secondary-fixed-variant": "#4f453c",
+                        "on-secondary-container": "#6d6259",
+                        "tertiary-fixed": "#94f2f0",
+                        "chip-amber": "#C98A3C",
+                        "primary-fixed-dim": "#ffb4a2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "16px",
+                        "margin-page": "40px",
+                        "stack-lg": "64px",
+                        "gutter": "24px",
+                        "stack-md": "32px",
+                        "max-width": "1200px"
+                    },
+                    "fontFamily": {
+                        "ui-label-sm": ["Inter"],
+                        "headline-h1": ["Source Serif 4"],
+                        "body-standard": ["Source Serif 4"],
+                        "quote-text": ["Source Serif 4"],
+                        "headline-h2": ["Source Serif 4"],
+                        "display-serif": ["Source Serif 4"],
+                        "body-reading": ["Source Serif 4"],
+                        "metadata": ["Inter"],
+                        "ui-label-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "ui-label-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "headline-h1": ["30px", { "lineHeight": "38px", "fontWeight": "600" }],
+                        "body-standard": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "quote-text": ["20px", { "lineHeight": "30px", "fontWeight": "400" }],
+                        "headline-h2": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
+                        "display-serif": ["42px", { "lineHeight": "52px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-reading": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "metadata": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "ui-label-lg": ["15px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        .shadow-book { box-shadow: 2px 4px 12px rgba(36, 31, 27, 0.04), 1px 1px 0px rgba(36, 31, 27, 0.02); }
+        .shadow-card { box-shadow: 0px 8px 24px rgba(36, 31, 27, 0.03); }
+        .decorative-corner { position: absolute; width: 40px; height: 40px; opacity: 0.15; pointer-events: none; }
+    
+        /* Paper texture — replaces inline SVG noise */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url('../assets/backgrounds/manuscript.png');
+            background-repeat: repeat;
+            background-size: 300px;
+            opacity: 0.045;
+            pointer-events: none;
+            z-index: 0;
+        }
+        </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-background dark:bg-background w-full top-0 sticky border-b border-border-hairline z-50">
+<div class="max-w-max-width mx-auto px-margin-page flex justify-between items-center h-16">
+<div class="font-display-serif text-headline-h1 text-text-main dark:text-inverse-surface flex items-center gap-2">
+<span>Bookatier</span>
+<span class="text-primary text-sm font-ui-label-sm translate-y-1">β→α</span>
+</div>
+<nav class="hidden md:flex items-center gap-6 font-ui-label-lg text-ui-label-lg h-full">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors duration-200 h-full flex items-center" href="../home-anon/index.html">Главная</a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors duration-200 h-full flex items-center" href="../catalog/index.html">Каталог</a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors duration-200 h-full flex items-center" href="#">Моя полка</a>
+<a class="text-primary font-bold border-b-2 border-primary pt-[2px] h-full flex items-center opacity-80 transition-all" href="#">Заметки</a>
+</nav>
+<div class="flex items-center gap-4 text-primary dark:text-primary-fixed-dim">
+<button class="hover:text-primary-container transition-colors"><span class="material-symbols-outlined" data-icon="menu_book" data-weight="fill" style="font-variation-settings: 'FILL' 1;">menu_book</span></button>
+<button class="hover:text-primary-container transition-colors"><span class="material-symbols-outlined" data-icon="person" data-weight="fill" style="font-variation-settings: 'FILL' 1;">person</span></button>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow max-w-max-width w-full mx-auto px-margin-page py-stack-md flex flex-col md:flex-row gap-gutter">
+<!-- Sidebar -->
+<aside class="w-full md:w-64 flex-shrink-0 flex flex-col gap-stack-md">
+<!-- Type Filter -->
+<div class="flex flex-col gap-2">
+<h3 class="font-ui-label-sm text-ui-label-sm text-on-secondary-container uppercase tracking-wider mb-2">Категории</h3>
+<button class="flex items-center justify-between py-2 px-3 bg-surface-container rounded-DEFAULT text-primary font-ui-label-sm text-ui-label-sm transition-colors">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">edit_note</span> Все записи</span>
+<span class="text-metadata font-metadata opacity-60">124</span>
+</button>
+<button class="flex items-center justify-between py-2 px-3 hover:bg-surface-container-low rounded-DEFAULT text-secondary hover:text-primary font-ui-label-sm text-ui-label-sm transition-colors">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">format_quote</span> Цитаты</span>
+<span class="text-metadata font-metadata opacity-60">86</span>
+</button>
+<button class="flex items-center justify-between py-2 px-3 hover:bg-surface-container-low rounded-DEFAULT text-secondary hover:text-primary font-ui-label-sm text-ui-label-sm transition-colors">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">bookmark</span> Закладки</span>
+<span class="text-metadata font-metadata opacity-60">12</span>
+</button>
+</div>
+<div class="w-full h-px bg-border-hairline"></div>
+<!-- Book Filter -->
+<div class="flex flex-col gap-3">
+<h3 class="font-ui-label-sm text-ui-label-sm text-on-secondary-container uppercase tracking-wider mb-1">По книгам</h3>
+<button class="flex items-start gap-3 text-left group">
+<div class="w-10 h-14 bg-surface-container shadow-book rounded-sm flex-shrink-0 bg-cover bg-center border border-border-hairline overflow-hidden" data-alt="A delicate, abstract watercolor texture evoking a sense of calm reflection, used as a subtle book cover thumbnail placeholder. Warm amber and soft sage hues blend gently on a slightly textured, off-white background, capturing a minimal, literary aesthetic suitable for a high-end digital library." style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLtb3qv5uocJD_-vaYDi4tuOo3OFDfU8FFZlQ_Hxw1SpCM2kFUC83p17eUoY6iVVHL-798ZNZWNeq-F-KTplrVTbyX6l6Pojlld2sm-7XvUJH1w-ZPVrRO2AKvqpAwlbcT0SgaVpsooKW7UGHeAwd_fNVWfcG322br2guzWX15vxZSsS8ujn3bokEpGyjrgXsQIWpLvHPBr7ZjdFZSWfDyoJwBrG8QKPXAvThEktYF1u4T3x5AFudIqXLeBR');">
+</div>
+<div class="flex flex-col justify-center h-14">
+<span class="font-body-standard text-[14px] leading-tight text-on-surface group-hover:text-primary transition-colors line-clamp-2">Научение на опыте</span>
+<span class="font-metadata text-metadata text-secondary mt-1">У. Бион · 42 записи</span>
+</div>
+</button>
+<button class="flex items-start gap-3 text-left group opacity-70 hover:opacity-100 transition-opacity">
+<div class="w-10 h-14 bg-surface-container-high shadow-book rounded-sm flex-shrink-0 border border-border-hairline overflow-hidden relative">
+<div class="absolute inset-0 opacity-30 bg-cover bg-center" data-alt="A subtle, minimalist ink drawing pattern featuring abstract silhouettes and fine lines, used as a decorative book cover background. The design is clean, professional, and sophisticated, relying on warm cream tones and faint terracotta accents, evoking a thoughtful, academic atmosphere." style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLsCn_IinvnjLI17M2Z9Ux_SSe753dFWZrzmSCGnGoS1l5CNBR14VJ_I52Z5s3c2cgAIXjtAYo-PDSq2Yc1FN5bukhpOORaT3tVE8Uunu2OJD9iH82h3z4Ho4xJXtSVwbijKzBUfnzhPsEI59sIzkIxMtFdp7IC-orFcvsoZQlPd-GqSwc8Ey9tz6fZIyHTnw1qsw6nUmufjprVlsjTF4M7fIadfXj2D2q-gSaRlwR60fBHC4LElIhhZtvsG');"></div>
+</div>
+<div class="flex flex-col justify-center h-14">
+<span class="font-body-standard text-[14px] leading-tight text-on-surface group-hover:text-primary transition-colors line-clamp-2">Избегание эмоций...</span>
+<span class="font-metadata text-metadata text-secondary mt-1">А. Ферро · 28 записей</span>
+</div>
+</button>
+<button class="flex items-start gap-3 text-left group opacity-70 hover:opacity-100 transition-opacity">
+<div class="w-10 h-14 bg-surface-container-lowest shadow-book rounded-sm flex-shrink-0 border border-border-hairline overflow-hidden">
+</div>
+<div class="flex flex-col justify-center h-14">
+<span class="font-body-standard text-[14px] leading-tight text-on-surface group-hover:text-primary transition-colors line-clamp-2">Психическое страдание</span>
+<span class="font-metadata text-metadata text-secondary mt-1">К. Николи · 15 записей</span>
+</div>
+</button>
+</div>
+</aside>
+<!-- Main Feed -->
+<div class="flex-grow flex flex-col gap-stack-md">
+<!-- Search -->
+<div class="relative w-full max-w-2xl">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-[20px]">search</span>
+<input class="w-full bg-surface border border-border-hairline rounded-full py-3 pl-12 pr-4 font-body-standard text-body-standard text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow" placeholder="Искать по тексту заметок, авторам или тегам..." type="text"/>
+</div>
+<div class="flex flex-col gap-6 w-full max-w-3xl">
+<!-- Note Card -->
+<article class="bg-surface border border-border-hairline rounded-lg p-6 shadow-card relative overflow-hidden group">
+<div class="decorative-corner top-0 right-0 bg-no-repeat bg-contain" data-alt="A tiny, soft watercolor leaf motif in subtle jewel tones, positioned in the top right corner of a note card to add a touch of human warmth and editorial elegance to the digital interface." style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLtb3qv5uocJD_-vaYDi4tuOo3OFDfU8FFZlQ_Hxw1SpCM2kFUC83p17eUoY6iVVHL-798ZNZWNeq-F-KTplrVTbyX6l6Pojlld2sm-7XvUJH1w-ZPVrRO2AKvqpAwlbcT0SgaVpsooKW7UGHeAwd_fNVWfcG322br2guzWX15vxZSsS8ujn3bokEpGyjrgXsQIWpLvHPBr7ZjdFZSWfDyoJwBrG8QKPXAvThEktYF1u4T3x5AFudIqXLeBR'); transform: translate(10px, -10px);"></div>
+<header class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2 text-metadata font-metadata text-secondary">
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+<span>Моя заметка</span>
+<span>·</span>
+<span>12 Октября, 2023</span>
+</div>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-secondary hover:text-primary"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+<button class="text-secondary hover:text-primary"><span class="material-symbols-outlined text-[18px]">share</span></button>
+<button class="text-secondary hover:text-error"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</div>
+</header>
+<div class="font-body-reading text-body-reading text-on-surface mb-6 leading-relaxed">
+                        Тут-то и обнаружилось, что Мышкин вовсе не так прост. Его кажущаяся наивность работает как контейнирующий механизм, отражающий тревоги окружающих.
+                    </div>
+<footer class="pt-4 border-t border-border-hairline border-dashed flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-6 h-8 bg-surface-container-high border border-border-hairline rounded-sm"></div>
+<div class="flex flex-col">
+<span class="font-metadata text-metadata text-secondary">Относится к:</span>
+<a class="font-body-standard text-[14px] text-on-surface hover:text-primary hover:underline decoration-primary/30 underline-offset-4 transition-all" href="#">Избегание эмоций...</a>
+</div>
+</div>
+<span class="px-2 py-1 bg-surface-container rounded text-[11px] font-ui-label-sm text-chip-slate">Клинический случай</span>
+</footer>
+</article>
+<!-- Citation Card -->
+<article class="bg-[#FCF9F2] border border-border-hairline rounded-lg p-6 shadow-card relative">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary/20 rounded-l-lg"></div>
+<header class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2 text-metadata font-metadata text-secondary">
+<span class="material-symbols-outlined text-[16px]">format_quote</span>
+<span>Цитата</span>
+<span>·</span>
+<span>05 Октября, 2023</span>
+</div>
+<div class="flex gap-2">
+<button class="text-secondary hover:text-primary"><span class="material-symbols-outlined text-[18px]">content_copy</span></button>
+</div>
+</header>
+<blockquote class="font-quote-text text-quote-text italic text-on-surface-variant mb-6 pl-4 border-l-2 border-outline-variant">
+                        «Аналитик — это не тот, кто знает, а тот, кто способен переносить незнание, оставаясь в контакте с сырыми элементами психического опыта пациента до тех пор, пока не появится смысл.»
+                    </blockquote>
+<footer class="flex flex-col gap-2">
+<div class="font-metadata text-[13px] text-on-secondary-container leading-relaxed">
+                            Bion, W. R. (1962). Learning from Experience. London: Heinemann. <br/>
+                            Бион, У. Р. (2008). Научение на опыте. М.: Когито-Центр, стр. 45.
+                        </div>
+<a class="flex items-center gap-1 font-ui-label-sm text-ui-label-sm text-primary hover:text-primary-container mt-2 group w-max" href="#">
+<span>Перейти к источнику</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</footer>
+</article>
+<!-- Bookmark Card -->
+<article class="flex items-center justify-between py-4 border-b border-border-hairline group">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-outline mt-1">bookmark</span>
+<div class="flex flex-col">
+<span class="font-body-standard text-body-standard text-on-surface">Закладка на стр. 142</span>
+<div class="flex items-center gap-2 text-metadata font-metadata text-secondary mt-1">
+<span>Научение на опыте</span>
+<span>·</span>
+<span>Глава 12</span>
+</div>
+</div>
+</div>
+<button class="px-4 py-2 bg-surface border border-border-hairline rounded font-ui-label-sm text-[13px] text-secondary hover:text-primary hover:border-outline-variant transition-colors opacity-0 group-hover:opacity-100">
+                        Открыть
+                    </button>
+</article>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-surface-container-lowest w-full py-stack-md mt-auto border-t border-border-hairline flat no shadows">
+<div class="max-w-max-width mx-auto px-margin-page flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="font-display-serif text-headline-h2 text-primary">Bookatier</div>
+<div class="flex gap-4 font-family-metadata text-metadata text-on-secondary-container">
+<a class="hover:text-primary-container transition-colors" href="../about/index.html">О проекте</a>
+<a class="hover:text-primary-container transition-colors" href="#">Методология</a>
+<a class="hover:text-primary-container transition-colors" href="#">Архив</a>
+<a class="hover:text-primary-container transition-colors" href="#">Помощь</a>
+</div>
+<div class="font-family-body-standard text-body-standard text-secondary dark:text-secondary-fixed opacity-70 text-sm">
+                β→α Bookatier v1.0.4-alpha
+            </div>
+</div>
+</footer>
+</body></html>
