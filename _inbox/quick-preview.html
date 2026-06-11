@@ -1,0 +1,334 @@
+<!DOCTYPE html><html lang="ru"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Quick Preview Panel - Bookatier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#fff4f1",
+                    "surface": "#FFFDF8",
+                    "surface-tint": "#a03f28",
+                    "outline": "#8a726c",
+                    "on-secondary-fixed-variant": "#4f453c",
+                    "surface-dim": "#dfd9cf",
+                    "on-surface": "#1d1c15",
+                    "on-secondary-container": "#6d6259",
+                    "secondary-fixed-dim": "#d2c4b9",
+                    "tertiary-container": "#007e7d",
+                    "primary-fixed": "#ffdad2",
+                    "on-tertiary-fixed-variant": "#00504f",
+                    "on-tertiary-fixed": "#002020",
+                    "chip-sage": "#4C6B5E",
+                    "secondary-fixed": "#efe0d4",
+                    "on-error-container": "#93000a",
+                    "border-hairline": "#E4D9C6",
+                    "inverse-surface": "#333029",
+                    "on-secondary-fixed": "#211a13",
+                    "error": "#ba1a1a",
+                    "chip-amber": "#C98A3C",
+                    "surface-container": "#f3ede2",
+                    "secondary": "#675d53",
+                    "tertiary": "#006362",
+                    "on-tertiary-container": "#d2fffd",
+                    "outline-variant": "#ddc0ba",
+                    "surface-variant": "#e8e2d7",
+                    "surface-container-low": "#f9f3e8",
+                    "secondary-container": "#efe0d4",
+                    "on-background": "#1d1c15",
+                    "on-surface-variant": "#56423d",
+                    "error-container": "#ffdad6",
+                    "inverse-on-surface": "#f6f0e5",
+                    "inverse-primary": "#ffb4a2",
+                    "surface-container-highest": "#e8e2d7",
+                    "background": "#fff9ee",
+                    "primary": "#983a23",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#ede8dd",
+                    "on-primary-fixed": "#3d0700",
+                    "tertiary-fixed-dim": "#78d6d4",
+                    "on-primary-fixed-variant": "#812913",
+                    "tertiary-fixed": "#94f2f0",
+                    "surface-container-lowest": "#ffffff",
+                    "text-main": "#241F1B",
+                    "surface-bright": "#fff9ee",
+                    "on-primary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#ffb4a2",
+                    "chip-slate": "#3E5C73",
+                    "primary-container": "#b85138",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "max-width": "1200px",
+                    "stack-lg": "64px",
+                    "gutter": "24px",
+                    "stack-sm": "16px",
+                    "stack-md": "32px",
+                    "margin-page": "40px"
+            },
+            "fontFamily": {
+                    "quote-text": [
+                            "Source Serif 4"
+                    ],
+                    "metadata": [
+                            "Inter"
+                    ],
+                    "headline-h2": [
+                            "Source Serif 4"
+                    ],
+                    "display-serif": [
+                            "Source Serif 4"
+                    ],
+                    "headline-h1": [
+                            "Source Serif 4"
+                    ],
+                    "ui-label-sm": [
+                            "Inter"
+                    ],
+                    "body-reading": [
+                            "Source Serif 4"
+                    ],
+                    "body-standard": [
+                            "Source Serif 4"
+                    ],
+                    "ui-label-lg": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "quote-text": [
+                            "20px",
+                            {
+                                    "lineHeight": "30px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "metadata": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-h2": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "display-serif": [
+                            "42px",
+                            {
+                                    "lineHeight": "52px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-h1": [
+                            "30px",
+                            {
+                                    "lineHeight": "38px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "ui-label-sm": [
+                            "13px",
+                            {
+                                    "lineHeight": "18px",
+                                    "letterSpacing": "0.03em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-reading": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-standard": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "ui-label-lg": [
+                            "15px",
+                            {
+                                    "lineHeight": "20px",
+                                    "letterSpacing": "0.02em",
+                                    "fontWeight": "500"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar for the reading panel */
+        .scrolling-area::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrolling-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .scrolling-area::-webkit-scrollbar-thumb {
+            background-color: #E4D9C6;
+            border-radius: 10px;
+        }
+        
+        /* Object Shadow for Book Covers */
+        .shadow-book {
+            box-shadow: 4px 4px 15px rgba(36, 31, 27, 0.08), 1px 1px 3px rgba(36, 31, 27, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-background text-text-main font-body-standard min-h-screen relative overflow-hidden">
+<!-- Background context: Catalog Page (Blurred out slightly to focus on panel) -->
+<div class="absolute inset-0 bg-cover bg-center bg-no-repeat blur-[2px] opacity-40 transition-all duration-300 pointer-events-none" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC0ph42B_P92bLGlqO0KnW4aT3FLmjX3HrXctutIPs2CAYIjjlQjigzNFC_UgNihzoneU39oa-tY_HxcG0Uyrp6KM1jmI_V58LD1ZGGrII5kSPGWnkrlMYr_c_mbOnuBeqRsj0j3SL1JFZb9SG6hbswMZIAj7MvPRRwZP-LdGM2SrR4axEd9krSFxF2fLLaxfOl5PTVKcdnqj6vE2LwZIsa9mCQmqL64mqrkzqkQ0cyCSZ9EqEvo6osB0rhXe53FI1Syye5v4adnCiv');"></div>
+<!-- Dimmer Overlay -->
+<div class="absolute inset-0 bg-inverse-surface/10 backdrop-blur-sm z-40" id="overlay"></div>
+<!-- Right Side Drawer -->
+<aside class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-surface shadow-[-4px_0_24px_rgba(36,31,27,0.06)] flex flex-col transform transition-transform duration-300 border-l border-border-hairline" id="preview-panel">
+<!-- 1. Header -->
+<header class="flex-none px-gutter py-5 border-b border-border-hairline flex items-start justify-between bg-surface z-10">
+<div class="pr-4">
+<h2 class="font-headline-h2 text-headline-h2 text-text-main mb-1">Избегание эмоций, проживание эмоций</h2>
+<p class="font-metadata text-metadata text-secondary">Антонино Ферро</p>
+</div>
+<button aria-label="Close panel" class="p-2 text-secondary hover:text-text-main hover:bg-surface-variant rounded transition-colors">
+<svg class="lucide lucide-x" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+</button>
+</header>
+<!-- 2. Body (Scrolling Area) -->
+<div class="flex-1 overflow-y-auto scrolling-area px-gutter py-stack-md flex flex-col gap-stack-md relative">
+<!-- Book Cover & Quick Meta -->
+<div class="flex gap-6 items-start">
+<div class="flex-shrink-0 w-32 relative group">
+<img alt="Обложка книги Антонино Ферро — Избегание эмоций, проживание эмоций. Классический редакционный дизайн на светлом фоне." class="w-full aspect-[0.71] object-cover shadow-book border border-black/5 rounded-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjsSlthQoJgQX5sZjun0DzGIE_lUNpShJsq6IBmw1Hi7uzRgsBlWF7HUnqRGZqX_tsZN6y4jHBEu7rUyZCdh7TAaHNgtYUfBaGmPi71IlM8gz_iD4Mve-bR_WcAy3c8avqr3D8O2c0qBsCZ7RMph9HGo9d7wpyluYZmPG-vvlE3kjkr4nmx6A5UKv75iIVsaG9zSIiLSVeBjjRwy89r031Payq5LUOjDSQrblSoJe_IcPBzy09sIu1wHcGLrDq9TmwpR6CNj0b8N_u">
+</div>
+<div class="flex flex-col gap-3 pt-2">
+<div class="flex flex-col gap-1">
+<span class="font-metadata text-metadata text-secondary uppercase tracking-wider">Год издания</span>
+<span class="font-ui-label-sm text-ui-label-sm text-text-main">2014</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-metadata text-metadata text-secondary uppercase tracking-wider">Редакция</span>
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 border border-border-hairline rounded bg-surface-container-low text-text-main font-metadata text-[11px] w-max">
+<span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+                           v1.0.4-alpha
+                        </div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-metadata text-metadata text-secondary uppercase tracking-wider">Оценка</span>
+<div class="flex items-center gap-1">
+<div class="flex text-chip-amber">
+<span class="material-symbols-outlined text-[16px] text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] text-amber-500/30" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="font-ui-label-sm text-ui-label-sm text-text-main ml-1">4.2</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Topic Chips -->
+<div class="flex flex-wrap gap-2 pt-2 border-t border-border-hairline">
+<span class="px-3 py-1 rounded-full bg-chip-slate/10 text-chip-slate font-metadata text-metadata">Психоанализ</span>
+<span class="px-3 py-1 rounded-full bg-chip-amber/10 text-chip-amber font-metadata text-metadata">Клиническая практика</span>
+<span class="px-3 py-1 rounded-full bg-chip-sage/10 text-chip-sage font-metadata text-metadata">Бионика</span>
+</div>
+<!-- About Section -->
+<section class="flex flex-col gap-3">
+<h3 class="font-ui-label-sm text-ui-label-sm text-secondary uppercase tracking-wider">О книге</h3>
+<p class="font-body-reading text-body-reading text-text-main">
+                    В этой новаторской работе Антонино Ферро исследует тонкую грань между избеганием и подлинным проживанием эмоционального опыта в аналитическом сеттинге. Автор опирается на пост-бионианскую перспективу, предлагая инструменты для трансформации невыносимых аффектов в нарративные структуры.
+                </p>
+</section>
+<!-- Table of Contents Preview -->
+<section class="flex flex-col gap-3">
+<h3 class="font-ui-label-sm text-ui-label-sm text-secondary uppercase tracking-wider">Оглавление (Фрагмент)</h3>
+<ul class="font-body-standard text-[15px] leading-relaxed text-text-main space-y-2">
+<li class="flex justify-between items-baseline gap-4">
+<span class="truncate">1. Введение: Поле и его обитатели</span>
+<span class="text-secondary font-metadata whitespace-nowrap">Стр. 9</span>
+</li>
+<li class="flex justify-between items-baseline gap-4">
+<span class="truncate">2. Избегание как защита поля</span>
+<span class="text-secondary font-metadata whitespace-nowrap">Стр. 25</span>
+</li>
+<li class="flex justify-between items-baseline gap-4">
+<span class="truncate">3. Сновидение наяву</span>
+<span class="text-secondary font-metadata whitespace-nowrap">Стр. 54</span>
+</li>
+<li class="flex justify-between items-baseline gap-4">
+<span class="truncate">4. Персонажи аналитической сессии</span>
+<span class="text-secondary font-metadata whitespace-nowrap">Стр. 89</span>
+</li>
+<li class="flex justify-between items-baseline gap-4">
+<span class="truncate text-secondary italic">...и еще 8 глав</span>
+</li>
+</ul>
+</section>
+<!-- Excerpt Block -->
+<section class="mt-2">
+<div class="bg-surface-container-low p-5 rounded border border-border-hairline/50 shadow-inner">
+<h3 class="font-ui-label-sm text-[11px] text-secondary uppercase tracking-wider mb-3">Отрывок</h3>
+<p class="font-quote-text text-quote-text text-text-main italic text-opacity-90">
+                        «Аналитик не просто контейнирует тревогу пациента; он участвует в совместном создании сновидения, которое еще не было увидено. Избегание эмоций часто является единственным доступным способом выжить в условиях отсутствия такого сновидческого пространства.»
+                    </p>
+</div>
+</section>
+<!-- Spacer to ensure bottom content isn't hidden behind fixed footer -->
+<div class="h-4"></div>
+</div>
+<!-- 3. Footer (Fixed Actions) -->
+<footer class="flex-none p-gutter border-t border-border-hairline bg-surface flex flex-col gap-3 shadow-[0_-4px_10px_rgba(36,31,27,0.02)]">
+<button class="w-full bg-primary hover:bg-primary-container text-on-primary font-ui-label-lg text-ui-label-lg py-3 px-4 rounded transition-colors flex items-center justify-center gap-2">
+                Перейти к книге
+            </button>
+<button class="w-full bg-transparent hover:bg-surface-variant text-secondary hover:text-text-main font-ui-label-lg text-ui-label-lg py-2.5 px-4 rounded transition-colors border border-border-hairline">
+                Читать фрагмент
+            </button>
+</footer>
+</aside>
+<script>
+        // Simple script to handle close interaction for preview panel
+        document.addEventListener('DOMContentLoaded', () => {
+            const closeBtn = document.querySelector('button[aria-label="Close panel"]');
+            const panel = document.getElementById('preview-panel');
+            const overlay = document.getElementById('overlay');
+            
+            function closePanel() {
+                panel.classList.add('translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 300);
+            }
+
+            closeBtn.addEventListener('click', closePanel);
+            overlay.addEventListener('click', closePanel);
+        });
+    </script>
+</body></html>

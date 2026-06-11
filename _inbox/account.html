@@ -1,0 +1,379 @@
+<!DOCTYPE html><html class="light" lang="ru"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Личный кабинет читателя - Bookatier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:opsz,wght@8..60,400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary-container": "#d2fffd",
+                        "tertiary-fixed": "#94f2f0",
+                        "primary-container": "#b85138",
+                        "secondary-container": "#efe0d4",
+                        "primary-fixed-dim": "#ffb4a2",
+                        "secondary-fixed-dim": "#d2c4b9",
+                        "outline-variant": "#ddc0ba",
+                        "text-main": "#241F1B",
+                        "inverse-on-surface": "#f6f0e5",
+                        "tertiary": "#006362",
+                        "on-secondary-container": "#6d6259",
+                        "surface-container-highest": "#e8e2d7",
+                        "on-secondary-fixed": "#211a13",
+                        "on-primary-container": "#fff4f1",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#1d1c15",
+                        "background": "#fff9ee",
+                        "outline": "#8a726c",
+                        "primary": "#983a23",
+                        "secondary": "#675d53",
+                        "surface-container-low": "#f9f3e8",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#812913",
+                        "on-secondary-fixed-variant": "#4f453c",
+                        "chip-amber": "#C98A3C",
+                        "tertiary-container": "#007e7d",
+                        "on-tertiary-fixed-variant": "#00504f",
+                        "border-hairline": "#E4D9C6",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#a03f28",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#56423d",
+                        "secondary-fixed": "#efe0d4",
+                        "inverse-primary": "#ffb4a2",
+                        "surface-container": "#f3ede2",
+                        "surface-variant": "#e8e2d7",
+                        "chip-slate": "#3E5C73",
+                        "surface-bright": "#fff9ee",
+                        "surface-container-high": "#ede8dd",
+                        "surface": "#FFFDF8",
+                        "on-primary-fixed": "#3d0700",
+                        "on-background": "#1d1c15",
+                        "chip-sage": "#4C6B5E",
+                        "on-tertiary-fixed": "#002020",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#78d6d4",
+                        "surface-dim": "#dfd9cf",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#ffdad2",
+                        "inverse-surface": "#333029"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "stack-sm": "16px",
+                        "stack-md": "32px",
+                        "margin-page": "40px",
+                        "stack-lg": "64px",
+                        "max-width": "1200px",
+                        "gutter": "24px"
+                    },
+                    fontFamily: {
+                        "metadata": ["Inter"],
+                        "quote-text": ["Source Serif 4"],
+                        "body-reading": ["Source Serif 4"],
+                        "ui-label-lg": ["Inter"],
+                        "body-standard": ["Source Serif 4"],
+                        "display-serif": ["Source Serif 4"],
+                        "headline-h1": ["Source Serif 4"],
+                        "ui-label-sm": ["Inter"],
+                        "headline-h2": ["Source Serif 4"]
+                    },
+                    fontSize: {
+                        "metadata": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "quote-text": ["20px", { "lineHeight": "30px", "fontWeight": "400" }],
+                        "body-reading": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "ui-label-lg": ["15px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-standard": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-serif": ["42px", { "lineHeight": "52px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-h1": ["30px", { "lineHeight": "38px", "fontWeight": "600" }],
+                        "ui-label-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "headline-h2": ["24px", { "lineHeight": "32px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #F7F1E6; /* Layer 0: Cream background */
+            color: #241F1B;
+        }
+        .text-truncate-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
+        .text-truncate-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
+        /* Custom scrollbar for horizontal scrolling areas if needed */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-body-standard text-body-standard">
+<!-- TopNavBar -->
+<header class="bg-surface shadow-[0px_4px_20px_rgba(36,31,27,0.04)] border-b border-border-hairline sticky top-0 z-50 w-full transition-all duration-300">
+<div class="flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-20">
+<!-- Brand -->
+<div class="flex items-center gap-2">
+<a class="font-display-serif text-headline-h2 text-text-main tracking-tight flex items-baseline gap-1" href="#">
+                    β<span class="text-primary text-lg">→</span>α Bookatier
+                </a>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-ui-label-lg text-ui-label-lg text-secondary hover:text-text-main hover:bg-surface-container-lowest transition-colors duration-200 py-2" href="#">Главная</a>
+<a class="font-ui-label-lg text-ui-label-lg text-secondary hover:text-text-main hover:bg-surface-container-lowest transition-colors duration-200 py-2" href="#">Каталог</a>
+<a class="font-ui-label-lg text-ui-label-lg text-secondary hover:text-text-main hover:bg-surface-container-lowest transition-colors duration-200 py-2" href="#">Сообщество</a>
+</nav>
+<!-- Actions -->
+<div class="flex items-center gap-6">
+<div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-border-hairline bg-surface-container-lowest">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="stars" data-weight="fill" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="font-metadata text-metadata text-secondary">Эксперт · 215</span>
+</div>
+<button class="text-secondary hover:text-primary transition-colors flex items-center justify-center relative p-2 rounded-full hover:bg-surface-container-lowest">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border border-surface"></span>
+</button>
+<button class="relative w-10 h-10 rounded-full overflow-hidden border border-border-hairline shadow-[0px_4px_20px_rgba(36,31,27,0.04)] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background">
+<img alt="Александр Воронов" class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged male psychotherapist with a neat beard, wearing a casual but smart earth-toned sweater. He is in a warmly lit room with bookshelves blurred in the background, conveying intelligence, calmness, and a deep, thoughtful presence. The lighting is soft and natural, fitting a light-mode editorial aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDN_vdTKZPsk6zDo8WacbB0qikOkKG-aUoYEfFBtxsGsyz-9XbrKgHvXA1JJ_coAP-1m7NcEzGYBfG3c_1F9vZ380lMx-cW-ib7Hog4w1HDNTggMll6iye5oUgx35t5E6g7xpbwtobxXMpe4bFFDWe1dH1YhkCWI7b3RwElpiKtP1-lMkCBkQGlMI1EBDUZfxV1LP-6tsxTxOWLQLxcCAQKJYPu-ICJuP01pyYOqmj92LlPLa8SmR39tK6wZr0U8CgoWKAgAp5LUVZv">
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow w-full px-margin-page max-w-max-width mx-auto py-stack-md grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Sidebar / Profile & Stats -->
+<aside class="col-span-1 lg:col-span-3 flex flex-col gap-stack-md">
+<!-- User Profile Snippet -->
+<div class="bg-surface border border-border-hairline rounded-lg p-stack-sm shadow-[0px_4px_20px_rgba(36,31,27,0.04)]">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-16 h-16 rounded-full overflow-hidden border border-border-hairline">
+<img alt="Александр Воронов" class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged male psychotherapist with a neat beard, wearing a casual but smart earth-toned sweater. He is in a warmly lit room with bookshelves blurred in the background, conveying intelligence, calmness, and a deep, thoughtful presence. The lighting is soft and natural, fitting a light-mode editorial aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI1tuCRq0Ijs0_qWxC103gKs5Gf08cuGJibRK02UaSYHRwWK_XP3cnTwfednJkc25kKPlDaAqr4qeloMdxBMtG5U6e9PmdeA87s0Q7hiAzoIRYDN2KW4G3EBa0SBXX297O9gDXsU9eS2aVZZAqnnyL7TMzXvGlNJ0p1ktI0xNieaQv1X7AJ4AXoVsuCgldKPtFchXcQFveK1ubWi6Y1974vskTswGSQ4v9pICYccMfBnDvZ_p0otPTw8h5wEu87h14YvO-gCSxFSSt">
+</div>
+<div>
+<h2 class="font-headline-h2 text-headline-h2 text-text-main">Александр Воронов</h2>
+<p class="font-metadata text-metadata text-secondary mt-1">Клинический психолог, гештальт-терапевт</p>
+</div>
+</div>
+<div class="border-t border-border-hairline pt-4 flex justify-between items-center">
+<a class="font-ui-label-sm text-ui-label-sm text-secondary hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="settings">settings</span>
+                        Настройки профиля
+                    </a>
+</div>
+</div>
+<!-- Reading Stats -->
+<div class="bg-surface border border-border-hairline rounded-lg p-stack-sm shadow-[0px_4px_20px_rgba(36,31,27,0.04)]">
+<h3 class="font-headline-h2 text-headline-h2 text-text-main mb-6">Статистика</h3>
+<div class="flex flex-col gap-6">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+</div>
+<div>
+<p class="font-display-serif text-[28px] leading-tight text-text-main">14</p>
+<p class="font-metadata text-metadata text-secondary">Книг за год</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+</div>
+<div>
+<p class="font-display-serif text-[28px] leading-tight text-text-main">128</p>
+<p class="font-metadata text-metadata text-secondary">Часов вдумчивого чтения</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+</div>
+<div>
+<p class="font-display-serif text-[28px] leading-tight text-text-main">42</p>
+<p class="font-metadata text-metadata text-secondary">Заметок сделано</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Central Canvas / Library -->
+<section class="col-span-1 lg:col-span-9 flex flex-col gap-stack-md">
+<div class="flex justify-between items-end border-b border-border-hairline pb-4">
+<h1 class="font-display-serif text-display-serif text-text-main">Моя библиотека</h1>
+<!-- Library Tabs -->
+<nav class="flex gap-6">
+<button class="font-ui-label-lg text-ui-label-lg text-primary font-bold border-b-2 border-primary pb-2 relative top-[17px]">Читаю сейчас</button>
+<button class="font-ui-label-lg text-ui-label-lg text-secondary hover:text-text-main pb-2 relative top-[17px] transition-colors">Прочитано</button>
+<button class="font-ui-label-lg text-ui-label-lg text-secondary hover:text-text-main pb-2 relative top-[17px] transition-colors">Хочу прочитать</button>
+</nav>
+</div>
+<!-- "Читаю сейчас" Content -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Book Card 1 -->
+<div class="bg-surface border border-border-hairline rounded-lg p-stack-sm flex gap-6 group hover:shadow-[0px_8px_30px_rgba(36,31,27,0.06)] transition-shadow duration-300">
+<div class="w-[120px] h-[180px] flex-shrink-0 bg-surface-container-low border border-border-hairline shadow-[4px_4px_10px_rgba(36,31,27,0.08)] relative">
+<img alt="Cover" class="w-full h-full object-cover grayscale-[20%] contrast-125 sepia-[10%]" data-alt="A minimalist book cover design featuring a calm, textured off-white background with elegant serif typography and an abstract watercolor shape in muted sage and slate. The design looks like a high-end academic psychology textbook, photographed straight-on under soft studio lighting, evoking a sophisticated, literary atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg-LutokdZkhSRV9WizezQKObjwHk3pIViAFKVxvIQDlosgmzy1nebZutjyRT9S35X_MrbQBFxXyp_O08tzoJtXAvqN9pXpmF7aiOp0RVKYEw7Njg8C7piM0LRijliZBXbqP0IFyHQbbxn_uiKHai5SOA5at8qPjNQCiJLaquLHEULNYZo1PvHUvt-uIxSpqxw2EeEwWsc_OBkUsf8DVG7jJVGZH3LShTuIanbg4jiJrbh7rg5Xkz00nNYIeAm1FXVc96BOrDhG0rz">
+<!-- Binding hint -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-r from-black/20 to-transparent"></div>
+</div>
+<div class="flex flex-col flex-grow justify-between">
+<div>
+<div class="flex gap-2 mb-2">
+<span class="bg-chip-sage/10 text-chip-sage font-metadata text-metadata px-2 py-0.5 rounded-full">Психоанализ</span>
+<span class="text-secondary font-metadata text-metadata py-0.5">2021</span>
+</div>
+<h3 class="font-headline-h2 text-headline-h2 text-text-main leading-tight mb-1 text-truncate-2">Введение в психоанализ: Современный взгляд</h3>
+<p class="font-metadata text-metadata text-secondary">Нэнси Мак-Вильямс</p>
+</div>
+<div class="mt-4">
+<div class="flex justify-between items-center mb-1">
+<span class="font-metadata text-metadata text-secondary">Стр. 145 из 480</span>
+<span class="font-metadata text-metadata text-primary font-medium">30%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mb-4">
+<div class="bg-primary h-full rounded-full" style="width: 30%"></div>
+</div>
+<button class="w-full bg-primary text-on-primary font-ui-label-lg text-ui-label-lg py-2 rounded flex items-center justify-center gap-2 hover:bg-surface-tint transition-colors">
+                                Продолжить чтение
+                                <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Book Card 2 -->
+<div class="bg-surface border border-border-hairline rounded-lg p-stack-sm flex gap-6 group hover:shadow-[0px_8px_30px_rgba(36,31,27,0.06)] transition-shadow duration-300">
+<div class="w-[120px] h-[180px] flex-shrink-0 bg-surface-container-low border border-border-hairline shadow-[4px_4px_10px_rgba(36,31,27,0.08)] relative">
+<img alt="Cover" class="w-full h-full object-cover grayscale-[20%] contrast-125 sepia-[10%]" data-alt="A vintage-inspired book cover lying on a wooden table. The cover has a textured deep amber hue with classic gold foil serif lettering. Soft, natural light cascades across the surface, highlighting the subtle paper grain and the physical thickness of the book, suggesting deep philosophical or psychological content in a quiet study." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6o8f4tOh7kcQiDvYzNECcD4w0Y5oU1reOpEC75E8fJ9nmUxFz5StESkAitwsxafKjrj4v6hVkQcv_a_unP7ITcsvJ8oHJztteXhXUfzDqZ9blWGfDkQqI7ZE_iWZFwIpozwpcqUtFMZ_pGGCe6hKaW6sqLPvSf50SaVcAFsJeVb2VauAm-0xDsIYIHoN7qBdbCOJHKxzeR3fjTJ_VlfZG7IBpzNf044K2gfWLnjTYnV9GD_ljx7TpoPIUUPXOjN7QfC5ep39Q5bSd">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-r from-black/20 to-transparent"></div>
+</div>
+<div class="flex flex-col flex-grow justify-between">
+<div>
+<div class="flex gap-2 mb-2">
+<span class="bg-chip-amber/10 text-chip-amber font-metadata text-metadata px-2 py-0.5 rounded-full">Философия</span>
+<span class="text-secondary font-metadata text-metadata py-0.5">2018</span>
+</div>
+<h3 class="font-headline-h2 text-headline-h2 text-text-main leading-tight mb-1 text-truncate-2">Бытие и время: Переосмысление</h3>
+<p class="font-metadata text-metadata text-secondary">Мартин Хайдеггер (ред.)</p>
+</div>
+<div class="mt-4">
+<div class="flex justify-between items-center mb-1">
+<span class="font-metadata text-metadata text-secondary">Стр. 312 из 600</span>
+<span class="font-metadata text-metadata text-primary font-medium">52%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden mb-4">
+<div class="bg-primary h-full rounded-full" style="width: 52%"></div>
+</div>
+<button class="w-full bg-surface-container-lowest border border-border-hairline text-text-main font-ui-label-lg text-ui-label-lg py-2 rounded flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors">
+                                Продолжить чтение
+                                <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Quotes & Notes Section -->
+<div class="mt-stack-md">
+<div class="flex justify-between items-center border-b border-border-hairline pb-4 mb-6">
+<h2 class="font-headline-h1 text-headline-h1 text-text-main">Мои цитаты и заметки</h2>
+<a class="font-ui-label-sm text-ui-label-sm text-secondary hover:text-primary transition-colors flex items-center gap-1" href="#">
+                        Все заметки
+                        <span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+</a>
+</div>
+<div class="flex flex-col gap-6">
+<!-- Note 1 -->
+<div class="bg-surface p-6 rounded-lg border border-border-hairline relative overflow-hidden group">
+<!-- Left terracota line -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="pl-4">
+<p class="font-quote-text text-quote-text text-text-main italic mb-4">«Терапевтические отношения — это не просто инструмент для исцеления; это само по себе микрокосм, в котором разыгрываются и переписываются сценарии привязанности пациента. Наша задача не в том, чтобы быть идеальными, а в том, чтобы быть выносимыми в нашем несовершенстве.»</p>
+<div class="flex justify-between items-end">
+<div>
+<p class="font-metadata text-metadata text-secondary mb-1">Введение в психоанализ: Современный взгляд</p>
+<div class="flex gap-4">
+<span class="font-metadata text-metadata text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="bookmark">bookmark</span>
+                                            Стр. 142
+                                        </span>
+<span class="font-metadata text-metadata text-secondary">2 дня назад</span>
+</div>
+</div>
+<button aria-label="Share" class="text-secondary opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary">
+<span class="material-symbols-outlined" data-icon="ios_share">ios_share</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Note 2 -->
+<div class="bg-surface p-6 rounded-lg border border-border-hairline relative overflow-hidden group">
+<!-- Left terracota line -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="pl-4">
+<p class="font-quote-text text-quote-text text-text-main italic mb-4">«Тревога часто является не признаком патологии, а сигналом о том, что человек стоит на пороге нового понимания себя, которое пока не может быть интегрировано в существующую структуру личности.»</p>
+<!-- Personal Note addition -->
+<div class="bg-surface-container-low p-3 rounded mb-4 text-secondary font-body-standard text-body-standard border border-border-hairline border-dashed">
+<span class="font-bold text-text-main">Моя мысль:</span> Обсудить это с клиентом М. на следующей сессии в контексте его недавней панической атаки перед повышением.
+                            </div>
+<div class="flex justify-between items-end">
+<div>
+<p class="font-metadata text-metadata text-secondary mb-1">Бытие и время: Переосмысление</p>
+<div class="flex gap-4">
+<span class="font-metadata text-metadata text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="bookmark">bookmark</span>
+                                            Стр. 289
+                                        </span>
+<span class="font-metadata text-metadata text-secondary">5 дней назад</span>
+</div>
+</div>
+<button aria-label="Share" class="text-secondary opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary">
+<span class="material-symbols-outlined" data-icon="ios_share">ios_share</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-border-hairline mt-auto">
+<div class="flex flex-col items-center py-stack-lg w-full px-margin-page max-w-max-width mx-auto gap-stack-sm">
+<div class="font-display-serif text-headline-h2 text-secondary mb-4 flex items-baseline gap-1">
+                β<span class="text-primary text-sm">→</span>α
+            </div>
+<nav class="flex flex-wrap justify-center gap-6 mb-4">
+<a class="font-metadata text-metadata text-on-surface-variant hover:text-primary transition-colors" href="#">Об издательстве β→α</a>
+<a class="font-metadata text-metadata text-on-surface-variant hover:text-primary transition-colors" href="#">Помощь</a>
+<a class="font-metadata text-metadata text-on-surface-variant hover:text-primary transition-colors" href="#">Конфиденциальность</a>
+<a class="font-metadata text-metadata text-on-surface-variant hover:text-primary transition-colors" href="#">Контакты</a>
+</nav>
+<p class="font-metadata text-metadata text-secondary opacity-80">© 2024 Bookatier. v1.0.4-alpha</p>
+</div>
+</footer>
+</body></html>
