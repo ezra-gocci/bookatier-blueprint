@@ -8,108 +8,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "surface-container-lowest": "#ffffff",
-                    "tertiary-fixed": "#94f2f0",
-                    "tertiary-fixed-dim": "#78d6d4",
-                    "on-primary-fixed-variant": "#812913",
-                    "on-primary-fixed": "#3d0700",
-                    "surface-container-high": "#ede8dd",
-                    "on-tertiary": "#ffffff",
-                    "primary": "#b85138",
-                    "on-secondary": "#ffffff",
-                    "primary-container": "#b85138",
-                    "chip-slate": "#3E5C73",
-                    "primary-fixed-dim": "#ffb4a2",
-                    "on-primary": "#ffffff",
-                    "on-error": "#ffffff",
-                    "surface-bright": "#fff9ee",
-                    "text-main": "#241F1B",
-                    "on-surface-variant": "#56423d",
-                    "error-container": "#ffdad6",
-                    "secondary-container": "#efe0d4",
-                    "on-background": "#1d1c15",
-                    "surface-container-low": "#f9f3e8",
-                    "surface-variant": "#e8e2d7",
-                    "outline-variant": "#ddc0ba",
-                    "tertiary": "#006362",
-                    "on-tertiary-container": "#d2fffd",
-                    "secondary": "#675d53",
-                    "background": "#fff9ee",
-                    "surface-container-highest": "#e8e2d7",
-                    "inverse-primary": "#ffb4a2",
-                    "inverse-on-surface": "#f6f0e5",
-                    "on-secondary-fixed": "#211a13",
-                    "inverse-surface": "#333029",
-                    "border-hairline": "#E4D9C6",
-                    "on-error-container": "#93000a",
-                    "secondary-fixed": "#efe0d4",
-                    "on-tertiary-fixed": "#002020",
-                    "chip-sage": "#4C6B5E",
-                    "surface-container": "#f3ede2",
-                    "error": "#ba1a1a",
-                    "chip-amber": "#C98A3C",
-                    "on-secondary-fixed-variant": "#4f453c",
-                    "surface-tint": "#a03f28",
-                    "outline": "#8a726c",
-                    "surface": "#FFFDF8",
-                    "on-primary-container": "#fff4f1",
-                    "on-tertiary-fixed-variant": "#00504f",
-                    "tertiary-container": "#007e7d",
-                    "primary-fixed": "#ffdad2",
-                    "secondary-fixed-dim": "#d2c4b9",
-                    "on-surface": "#1d1c15",
-                    "on-secondary-container": "#6d6259",
-                    "surface-dim": "#dfd9cf"
-            },
-            "borderRadius": {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "full": "9999px"
-            },
-            "spacing": {
-                    "stack-md": "32px",
-                    "margin-page": "40px",
-                    "stack-sm": "16px",
-                    "stack-lg": "64px",
-                    "gutter": "24px",
-                    "max-width": "1200px"
-            },
-            "fontFamily": {
-                    "display-serif": ["Source Serif 4"],
-                    "headline-h1": ["Source Serif 4"],
-                    "quote-text": ["Source Serif 4"],
-                    "metadata": ["Inter"],
-                    "headline-h2": ["Source Serif 4"],
-                    "ui-label-lg": ["Inter"],
-                    "body-reading": ["Source Serif 4"],
-                    "ui-label-sm": ["Inter"],
-                    "body-standard": ["Source Serif 4"]
-            },
-            "fontSize": {
-                    "display-serif": ["42px", {"lineHeight": "52px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                    "headline-h1": ["30px", {"lineHeight": "38px", "fontWeight": "600"}],
-                    "quote-text": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
-                    "metadata": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
-                    "headline-h2": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
-                    "ui-label-lg": ["15px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
-                    "body-reading": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-                    "ui-label-sm": ["13px", {"lineHeight": "18px", "letterSpacing": "0.03em", "fontWeight": "500"}],
-                    "body-standard": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
-            }
-          }
-        }
-      }
-    </script>
+<script src="../assets/tokens.js"></script>
 <style>
         body {
-            background-color: #fff9ee; /* Cream base */
+            background-color: var(--paper); /* Cream base */
             color: theme('colors.text-main');
         }
         .texture-overlay {
@@ -136,57 +38,71 @@
         }
         </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col selection:bg-surface-tint selection:text-white">
+<body class="antialiased min-h-screen flex flex-col selection:bg-accent selection:text-white">
 <div class="texture-overlay"></div>
 <!-- TopNavBar -->
-<header class="bg-surface dark:bg-surface-container-low border-b border-border-hairline dark:border-outline-variant shadow-[0px_4px_20px_rgba(36,31,27,0.04)] w-full sticky top-0 z-40 transition-colors duration-200">
-<div class="flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-20">
-<!-- Brand -->
-<a class="font-display-serif text-headline-h2 text-text-main dark:text-inverse-on-surface tracking-tight flex items-center gap-1 group" href="#">
-<span class="text-primary group-hover:text-primary-container transition-colors">β→α</span> Bookatier
-            </a>
-<!-- Navigation Links (Desktop) -->
-<nav class="hidden md:flex items-center gap-8 font-ui-label-lg text-ui-label-lg">
-<a class="text-secondary dark:text-secondary-fixed-dim hover:text-text-main transition-colors duration-200 opacity-80 hover:opacity-100 py-1" href="../home-anon/index.html">Главная</a>
-<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary py-1 opacity-90 transition-all duration-300" href="../catalog/index.html">Каталог</a>
-<a class="text-secondary dark:text-secondary-fixed-dim hover:text-text-main transition-colors duration-200 opacity-80 hover:opacity-100 py-1" href="../community/index.html">Сообщество</a>
+<header class="bg-paper flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-16 border-b border-line sticky top-0 z-50" id="site-header">
+<a class="font-display-serif text-headline-h1 text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="../home-auth/index.html">β<span class="text-accent">→</span>α</a>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../home-auth/index.html">Главная</a>
+<a class="text-accent font-semibold border-b-2 border-accent pb-0.5 font-ui-label-lg text-ui-label-lg" aria-current="page" href="../catalog/index.html">Каталог</a>
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../community/index.html">Сообщество</a>
 </nav>
-<!-- Actions -->
-<div class="flex items-center gap-6">
-<!-- Search (Icon only on mobile, expanded on desktop could be added) -->
-<button aria-label="Search" class="text-secondary hover:text-text-main transition-colors">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">search</span>
+<div class="flex items-center gap-4">
+<button class="text-ink-soft hover:text-accent transition-colors" aria-label="Поиск">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">search</span>
 </button>
-<button aria-label="Notifications" class="text-secondary hover:text-text-main transition-colors relative">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
-<span class="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full"></span>
+<div class="relative" id="notif-wrapper">
+<button class="text-ink-soft hover:text-accent transition-colors relative" id="notif-btn" aria-label="Уведомления">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">notifications</span>
+<span class="absolute -top-1 -right-1 w-4 h-4 bg-accent text-white text-[10px] rounded-full flex items-center justify-center font-bold leading-none">3</span>
 </button>
-<!-- Reputation Pill -->
-<div class="hidden sm:flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full border border-border-hairline">
-<span class="material-symbols-outlined text-chip-amber text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
-<span class="font-metadata text-metadata text-secondary">Эксперт · <span class="font-mono">215</span></span>
+<div class="hidden absolute right-0 top-full mt-2 w-80 bg-surface rounded-lg border border-line shadow-[0_8px_30px_rgba(40,30,20,.08)] z-50" id="notif-panel">
+<div class="p-3 border-b border-line flex justify-between items-center">
+<span class="font-ui-label-sm text-ui-label-sm text-ink-faint uppercase tracking-wider">Уведомления</span>
+<a class="font-metadata text-metadata text-accent hover:underline" href="../notifications/index.html">Все</a>
 </div>
-<button aria-label="User profile" class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-border-hairline">
-<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWTyzFgHfh6gN4IRkQB07lSQXw3nGVqsSdKSF4nACYEtSuoXNWSSu5n82kmVl7nnuTN0BE5HJdXEeMd4lUihVJ52IAX9jgTkdgwqYBIk3oiV6o1_YatP52j0mUARf3v6-Nzca3-slj-0zRx1Fvi1UByeIVWRqP57uUdvbW7WbNmLh0azSyQU35LGs8NMPEHTkVu6vuGLiInKlAZOKLzTRv4hSssNg7IffRP-1foydey_IxWCWHqK8wZr-lq7Bu6eSZzCutYNo_QHBS">
-</button>
+<ul class="py-1 divide-y divide-line">
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Мария Соколова ответила на ваш комментарий</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">3 мин. назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Новая версия: «Научение на опыте»</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">1 час назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Ваш отзыв получил 4 одобрения</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">Вчера</p>
+</li>
+</ul>
 </div>
+</div>
+<div class="hidden sm:flex items-center gap-1 px-2 py-1 rounded-full border border-line bg-surface">
+<span class="material-symbols-outlined text-[14px] text-amber" style="font-variation-settings: 'FILL' 1, 'wght' 400;">star</span>
+<span class="font-ui-label-sm text-ui-label-sm text-ink tabular-nums font-semibold">142</span>
+</div>
+<a class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white font-ui-label-sm font-semibold hover:bg-accent-hover transition-colors" href="../user-profile/index.html" title="Профиль пользователя">АИ</a>
+<button class="md:hidden text-ink-soft hover:text-accent transition-colors" aria-label="Меню">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">menu</span>
+</button>
 </div>
 </header>
 <!-- Main Content Area -->
 <main class="flex-grow w-full max-w-max-width mx-auto px-margin-page py-stack-md flex flex-col gap-stack-lg z-10 relative">
 <!-- Breadcrumbs -->
-<nav class="font-metadata text-metadata text-secondary flex gap-2 items-center">
-<a class="hover:text-primary transition-colors" href="../catalog/index.html">Каталог</a>
+<nav class="font-metadata text-metadata text-ink-soft flex gap-2 items-center">
+<a class="hover:text-accent transition-colors" href="../catalog/index.html">Каталог</a>
 <span>/</span>
-<a class="hover:text-primary transition-colors" href="#">Клиническая практика</a>
+<a class="hover:text-accent transition-colors" href="#">Клиническая практика</a>
 <span>/</span>
-<span class="text-text-main">Невидимая архитектура</span>
+<span class="text-ink">Невидимая архитектура</span>
 </nav>
 <!-- Hero Section -->
 <section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
 <!-- Book Cover Column -->
 <div class="lg:col-span-4 flex flex-col gap-stack-sm">
-<div class="relative w-full aspect-[2/3] bg-surface rounded-sm border border-border-hairline shadow-[8px_8px_24px_rgba(36,31,27,0.08)] group overflow-hidden">
+<div class="relative w-full aspect-[2/3] bg-surface rounded-sm border border-line shadow-[8px_8px_24px_rgba(36,31,27,0.08)] group overflow-hidden">
 <!-- Right edge shadow for thickness -->
 <div class="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-l from-black/5 to-transparent z-10"></div>
 <img alt="Book cover for The Unseen Architecture" class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500 ease-out" src="../assets/covers/bion-nauchenie-na-opyte-cover.png">
@@ -196,13 +112,13 @@
 <div class="lg:col-span-8 flex flex-col gap-stack-md">
 <!-- Title & Meta -->
 <div class="flex flex-col gap-4">
-<h1 class="font-display-serif text-display-serif text-text-main leading-tight tracking-tight">
+<h1 class="font-display-serif text-display-serif text-ink leading-tight tracking-tight">
                         Невидимая архитектура
                     </h1>
-<h2 class="font-headline-h2 text-headline-h2 text-secondary italic">
+<h2 class="font-headline-h2 text-headline-h2 text-ink-soft italic">
                         Руководство по психотерапии
                     </h2>
-<div class="flex flex-wrap gap-x-6 gap-y-2 mt-2 font-metadata text-metadata text-secondary border-b border-border-hairline pb-4">
+<div class="flex flex-wrap gap-x-6 gap-y-2 mt-2 font-metadata text-metadata text-ink-soft border-b border-line pb-4">
 <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">person</span> Dr. Elara Vance</span>
 <span>Год: 2021</span>
 <span>Издательство: Aurum Press</span>
@@ -211,41 +127,41 @@
 </div>
 <!-- Actions -->
 <div class="flex flex-wrap items-center gap-4 py-2">
-<button class="bg-primary hover:bg-primary-container text-white font-ui-label-lg text-ui-label-lg px-8 py-3 rounded transition-colors shadow-sm flex items-center gap-2">
+<button class="bg-accent hover:bg-accent text-white font-ui-label-lg text-ui-label-lg px-8 py-3 rounded transition-colors shadow-sm flex items-center gap-2">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu_book</span>
                         Читать фрагмент
                     </button>
-<button class="bg-transparent border border-outline hover:border-text-main text-text-main font-ui-label-lg text-ui-label-lg px-6 py-3 rounded transition-colors flex items-center gap-2">
+<button class="bg-transparent border border-ink-faint hover:border-ink text-ink font-ui-label-lg text-ui-label-lg px-6 py-3 rounded transition-colors flex items-center gap-2">
 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">bookmark_add</span>
                         Добавить в библиотеку
                     </button>
 </div>
 <!-- Abstract -->
 <div class="flex flex-col gap-4 mt-4">
-<h3 class="font-headline-h2 text-headline-h2 text-text-main">Аннотация</h3>
-<div class="font-body-reading text-body-reading text-on-surface-variant max-w-[70ch] flex flex-col gap-4 leading-relaxed">
+<h3 class="font-headline-h2 text-headline-h2 text-ink">Аннотация</h3>
+<div class="font-body-reading text-body-reading text-ink-soft max-w-[70ch] flex flex-col gap-4 leading-relaxed">
 <p>В «Невидимой архитектуре» доктор Элара Вэнс исследует скрытые структуры, формирующие терапевтический альянс. Опираясь на десятилетия клинической практики, она предлагает новый взгляд на то, как пространственные и эмоциональные границы влияют на процесс исцеления.</p>
 <p>Книга предназначена для практикующих психотерапевтов, стремящихся углубить свое понимание невербальной динамики в кабинете, и предлагает практические инструменты для создания более безопасного и резонансного терапевтического контейнера.</p>
 </div>
 </div>
 </div>
 </section>
-<hr class="border-border-hairline w-full my-stack-sm">
+<hr class="border-line w-full my-stack-sm">
 <!-- Two Column Content Layout below Hero -->
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
 <!-- Main Content Area (Left) -->
 <div class="lg:col-span-8 flex flex-col gap-stack-lg">
 <!-- About Author -->
 <section class="flex flex-col gap-stack-sm">
-<h3 class="font-headline-h2 text-headline-h2 text-text-main border-b border-border-hairline pb-2">Об авторе</h3>
+<h3 class="font-headline-h2 text-headline-h2 text-ink border-b border-line pb-2">Об авторе</h3>
 <div class="flex gap-6 items-start mt-2">
-<div class="w-16 h-16 rounded-full bg-surface-container-high border border-border-hairline overflow-hidden flex-shrink-0">
-<img alt="Dr. Elara Vance" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqOYuBxEVtR7PozP-6JpAiNZdVqkt7ecoT-C1jm5AWJzXFQyMW-Ra1BhLg5k1d4sMs3DdLenUsB4xmmU36ALWhsIRzgXoMfIR-97d7ku1fuM0_gWDtIqw5lOZufMgAOH8PpgLYDKW7JnRlgFVoqzuFrKXsjTHgdgjs6mesW3IBUh80NkGrZkOmQ_ZcISJje7mPxRlutCh5c5lPAtt0Srn0HcftzPqQ93y9z7vzfCxmy6SrMzZLJPgVKjCozsoufXRorZn_PDXfDdrm">
+<div class="w-16 h-16 rounded-full bg-surface-sunk border border-line overflow-hidden flex-shrink-0">
+<img alt="Dr. Elara Vance" class="w-full h-full object-cover" src="../assets/covers/bion-nauchenie-na-opyte-cover.png">
 </div>
 <div class="flex flex-col gap-2">
-<h4 class="font-ui-label-lg text-ui-label-lg text-text-main">Dr. Elara Vance</h4>
-<p class="font-body-standard text-body-standard text-secondary max-w-[60ch]">Клинический психолог, супервизор и исследователь с более чем 20-летним опытом работы. Специализируется на глубинной психотерапии и вопросах терапевтического сеттинга.</p>
-<a class="font-ui-label-sm text-ui-label-sm text-primary hover:text-primary-container flex items-center gap-1 w-max mt-1" href="#">
+<h4 class="font-ui-label-lg text-ui-label-lg text-ink">Dr. Elara Vance</h4>
+<p class="font-body-standard text-body-standard text-ink-soft max-w-[60ch]">Клинический психолог, супервизор и исследователь с более чем 20-летним опытом работы. Специализируется на глубинной психотерапии и вопросах терапевтического сеттинга.</p>
+<a class="font-ui-label-sm text-ui-label-sm text-accent hover:text-accent flex items-center gap-1 w-max mt-1" href="#">
                                 Профиль автора <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
 </a>
 </div>
@@ -253,44 +169,44 @@
 </section>
 <!-- Reviews -->
 <section class="flex flex-col gap-stack-sm">
-<div class="flex justify-between items-end border-b border-border-hairline pb-2">
-<h3 class="font-headline-h2 text-headline-h2 text-text-main">Рецензии сообщества</h3>
-<span class="font-metadata text-metadata text-secondary">Показано 2 из 15</span>
+<div class="flex justify-between items-end border-b border-line pb-2">
+<h3 class="font-headline-h2 text-headline-h2 text-ink">Рецензии сообщества</h3>
+<span class="font-metadata text-metadata text-ink-soft">Показано 2 из 15</span>
 </div>
 <div class="flex flex-col gap-8 mt-4">
 <!-- Review 1 -->
 <div class="flex gap-4">
-<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden flex-shrink-0 border border-border-hairline">
+<div class="w-10 h-10 rounded-full bg-surface-sunk overflow-hidden flex-shrink-0 border border-line">
 <img alt="Reviewer" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnKtl10Zv19yiHrKImzVwOm3iUyXSiHHlEpPvuUDJAJK75f-TDZpMchE3fr32OxzrvznIjLJVTFQlUHjLMwan3JKSuA5SgadhLdmZIsxuTZCX4xKBjKPW1ka0AgvdDf7CYh254zPyOrcfCcKSchcgLashOzIf7hRaJ0vPV2gt3rLEdypLYtU3JfBPSxmoGyyFXvMp9aOFN418yyni6xSNYkIh3bWKCgi8aXkIJSmjn43GqM4ZQM8Olye-H9lbc87517jQBVA5eFpYD">
 </div>
-<div class="flex flex-col gap-2 bg-surface p-6 rounded border border-border-hairline shadow-[0px_2px_10px_rgba(36,31,27,0.02)] w-full relative">
+<div class="flex flex-col gap-2 bg-surface p-6 rounded border border-line shadow-[0px_2px_10px_rgba(36,31,27,0.02)] w-full relative">
 <!-- Quote decoration -->
-<span class="material-symbols-outlined absolute top-4 right-4 text-surface-variant text-[32px] opacity-50">format_quote</span>
+<span class="material-symbols-outlined absolute top-4 right-4 text-surface-sunk text-[32px] opacity-50">format_quote</span>
 <div class="flex items-center gap-2 mb-1">
-<span class="font-ui-label-sm text-ui-label-sm text-text-main">Михаил Р.</span>
-<span class="bg-chip-slate/10 text-chip-slate px-2 py-0.5 rounded-full font-metadata text-metadata flex items-center gap-1">
+<span class="font-ui-label-sm text-ui-label-sm text-ink">Михаил Р.</span>
+<span class="bg-slate/10 text-slate px-2 py-0.5 rounded-full font-metadata text-metadata flex items-center gap-1">
 <span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">verified</span> Практик
                                     </span>
 </div>
-<p class="font-body-standard text-body-standard text-secondary">
+<p class="font-body-standard text-body-standard text-ink-soft">
                                     "Фундаментальный труд, который заставил меня пересмотреть организацию физического пространства моего кабинета. Вэнс блестяще описывает, как среда становится третьим участником терапии."
                                 </p>
 </div>
 </div>
 <!-- Review 2 -->
 <div class="flex gap-4">
-<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden flex-shrink-0 border border-border-hairline">
+<div class="w-10 h-10 rounded-full bg-surface-sunk overflow-hidden flex-shrink-0 border border-line">
 <img alt="Reviewer" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHIIl2pXaiovIvYQMFx2Im5EvdqwcghCqI23MH57zkTgBovBj1vQ6t-0AE4EqWxjwst06J2KmmfdUUoSR0XCVh1gsZ4QhjnHBgE5jC70Lhj7AQNdcrQSOjvuruYCbDut_PdcfGaebxQnHygtG3yQ9TUbOswSGzOAL9TJWU1KruNDp5Jkb72nG_S_Al0lQRdpKUiaoD_PuU2-SeRWHZMFLuXm1STJOTF92VZxw4SoL-vqr9liWRRi68uv8R9Py8R9yzaJMFhFVvzzT5">
 </div>
-<div class="flex flex-col gap-2 bg-surface p-6 rounded border border-border-hairline shadow-[0px_2px_10px_rgba(36,31,27,0.02)] w-full relative">
-<span class="material-symbols-outlined absolute top-4 right-4 text-surface-variant text-[32px] opacity-50">format_quote</span>
+<div class="flex flex-col gap-2 bg-surface p-6 rounded border border-line shadow-[0px_2px_10px_rgba(36,31,27,0.02)] w-full relative">
+<span class="material-symbols-outlined absolute top-4 right-4 text-surface-sunk text-[32px] opacity-50">format_quote</span>
 <div class="flex items-center gap-2 mb-1">
-<span class="font-ui-label-sm text-ui-label-sm text-text-main">Анна С.</span>
-<span class="bg-chip-amber/10 text-chip-amber px-2 py-0.5 rounded-full font-metadata text-metadata flex items-center gap-1">
+<span class="font-ui-label-sm text-ui-label-sm text-ink">Анна С.</span>
+<span class="bg-amber/10 text-amber px-2 py-0.5 rounded-full font-metadata text-metadata flex items-center gap-1">
 <span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">verified</span> Эксперт
                                     </span>
 </div>
-<p class="font-body-standard text-body-standard text-secondary">
+<p class="font-body-standard text-body-standard text-ink-soft">
                                     "Хотя некоторые теоретические концепты кажутся слегка абстрактными, практические рекомендации бесценны. Обязательно к прочтению для начинающих специалистов."
                                 </p>
 </div>
@@ -301,37 +217,37 @@
 <!-- Sidebar (Right) -->
 <aside class="lg:col-span-4 flex flex-col gap-stack-md">
 <!-- Topics -->
-<div class="bg-surface p-6 rounded border border-border-hairline shadow-[0px_4px_20px_rgba(36,31,27,0.02)]">
-<h4 class="font-ui-label-lg text-ui-label-lg text-text-main mb-4 border-b border-border-hairline pb-2">Темы</h4>
+<div class="bg-surface p-6 rounded border border-line shadow-[0px_4px_20px_rgba(36,31,27,0.02)]">
+<h4 class="font-ui-label-lg text-ui-label-lg text-ink mb-4 border-b border-line pb-2">Темы</h4>
 <div class="flex flex-wrap gap-2">
-<span class="bg-chip-sage/10 text-chip-sage px-3 py-1 rounded-full font-metadata text-metadata">Psychology</span>
-<span class="bg-chip-slate/10 text-chip-slate px-3 py-1 rounded-full font-metadata text-metadata">Clinical Practice</span>
-<span class="bg-chip-amber/10 text-chip-amber px-3 py-1 rounded-full font-metadata text-metadata">Theory</span>
+<span class="bg-sage/10 text-sage px-3 py-1 rounded-full font-metadata text-metadata">Psychology</span>
+<span class="bg-slate/10 text-slate px-3 py-1 rounded-full font-metadata text-metadata">Clinical Practice</span>
+<span class="bg-amber/10 text-amber px-3 py-1 rounded-full font-metadata text-metadata">Theory</span>
 </div>
 </div>
 <!-- Related -->
-<div class="bg-surface p-6 rounded border border-border-hairline shadow-[0px_4px_20px_rgba(36,31,27,0.02)] flex flex-col gap-4">
-<h4 class="font-ui-label-lg text-ui-label-lg text-text-main border-b border-border-hairline pb-2">Связанные издания</h4>
+<div class="bg-surface p-6 rounded border border-line shadow-[0px_4px_20px_rgba(36,31,27,0.02)] flex flex-col gap-4">
+<h4 class="font-ui-label-lg text-ui-label-lg text-ink border-b border-line pb-2">Связанные издания</h4>
 <!-- Related Book 1 -->
 <a class="flex gap-4 group" href="#">
-<div class="w-16 h-24 bg-surface-container-high border border-border-hairline flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
-<div class="w-full h-full bg-gradient-to-br from-secondary-container to-surface-variant" data-alt="A generic, muted abstract book cover design with subtle geometric shapes, suitable for clinical psychology texts. Light cream and sage tones."></div>
+<div class="w-16 h-24 bg-surface-sunk border border-line flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
+<div class="w-full h-full bg-gradient-to-br from-accent-tint to-surface-sunk" data-alt="A generic, muted abstract book cover design with subtle geometric shapes, suitable for clinical psychology texts. Light cream and sage tones."></div>
 </div>
 <div class="flex flex-col gap-1 justify-center">
-<span class="font-ui-label-sm text-ui-label-sm text-text-main group-hover:text-primary transition-colors leading-tight">Границы в практике</span>
-<span class="font-metadata text-metadata text-secondary">А. Петров</span>
-<span class="font-metadata text-metadata text-outline mt-1">2020</span>
+<span class="font-ui-label-sm text-ui-label-sm text-ink group-hover:text-accent transition-colors leading-tight">Границы в практике</span>
+<span class="font-metadata text-metadata text-ink-soft">А. Петров</span>
+<span class="font-metadata text-metadata text-ink-faint mt-1">2020</span>
 </div>
 </a>
 <!-- Related Book 2 -->
 <a class="flex gap-4 group" href="#">
-<div class="w-16 h-24 bg-surface-container-high border border-border-hairline flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
-<div class="w-full h-full bg-gradient-to-br from-surface-variant to-chip-slate/20" data-alt="An abstract book cover featuring deep slate and cream colors, with minimalistic lines suggesting structure and framing."></div>
+<div class="w-16 h-24 bg-surface-sunk border border-line flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
+<div class="w-full h-full bg-gradient-to-br from-surface-sunk to-slate/20" data-alt="An abstract book cover featuring deep slate and cream colors, with minimalistic lines suggesting structure and framing."></div>
 </div>
 <div class="flex flex-col gap-1 justify-center">
-<span class="font-ui-label-sm text-ui-label-sm text-text-main group-hover:text-primary transition-colors leading-tight">Пространство терапии</span>
-<span class="font-metadata text-metadata text-secondary">Л. Давыдова</span>
-<span class="font-metadata text-metadata text-outline mt-1">2018</span>
+<span class="font-ui-label-sm text-ui-label-sm text-ink group-hover:text-accent transition-colors leading-tight">Пространство терапии</span>
+<span class="font-metadata text-metadata text-ink-soft">Л. Давыдова</span>
+<span class="font-metadata text-metadata text-ink-faint mt-1">2018</span>
 </div>
 </a>
 </div>
@@ -339,20 +255,100 @@
 </div>
 </main>
 <!-- Footer -->
-<footer class="bg-surface-container-low dark:bg-surface-container-highest border-t border-border-hairline w-full mt-auto">
-<div class="flex flex-col items-center py-stack-lg w-full px-margin-page max-w-max-width mx-auto gap-stack-sm opacity-80 hover:opacity-100 transition-opacity">
-<div class="font-display-serif text-headline-h2 text-secondary mb-2 flex items-center gap-2">
-<span>β→α</span> Bookatier
-            </div>
-<nav class="flex flex-wrap justify-center gap-6 font-body-standard text-body-standard text-on-surface-variant">
-<a class="hover:text-primary transition-colors" href="#">Об издательстве β→α</a>
-<a class="hover:text-primary transition-colors" href="#">Помощь</a>
-<a class="hover:text-primary transition-colors" href="#">Конфиденциальность</a>
-<a class="hover:text-primary transition-colors" href="#">Контакты</a>
+<footer class="bg-paper border-t border-line" id="site-footer">
+<div class="max-w-max-width mx-auto px-margin-page py-stack-md">
+<div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+<a class="font-display-serif text-[22px] text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="../about/index.html">β<span class="text-accent">→</span>α</a>
+<nav class="flex gap-6 flex-wrap" aria-label="Нижняя навигация">
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../catalog/index.html">Каталог</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../community/index.html">Сообщество</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../about/index.html">О проекте</a>
 </nav>
-<div class="font-metadata text-metadata text-secondary mt-4">
-                © 2024 Bookatier. v1.0.4-alpha
-            </div>
+<span class="font-metadata text-metadata text-ink-faint">v1.0.0-primer</span>
+</div>
+<div class="pt-4 border-t border-line font-metadata text-metadata text-ink-faint text-center">
+© 2026 beta→alpha. Для профессионального сообщества.
+</div>
 </div>
 </footer>
+<script>
+/* notif */
+(function(){
+  var b=document.getElementById('notif-btn'),p=document.getElementById('notif-panel');
+  if(!b||!p)return;
+  b.addEventListener('click',function(e){e.stopPropagation();p.classList.toggle('hidden');});
+  document.addEventListener('click',function(e){
+    if(!p.classList.contains('hidden')&&!p.contains(e.target)&&e.target!==b)
+      p.classList.add('hidden');
+  });
+})();
+/* tab bar */
+(function(){
+  var tabBar=document.getElementById('book-tab-bar');
+  var contentGrid=document.getElementById('tab-content-main');
+  if(!tabBar||!contentGrid)return;
+  /* wrap existing content as panel-0 */
+  var wrapper=document.createElement('div');
+  wrapper.id='tab-panels';
+  contentGrid.parentNode.insertBefore(wrapper,contentGrid);
+  wrapper.appendChild(contentGrid);
+  contentGrid.id='tab-panel-0';
+  /* placeholder panels for tabs 1-4 */
+  var labels=['Оценка','Комментарии','Отзывы','Реквизиты'];
+  var icons=['grade','chat_bubble_outline','rate_review','info'];
+  var msgs=[
+    'Система оценок будет доступна в следующей фазе.',
+    'Обсуждения появятся после запуска платформы.',
+    'Профессиональные рецензии — в Фазе 2.',
+    'Библиографические реквизиты скоро будут здесь.'
+  ];
+  for(var i=0;i<4;i++){
+    var p=document.createElement('div');
+    p.id='tab-panel-'+(i+1);
+    p.className='hidden py-16 text-center text-ink-soft font-body-standard';
+    p.innerHTML='<span class="material-symbols-outlined text-4xl block mb-4 opacity-40">'+icons[i]+'</span><p>'+msgs[i]+'</p>';
+    wrapper.appendChild(p);
+  }
+  var tabs=Array.from(tabBar.querySelectorAll('button'));
+  var ACTIVE_CLS=['border-accent','text-accent','font-bold'];
+  var INACTIVE_CLS=['border-transparent','text-ink-soft'];
+  function activateTab(idx){
+    tabs.forEach(function(t,j){
+      ACTIVE_CLS.forEach(function(c){t.classList.toggle(c,j===idx);});
+      INACTIVE_CLS.forEach(function(c){t.classList.toggle(c,j!==idx);});
+      if(j!==idx)t.classList.remove('font-bold');
+    });
+    wrapper.querySelectorAll('[id^="tab-panel-"]').forEach(function(panel,j){
+      panel.classList.toggle('hidden',j!==idx);
+    });
+  }
+  tabs.forEach(function(btn,idx){
+    btn.addEventListener('click',function(){activateTab(idx);});
+  });
+})();
+/* favorite / vote toggle */
+(function(){
+  document.querySelectorAll('button').forEach(function(btn){
+    var icon=btn.querySelector('.material-symbols-outlined');
+    if(!icon||icon.textContent.trim()!=='favorite')return;
+    var countEl=Array.from(btn.querySelectorAll('span')).find(function(s){
+      return s!==icon&&/^\d+$/.test(s.textContent.trim());
+    });
+    var on=false;
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      on=!on;
+      icon.style.fontVariationSettings=on?"'FILL' 1, 'wght' 400":"'FILL' 0, 'wght' 300";
+      icon.style.color=on?'var(--accent)':'';
+      if(countEl){countEl.textContent=String(parseInt(countEl.textContent)+(on?1:-1));}
+    });
+  });
+})();
+/* micro press effect */
+document.querySelectorAll('button').forEach(function(btn){
+  btn.addEventListener('mousedown',function(){this.style.transform='scale(0.97)';});
+  btn.addEventListener('mouseup',function(){this.style.transform='';});
+  btn.addEventListener('mouseleave',function(){this.style.transform='';});
+});
+</script>
 </body></html>

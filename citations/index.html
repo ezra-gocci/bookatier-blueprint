@@ -3,112 +3,12 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>Мои заметки и цитаты - Bookatier</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="../assets/tokens.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&amp;display=swap" rel="stylesheet">
-
-<script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              "colors": {
-                      "outline-variant": "#ddc0ba",
-                      "secondary": "#675d53",
-                      "background": "#fff9ee",
-                      "secondary-fixed-dim": "#d2c4b9",
-                      "on-tertiary-fixed": "#002020",
-                      "secondary-container": "#efe0d4",
-                      "surface-dim": "#dfd9cf",
-                      "outline": "#8a726c",
-                      "surface": "#FFFDF8",
-                      "surface-container-lowest": "#ffffff",
-                      "error-container": "#ffdad6",
-                      "border-hairline": "#E4D9C6",
-                      "on-error-container": "#93000a",
-                      "tertiary-fixed-dim": "#78d6d4",
-                      "on-secondary-container": "#6d6259",
-                      "inverse-surface": "#333029",
-                      "on-primary-container": "#fff4f1",
-                      "on-background": "#1d1c15",
-                      "surface-container-highest": "#e8e2d7",
-                      "primary-container": "#b85138",
-                      "chip-amber": "#C98A3C",
-                      "tertiary-fixed": "#94f2f0",
-                      "on-primary-fixed-variant": "#812913",
-                      "on-error": "#ffffff",
-                      "on-surface": "#1d1c15",
-                      "on-tertiary-fixed-variant": "#00504f",
-                      "secondary-fixed": "#efe0d4",
-                      "on-tertiary-container": "#d2fffd",
-                      "surface-variant": "#e8e2d7",
-                      "inverse-primary": "#ffb4a2",
-                      "chip-slate": "#3E5C73",
-                      "surface-container-high": "#ede8dd",
-                      "tertiary": "#006362",
-                      "primary-fixed-dim": "#ffb4a2",
-                      "on-surface-variant": "#56423d",
-                      "on-primary-fixed": "#3d0700",
-                      "error": "#ba1a1a",
-                      "primary-fixed": "#ffdad2",
-                      "surface-tint": "#a03f28",
-                      "on-secondary-fixed-variant": "#4f453c",
-                      "on-secondary": "#ffffff",
-                      "chip-sage": "#4C6B5E",
-                      "primary": "#b85138",
-                      "inverse-on-surface": "#f6f0e5",
-                      "surface-container-low": "#f9f3e8",
-                      "surface-bright": "#fff9ee",
-                      "text-main": "#241F1B",
-                      "tertiary-container": "#007e7d",
-                      "on-primary": "#ffffff",
-                      "surface-container": "#f3ede2",
-                      "on-tertiary": "#ffffff",
-                      "on-secondary-fixed": "#211a13",
-                      "cream": "#fff9ee" // Added manually based on prompt, though not in config, will use background/surface-low where appropriate
-              },
-              "borderRadius": {
-                      "DEFAULT": "0.25rem",
-                      "lg": "0.5rem",
-                      "xl": "0.75rem",
-                      "full": "9999px"
-              },
-              "spacing": {
-                      "stack-md": "32px",
-                      "margin-page": "40px",
-                      "max-width": "1200px",
-                      "stack-sm": "16px",
-                      "stack-lg": "64px",
-                      "gutter": "24px"
-              },
-              "fontFamily": {
-                      "headline-h2": ["Source Serif 4"],
-                      "display-serif": ["Source Serif 4"],
-                      "ui-label-sm": ["Inter"],
-                      "metadata": ["Inter"],
-                      "body-standard": ["Source Serif 4"],
-                      "ui-label-lg": ["Inter"],
-                      "quote-text": ["Source Serif 4"],
-                      "headline-h1": ["Source Serif 4"],
-                      "body-reading": ["Source Serif 4"]
-              },
-              "fontSize": {
-                      "headline-h2": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
-                      "display-serif": ["42px", {"lineHeight": "52px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                      "ui-label-sm": ["13px", {"lineHeight": "18px", "letterSpacing": "0.03em", "fontWeight": "500"}],
-                      "metadata": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
-                      "body-standard": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                      "ui-label-lg": ["15px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
-                      "quote-text": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
-                      "headline-h1": ["30px", {"lineHeight": "38px", "fontWeight": "600"}],
-                      "body-reading": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
-              }
-            }
-          }
-        }
-    </script>
 <style>
         body {
-            background-color: #fff9ee; /* Enforcing the cream background from prompt */
+            background-color: var(--paper); /* Enforcing the cream background from prompt */
         }
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -131,40 +31,53 @@
         }
         </style>
 </head>
-<body class="text-text-main font-body-standard min-h-screen flex flex-col">
+<body class="text-ink font-body-standard min-h-screen flex flex-col">
 <!-- TopNavBar -->
-<header class="bg-surface docked full-width top-0 border-b border-border-hairline shadow-[0px_4px_20px_rgba(36,31,27,0.04)] z-50">
-<div class="flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-20">
-<!-- Brand -->
-<div class="flex items-center gap-2 cursor-pointer opacity-90 hover:opacity-100 transition-all duration-300">
-<span class="text-primary font-bold text-xl leading-none tracking-tighter">β<span class="text-xs align-middle">→</span>α</span>
-<span class="font-display-serif text-headline-h2 text-text-main tracking-tight">Bookatier</span>
-</div>
-<!-- Navigation Links -->
-<nav class="hidden md:flex items-center gap-8">
-<a class="text-secondary hover:text-text-main font-ui-label-lg text-ui-label-lg hover:bg-surface-container-lowest transition-colors duration-200 px-3 py-2 rounded-DEFAULT" href="../home-anon/index.html">Главная</a>
-<span class="text-border-hairline">·</span>
-<a class="text-secondary hover:text-text-main font-ui-label-lg text-ui-label-lg hover:bg-surface-container-lowest transition-colors duration-200 px-3 py-2 rounded-DEFAULT" href="../catalog/index.html">Каталог</a>
-<span class="text-border-hairline">·</span>
-<a class="text-secondary hover:text-text-main font-ui-label-lg text-ui-label-lg hover:bg-surface-container-lowest transition-colors duration-200 px-3 py-2 rounded-DEFAULT" href="../community/index.html">Сообщество</a>
-<span class="text-border-hairline">·</span>
-<!-- Active Nav Item -->
-<a class="text-primary font-bold border-b-2 border-primary font-ui-label-lg text-ui-label-lg px-3 py-2" href="#">Мои заметки</a>
+<header class="bg-paper flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-16 border-b border-line sticky top-0 z-50" id="site-header">
+<a class="font-display-serif text-headline-h1 text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="../home-auth/index.html">β<span class="text-accent">→</span>α</a>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../home-auth/index.html">Главная</a>
+<a class="text-accent font-semibold border-b-2 border-accent pb-0.5 font-ui-label-lg text-ui-label-lg" aria-current="page" href="../catalog/index.html">Каталог</a>
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../community/index.html">Сообщество</a>
 </nav>
-<!-- Trailing Actions -->
-<div class="flex items-center gap-6">
-<!-- Reputation Pill -->
-<div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-border-hairline bg-surface-container-lowest">
-<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
-<span class="font-metadata text-metadata text-secondary font-medium">Эксперт <span class="text-border-hairline mx-1">·</span> <span class="font-mono">215</span></span>
-</div>
-<button aria-label="Notifications" class="text-secondary hover:text-primary transition-colors duration-200 p-2 rounded-full hover:bg-surface-container-lowest">
-<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<div class="flex items-center gap-4">
+<button class="text-ink-soft hover:text-accent transition-colors" aria-label="Поиск">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">search</span>
 </button>
-<button class="w-10 h-10 rounded-full overflow-hidden border border-border-hairline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-<img alt="User profile" class="w-full h-full object-cover" data-alt="A refined, professional portrait of an intellectual, possibly a therapist or academic, looking thoughtful. Warm, soft lighting typical of a high-end editorial photo. Light cream background. The mood is calm and contemplative." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhrwJ0e9jPja1GmAoVzGl_eFiWyiLB0Nao29PtWgQ2zxq8UKaQpuVuqfwf7fNB_bfhLKv9JCmO7nIJ0YCYkq0yqlE_33xEozQQYpnYvBbliK5KbsDdkok4NInBy1o0kpRpBxbgUcEfdLTx02XfTuqfqMfz0xfmLG3vtsy3bforap3NpDf64FGuVlKMKN20hrcNXsldmuMcax5HchXvjsY2nVlXe0sZjucck3nzCJRKlWxpnQb7CkXrewf3rR3cpAp2z7FAqAUHyTqb">
+<div class="relative" id="notif-wrapper">
+<button class="text-ink-soft hover:text-accent transition-colors relative" id="notif-btn" aria-label="Уведомления">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">notifications</span>
+<span class="absolute -top-1 -right-1 w-4 h-4 bg-accent text-white text-[10px] rounded-full flex items-center justify-center font-bold leading-none">3</span>
 </button>
+<div class="hidden absolute right-0 top-full mt-2 w-80 bg-surface rounded-lg border border-line shadow-[0_8px_30px_rgba(40,30,20,.08)] z-50" id="notif-panel">
+<div class="p-3 border-b border-line flex justify-between items-center">
+<span class="font-ui-label-sm text-ui-label-sm text-ink-faint uppercase tracking-wider">Уведомления</span>
+<a class="font-metadata text-metadata text-accent hover:underline" href="../notifications/index.html">Все</a>
 </div>
+<ul class="py-1 divide-y divide-line">
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Мария Соколова ответила на ваш комментарий</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">3 мин. назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Новая версия: «Научение на опыте»</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">1 час назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Ваш отзыв получил 4 одобрения</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">Вчера</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="hidden sm:flex items-center gap-1 px-2 py-1 rounded-full border border-line bg-surface">
+<span class="material-symbols-outlined text-[14px] text-amber" style="font-variation-settings: 'FILL' 1, 'wght' 400;">star</span>
+<span class="font-ui-label-sm text-ui-label-sm text-ink tabular-nums font-semibold">142</span>
+</div>
+<a class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white font-ui-label-sm font-semibold hover:bg-accent-hover transition-colors" href="../user-profile/index.html" title="Профиль пользователя">АИ</a>
+<button class="md:hidden text-ink-soft hover:text-accent transition-colors" aria-label="Меню">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">menu</span>
+</button>
 </div>
 </header>
 <!-- Main Layout -->
@@ -174,43 +87,43 @@
 <div class="sticky top-[120px] flex flex-col gap-8">
 <!-- Search -->
 <div>
-<h3 class="font-ui-label-sm text-ui-label-sm text-secondary uppercase tracking-wider mb-4">Поиск по заметкам</h3>
+<h3 class="font-ui-label-sm text-ui-label-sm text-ink-soft uppercase tracking-wider mb-4">Поиск по заметкам</h3>
 <div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[18px]">search</span>
-<input class="w-full bg-surface border border-border-hairline rounded-DEFAULT py-2 pl-10 pr-4 font-ui-label-lg text-ui-label-lg text-text-main placeholder:text-secondary-fixed-dim focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Искать в тексте..." type="text">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft text-[18px]">search</span>
+<input class="w-full bg-surface border border-line rounded-DEFAULT py-2 pl-10 pr-4 font-ui-label-lg text-ui-label-lg text-ink placeholder:text-ink-faint focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors" placeholder="Искать в тексте..." type="text">
 </div>
 </div>
-<hr class="border-border-hairline">
+<hr class="border-line">
 <!-- Topic Filters -->
 <div>
-<h3 class="font-ui-label-sm text-ui-label-sm text-secondary uppercase tracking-wider mb-4">Темы</h3>
+<h3 class="font-ui-label-sm text-ui-label-sm text-ink-soft uppercase tracking-wider mb-4">Темы</h3>
 <div class="flex flex-wrap gap-2">
-<button class="px-3 py-1 rounded-full bg-chip-amber/10 text-chip-amber font-ui-label-sm text-ui-label-sm border border-chip-amber/20 hover:bg-chip-amber/20 transition-colors">Психоанализ</button>
-<button class="px-3 py-1 rounded-full bg-chip-slate/10 text-chip-slate font-ui-label-sm text-ui-label-sm border border-chip-slate/20 hover:bg-chip-slate/20 transition-colors">Клиническая практика</button>
-<button class="px-3 py-1 rounded-full bg-chip-sage/10 text-chip-sage font-ui-label-sm text-ui-label-sm border border-chip-sage/20 hover:bg-chip-sage/20 transition-colors">Супервизия</button>
-<button class="px-3 py-1 rounded-full bg-surface-container-high text-secondary font-ui-label-sm text-ui-label-sm border border-border-hairline hover:bg-surface-variant transition-colors">Этика</button>
+<button class="px-3 py-1 rounded-full bg-amber/10 text-amber font-ui-label-sm text-ui-label-sm border border-amber/20 hover:bg-amber/20 transition-colors">Психоанализ</button>
+<button class="px-3 py-1 rounded-full bg-slate/10 text-slate font-ui-label-sm text-ui-label-sm border border-slate/20 hover:bg-slate/20 transition-colors">Клиническая практика</button>
+<button class="px-3 py-1 rounded-full bg-sage/10 text-sage font-ui-label-sm text-ui-label-sm border border-sage/20 hover:bg-sage/20 transition-colors">Супервизия</button>
+<button class="px-3 py-1 rounded-full bg-surface-sunk text-ink-soft font-ui-label-sm text-ui-label-sm border border-line hover:bg-surface-sunk transition-colors">Этика</button>
 </div>
 </div>
 <!-- Book Filters -->
 <div>
-<h3 class="font-ui-label-sm text-ui-label-sm text-secondary uppercase tracking-wider mb-4">Книги</h3>
+<h3 class="font-ui-label-sm text-ui-label-sm text-ink-soft uppercase tracking-wider mb-4">Книги</h3>
 <ul class="flex flex-col gap-3">
 <li>
 <label class="flex items-start gap-3 cursor-pointer group">
-<input checked="" class="mt-1 w-4 h-4 text-primary border-outline-variant rounded focus:ring-primary focus:ring-offset-[#fff9ee] bg-surface" type="checkbox">
-<span class="font-metadata text-metadata text-text-main group-hover:text-primary transition-colors">Толкование сновидений<br><span class="text-secondary">Зигмунд Фрейд</span></span>
+<input checked="" class="mt-1 w-4 h-4 text-accent border-line rounded focus:ring-accent focus:ring-offset-[#fff9ee] bg-surface" type="checkbox">
+<span class="font-metadata text-metadata text-ink group-hover:text-accent transition-colors">Толкование сновидений<br><span class="text-ink-soft">Зигмунд Фрейд</span></span>
 </label>
 </li>
 <li>
 <label class="flex items-start gap-3 cursor-pointer group">
-<input class="mt-1 w-4 h-4 text-primary border-outline-variant rounded focus:ring-primary focus:ring-offset-[#fff9ee] bg-surface" type="checkbox">
-<span class="font-metadata text-metadata text-text-main group-hover:text-primary transition-colors">Проблема тревоги<br><span class="text-secondary">Зигмунд Фрейд</span></span>
+<input class="mt-1 w-4 h-4 text-accent border-line rounded focus:ring-accent focus:ring-offset-[#fff9ee] bg-surface" type="checkbox">
+<span class="font-metadata text-metadata text-ink group-hover:text-accent transition-colors">Проблема тревоги<br><span class="text-ink-soft">Зигмунд Фрейд</span></span>
 </label>
 </li>
 <li>
 <label class="flex items-start gap-3 cursor-pointer group">
-<input class="mt-1 w-4 h-4 text-primary border-outline-variant rounded focus:ring-primary focus:ring-offset-[#fff9ee] bg-surface" type="checkbox">
-<span class="font-metadata text-metadata text-text-main group-hover:text-primary transition-colors">Игра и реальность<br><span class="text-secondary">Дональд Винникотт</span></span>
+<input class="mt-1 w-4 h-4 text-accent border-line rounded focus:ring-accent focus:ring-offset-[#fff9ee] bg-surface" type="checkbox">
+<span class="font-metadata text-metadata text-ink group-hover:text-accent transition-colors">Игра и реальность<br><span class="text-ink-soft">Дональд Винникотт</span></span>
 </label>
 </li>
 </ul>
@@ -219,130 +132,144 @@
 </aside>
 <!-- Main Feed -->
 <section class="flex-grow flex flex-col gap-stack-md max-w-[800px]">
-<div class="flex justify-between items-end mb-stack-sm border-b border-border-hairline pb-4">
-<h1 class="font-headline-h1 text-headline-h1 text-text-main">Мои заметки и цитаты</h1>
-<div class="flex items-center gap-2 text-secondary font-metadata text-metadata">
+<div class="flex justify-between items-end mb-stack-sm border-b border-line pb-4">
+<h1 class="font-headline-h1 text-headline-h1 text-ink">Мои заметки и цитаты</h1>
+<div class="flex items-center gap-2 text-ink-soft font-metadata text-metadata">
 <span>Сортировка:</span>
-<button class="flex items-center hover:text-text-main transition-colors">
+<button class="flex items-center hover:text-ink transition-colors">
                         Сначала новые
                         <span class="material-symbols-outlined text-[16px] ml-1">keyboard_arrow_down</span>
 </button>
 </div>
 </div>
 <!-- Note Card 1 -->
-<article class="bg-surface border border-border-hairline rounded-lg p-8 shadow-[0px_4px_20px_rgba(36,31,27,0.02)] hover:shadow-[0px_8px_30px_rgba(36,31,27,0.04)] transition-shadow duration-300">
+<article class="bg-surface border border-line rounded-lg p-8 shadow-[0px_4px_20px_rgba(36,31,27,0.02)] hover:shadow-[0px_8px_30px_rgba(36,31,27,0.04)] transition-shadow duration-300">
 <!-- Metadata Header -->
 <header class="flex justify-between items-start mb-6">
 <div class="flex items-center gap-3">
-<div class="w-8 h-12 bg-surface-container border border-border-hairline rounded-sm flex items-center justify-center overflow-hidden flex-shrink-0 shadow-[2px_2px_4px_rgba(36,31,27,0.05)]">
+<div class="w-8 h-12 bg-surface-sunk border border-line rounded-sm flex items-center justify-center overflow-hidden flex-shrink-0 shadow-[2px_2px_4px_rgba(36,31,27,0.05)]">
 <img alt="Book cover" class="w-full h-full object-cover" data-alt="A close-up shot of an elegant, vintage book cover with gold foil stamping on a dark linen texture. Soft, warm lighting emphasizes the tactile quality of the book. High-end editorial style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCX_ztmxAd8VgyhLbK_5PJ7FMEKdPkInBz_197CrZfG2OlpNcuIiQmyk1-Qjw6WAYsIJ2pYQRzflRLJM6aMilkjXPAl648IW0wt18i-HILRJ8OBbSMA7MKqMD0XzOxHQDrmGK5c01tWwhEeKcYNq9MCWhHfSIWk2bD6oVZ9qRKFo04-32CRihZHmoIXNkV-1PbfS9c8xOgeksDZkdWiubXMX7Ui_L31YnmgqudwY22BhlKDRY5bDmesTWdAgr_WqjNdeA2bGZGy7EcA">
 </div>
 <div>
-<h4 class="font-ui-label-lg text-ui-label-lg text-text-main">Толкование сновидений</h4>
-<p class="font-metadata text-metadata text-secondary">Зигмунд Фрейд</p>
+<h4 class="font-ui-label-lg text-ui-label-lg text-ink">Толкование сновидений</h4>
+<p class="font-metadata text-metadata text-ink-soft">Зигмунд Фрейд</p>
 </div>
 </div>
-<button aria-label="More options" class="text-secondary hover:text-primary transition-colors p-1">
+<button aria-label="More options" class="text-ink-soft hover:text-accent transition-colors p-1">
 <span class="material-symbols-outlined">more_horiz</span>
 </button>
 </header>
 <!-- Quote Block -->
-<blockquote class="border-l-4 border-primary pl-6 py-2 mb-8">
-<p class="font-quote-text text-quote-text text-text-main italic text-opacity-90">
+<blockquote class="border-l-4 border-accent pl-6 py-2 mb-8">
+<p class="font-quote-text text-quote-text text-ink italic text-opacity-90">
                         «Сновидение — это королевская дорога к бессознательному. В нем мы находим те скрытые желания, которые в бодрствующем состоянии подавляются цензурой нашего "Я", но здесь они получают символическое, порой искаженное, но всегда значимое выражение.»
                     </p>
 </blockquote>
 <!-- User Thought Block -->
-<div class="bg-surface-container p-5 rounded-lg mb-6 border border-border-hairline border-opacity-50">
+<div class="bg-surface-sunk p-5 rounded-lg mb-6 border border-line border-opacity-50">
 <div class="flex items-center gap-2 mb-2">
-<span class="material-symbols-outlined text-secondary text-[18px]">edit_note</span>
-<span class="font-ui-label-sm text-ui-label-sm text-secondary font-semibold uppercase tracking-wider">Мой комментарий</span>
+<span class="material-symbols-outlined text-ink-soft text-[18px]">edit_note</span>
+<span class="font-ui-label-sm text-ui-label-sm text-ink-soft font-semibold uppercase tracking-wider">Мой комментарий</span>
 </div>
-<p class="font-body-standard text-body-standard text-on-surface-variant">
+<p class="font-body-standard text-body-standard text-ink-soft">
                         Важно обратить внимание на то, как именно пациентка М. вчера описывала свой сон о потерянном ключе. Защитные механизмы были очевидны, но символика указывает на глубокую тревогу по поводу потери контроля над процессом терапии, а не только над личной ситуацией.
                     </p>
 </div>
 <!-- Footer Metadata & Actions -->
-<footer class="flex justify-between items-center pt-4 border-t border-border-hairline border-dashed">
-<div class="flex items-center gap-4 text-secondary font-metadata text-metadata">
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">menu_book</span> Стр. 142</span>
-<span>·</span>
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span> 12 Окт 2023</span>
-<span>·</span>
-<span class="inline-flex px-2 py-0.5 rounded-full bg-chip-amber/10 text-chip-amber border border-chip-amber/20">Психоанализ</span>
+<footer class="bg-paper border-t border-line" id="site-footer">
+<div class="max-w-max-width mx-auto px-margin-page py-stack-md">
+<div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+<a class="font-display-serif text-[22px] text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="../about/index.html">β<span class="text-accent">→</span>α</a>
+<nav class="flex gap-6 flex-wrap" aria-label="Нижняя навигация">
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../catalog/index.html">Каталог</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../community/index.html">Сообщество</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../about/index.html">О проекте</a>
+</nav>
+<span class="font-metadata text-metadata text-ink-faint">v1.0.0-primer</span>
 </div>
-<button class="flex items-center gap-2 text-primary hover:text-surface-tint font-ui-label-sm text-ui-label-sm font-semibold transition-colors group">
-                        Перейти к контексту
-                        <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
-</button>
+<div class="pt-4 border-t border-line font-metadata text-metadata text-ink-faint text-center">
+© 2026 beta→alpha. Для профессионального сообщества.
+</div>
+</div>
 </footer>
 </article>
 <!-- Note Card 2 -->
-<article class="bg-surface border border-border-hairline rounded-lg p-8 shadow-[0px_4px_20px_rgba(36,31,27,0.02)] hover:shadow-[0px_8px_30px_rgba(36,31,27,0.04)] transition-shadow duration-300">
+<article class="bg-surface border border-line rounded-lg p-8 shadow-[0px_4px_20px_rgba(36,31,27,0.02)] hover:shadow-[0px_8px_30px_rgba(36,31,27,0.04)] transition-shadow duration-300">
 <header class="flex justify-between items-start mb-6">
 <div class="flex items-center gap-3">
-<div class="w-8 h-12 bg-surface-container border border-border-hairline rounded-sm flex items-center justify-center overflow-hidden flex-shrink-0 shadow-[2px_2px_4px_rgba(36,31,27,0.05)]">
+<div class="w-8 h-12 bg-surface-sunk border border-line rounded-sm flex items-center justify-center overflow-hidden flex-shrink-0 shadow-[2px_2px_4px_rgba(36,31,27,0.05)]">
 <img alt="Book cover" class="w-full h-full object-cover" data-alt="A minimalist book cover design in deep blue and white, resting on a wooden table. Sunlight casts a gentle shadow across the cover. High-end, academic aesthetic, calm and intellectual." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBw_DggRbXNMt4vDTgSzSJN1mqDpJXiRf4nIKgpzgOjNqPK6aAm9yuNQDZMcm1dK6hEz8XXg1OSvUIR2Gz0iGQ2iwAQCJw7JtHmg2Lkc9-anPTHyjaoll4x0MSOi2VZAYI7208vuk5TsPYn5sKP3sJLafoewp-1Q_3I1RUjXsEQvzEqpVvalI2Dn_S5bSK9HiqOVhtqpaEUQbHSk3kPaRB1aYBO_szQUnnQnMlGGSOp03ZZH930ghav-XWuZCir5Rw_lg3pWiGUH9a9">
 </div>
 <div>
-<h4 class="font-ui-label-lg text-ui-label-lg text-text-main">Игра и реальность</h4>
-<p class="font-metadata text-metadata text-secondary">Дональд Винникотт</p>
+<h4 class="font-ui-label-lg text-ui-label-lg text-ink">Игра и реальность</h4>
+<p class="font-metadata text-metadata text-ink-soft">Дональд Винникотт</p>
 </div>
 </div>
-<button aria-label="More options" class="text-secondary hover:text-primary transition-colors p-1">
+<button aria-label="More options" class="text-ink-soft hover:text-accent transition-colors p-1">
 <span class="material-symbols-outlined">more_horiz</span>
 </button>
 </header>
-<blockquote class="border-l-4 border-primary pl-6 py-2 mb-8">
-<p class="font-quote-text text-quote-text text-text-main italic text-opacity-90">
+<blockquote class="border-l-4 border-accent pl-6 py-2 mb-8">
+<p class="font-quote-text text-quote-text text-ink italic text-opacity-90">
                         «Способность быть одному является одним из важнейших признаков зрелости в эмоциональном развитии.»
                     </p>
 </blockquote>
-<footer class="flex justify-between items-center pt-4 border-t border-border-hairline border-dashed">
-<div class="flex items-center gap-4 text-secondary font-metadata text-metadata">
+<footer class="flex justify-between items-center pt-4 border-t border-line border-dashed">
+<div class="flex items-center gap-4 text-ink-soft font-metadata text-metadata">
 <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">menu_book</span> Стр. 45</span>
 <span>·</span>
 <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span> 05 Окт 2023</span>
 <span>·</span>
-<span class="inline-flex px-2 py-0.5 rounded-full bg-chip-slate/10 text-chip-slate border border-chip-slate/20">Клиническая практика</span>
+<span class="inline-flex px-2 py-0.5 rounded-full bg-slate/10 text-slate border border-slate/20">Клиническая практика</span>
 </div>
-<button class="flex items-center gap-2 text-primary hover:text-surface-tint font-ui-label-sm text-ui-label-sm font-semibold transition-colors group">
+<button class="flex items-center gap-2 text-accent hover:text-accent font-ui-label-sm text-ui-label-sm font-semibold transition-colors group">
                         Перейти к контексту
                         <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
 </button>
 </footer>
 </article>
 <!-- Pagination -->
-<div class="flex justify-center items-center gap-4 mt-stack-md pt-6 border-t border-border-hairline">
-<button class="text-secondary hover:text-primary disabled:opacity-50 disabled:hover:text-secondary flex items-center p-2 transition-colors" disabled="">
+<div class="flex justify-center items-center gap-4 mt-stack-md pt-6 border-t border-line">
+<button class="text-ink-soft hover:text-accent disabled:opacity-50 disabled:hover:text-ink-soft flex items-center p-2 transition-colors" disabled="">
 <span class="material-symbols-outlined">chevron_left</span>
 </button>
 <div class="flex gap-2 font-ui-label-lg text-ui-label-lg">
-<button class="w-8 h-8 flex items-center justify-center rounded-full bg-primary text-on-primary font-bold">1</button>
-<button class="w-8 h-8 flex items-center justify-center rounded-full text-secondary hover:bg-surface-container hover:text-text-main transition-colors">2</button>
-<button class="w-8 h-8 flex items-center justify-center rounded-full text-secondary hover:bg-surface-container hover:text-text-main transition-colors">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-accent text-white font-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full text-ink-soft hover:bg-surface-sunk hover:text-ink transition-colors">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full text-ink-soft hover:bg-surface-sunk hover:text-ink transition-colors">3</button>
 </div>
-<button class="text-secondary hover:text-primary flex items-center p-2 transition-colors">
+<button class="text-ink-soft hover:text-accent flex items-center p-2 transition-colors">
 <span class="material-symbols-outlined">chevron_right</span>
 </button>
 </div>
 </section>
 </main>
 <!-- Footer -->
-<footer class="bg-surface-container-low dark:bg-surface-container-highest border-t border-border-hairline full-width mt-auto">
+<footer class="bg-surface dark:bg-surface-sunk border-t border-line full-width mt-auto">
 <div class="flex flex-col items-center py-stack-lg w-full px-margin-page max-w-max-width mx-auto gap-stack-sm opacity-80 hover:opacity-100 transition-opacity">
-<div class="font-display-serif text-headline-h2 text-secondary mb-4">
+<div class="font-display-serif text-headline-h2 text-ink-soft mb-4">
                 β→α
             </div>
 <nav class="flex flex-wrap justify-center gap-6 mb-4">
-<a class="font-body-standard text-body-standard text-on-surface-variant hover:text-primary transition-colors" href="#">Об издательстве β→α</a>
-<a class="font-body-standard text-body-standard text-on-surface-variant hover:text-primary transition-colors" href="#">Помощь</a>
-<a class="font-body-standard text-body-standard text-on-surface-variant hover:text-primary transition-colors" href="#">Конфиденциальность</a>
-<a class="font-body-standard text-body-standard text-on-surface-variant hover:text-primary transition-colors" href="#">Контакты</a>
+<a class="font-body-standard text-body-standard text-ink-soft hover:text-accent transition-colors" href="#">Об издательстве β→α</a>
+<a class="font-body-standard text-body-standard text-ink-soft hover:text-accent transition-colors" href="#">Помощь</a>
+<a class="font-body-standard text-body-standard text-ink-soft hover:text-accent transition-colors" href="#">Конфиденциальность</a>
+<a class="font-body-standard text-body-standard text-ink-soft hover:text-accent transition-colors" href="#">Контакты</a>
 </nav>
-<div class="font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim text-center">
+<div class="font-metadata text-metadata text-ink-soft dark:text-ink-faint text-center">
                 © 2024 Bookatier. v1.0.4-alpha
             </div>
 </div>
 </footer>
+<script>
+(function(){
+  var b=document.getElementById('notif-btn'),p=document.getElementById('notif-panel');
+  if(!b||!p)return;
+  b.addEventListener('click',function(e){e.stopPropagation();p.classList.toggle('hidden');});
+  document.addEventListener('click',function(e){
+    if(!p.classList.contains('hidden')&&!p.contains(e.target)&&e.target!==b)
+      p.classList.add('hidden');
+  });
+})();
+</script>
 </body></html>

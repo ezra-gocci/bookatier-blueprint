@@ -3,108 +3,9 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>Bookatier - Debug Console</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="../assets/tokens.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;500;600&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "surface-container-low": "#f9f3e8",
-                        "inverse-primary": "#ffb4a2",
-                        "on-primary-fixed-variant": "#812913",
-                        "on-secondary-fixed": "#211a13",
-                        "secondary-fixed-dim": "#d2c4b9",
-                        "on-primary": "#ffffff",
-                        "primary": "#b85138",
-                        "surface-dim": "#dfd9cf",
-                        "border-hairline": "#E4D9C6",
-                        "secondary-container": "#efe0d4",
-                        "chip-sage": "#4C6B5E",
-                        "error-container": "#ffdad6",
-                        "inverse-on-surface": "#f6f0e5",
-                        "on-error": "#ffffff",
-                        "outline": "#8a726c",
-                        "on-secondary-container": "#6d6259",
-                        "surface-variant": "#e8e2d7",
-                        "surface-container-high": "#ede8dd",
-                        "secondary": "#675d53",
-                        "tertiary-fixed": "#94f2f0",
-                        "on-tertiary": "#ffffff",
-                        "on-secondary": "#ffffff",
-                        "surface-container-highest": "#e8e2d7",
-                        "surface-bright": "#fff9ee",
-                        "error": "#ba1a1a",
-                        "surface-container": "#f3ede2",
-                        "tertiary-container": "#007e7d",
-                        "on-primary-fixed": "#3d0700",
-                        "surface-container-lowest": "#ffffff",
-                        "on-error-container": "#93000a",
-                        "tertiary": "#006362",
-                        "on-tertiary-container": "#d2fffd",
-                        "inverse-surface": "#333029",
-                        "on-surface-variant": "#56423d",
-                        "primary-fixed-dim": "#ffb4a2",
-                        "chip-slate": "#3E5C73",
-                        "on-secondary-fixed-variant": "#4f453c",
-                        "on-primary-container": "#fff4f1",
-                        "surface": "#FFFDF8",
-                        "on-tertiary-fixed": "#002020",
-                        "on-background": "#1d1c15",
-                        "surface-tint": "#a03f28",
-                        "on-surface": "#1d1c15",
-                        "background": "#fff9ee",
-                        "primary-fixed": "#ffdad2",
-                        "primary-container": "#b85138",
-                        "on-tertiary-fixed-variant": "#00504f",
-                        "tertiary-fixed-dim": "#78d6d4",
-                        "secondary-fixed": "#efe0d4",
-                        "outline-variant": "#ddc0ba",
-                        "text-main": "#241F1B",
-                        "chip-amber": "#C98A3C"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "gutter": "24px",
-                        "stack-sm": "16px",
-                        "max-width": "1200px",
-                        "stack-lg": "64px",
-                        "margin-page": "40px",
-                        "stack-md": "32px"
-                    },
-                    "fontFamily": {
-                        "body-reading": ["Source Serif 4"],
-                        "headline-h1": ["Source Serif 4"],
-                        "body-standard": ["Source Serif 4"],
-                        "ui-label-lg": ["Inter"],
-                        "display-serif": ["Source Serif 4"],
-                        "headline-h2": ["Source Serif 4"],
-                        "ui-label-sm": ["Inter"],
-                        "metadata": ["Inter"],
-                        "quote-text": ["Source Serif 4"]
-                    },
-                    "fontSize": {
-                        "body-reading": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
-                        "headline-h1": ["30px", { "lineHeight": "38px", "fontWeight": "600" }],
-                        "body-standard": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
-                        "ui-label-lg": ["15px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
-                        "display-serif": ["42px", { "lineHeight": "52px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
-                        "headline-h2": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
-                        "ui-label-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.03em", "fontWeight": "500" }],
-                        "metadata": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
-                        "quote-text": ["20px", { "lineHeight": "30px", "fontWeight": "400" }]
-                    }
-                }
-            }
-        }
-    </script>
 <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -124,54 +25,100 @@
         }
         </style>
 </head>
-<body class="bg-background text-on-background font-body-standard relative h-screen overflow-hidden">
+<body class="bg-paper text-ink font-body-standard relative h-screen overflow-hidden">
+<header class="bg-paper flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-16 border-b border-line sticky top-0 z-50" id="site-header">
+<a class="font-display-serif text-headline-h1 text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="../home-auth/index.html">β<span class="text-accent">→</span>α</a>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../home-auth/index.html">Главная</a>
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../catalog/index.html">Каталог</a>
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../community/index.html">Сообщество</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-ink-soft hover:text-accent transition-colors" aria-label="Поиск">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">search</span>
+</button>
+<div class="relative" id="notif-wrapper">
+<button class="text-ink-soft hover:text-accent transition-colors relative" id="notif-btn" aria-label="Уведомления">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">notifications</span>
+<span class="absolute -top-1 -right-1 w-4 h-4 bg-accent text-white text-[10px] rounded-full flex items-center justify-center font-bold leading-none">3</span>
+</button>
+<div class="hidden absolute right-0 top-full mt-2 w-80 bg-surface rounded-lg border border-line shadow-[0_8px_30px_rgba(40,30,20,.08)] z-50" id="notif-panel">
+<div class="p-3 border-b border-line flex justify-between items-center">
+<span class="font-ui-label-sm text-ui-label-sm text-ink-faint uppercase tracking-wider">Уведомления</span>
+<a class="font-metadata text-metadata text-accent hover:underline" href="../notifications/index.html">Все</a>
+</div>
+<ul class="py-1 divide-y divide-line">
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Мария Соколова ответила на ваш комментарий</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">3 мин. назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Новая версия: «Научение на опыте»</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">1 час назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Ваш отзыв получил 4 одобрения</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">Вчера</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="hidden sm:flex items-center gap-1 px-2 py-1 rounded-full border border-line bg-surface">
+<span class="material-symbols-outlined text-[14px] text-amber" style="font-variation-settings: 'FILL' 1, 'wght' 400;">star</span>
+<span class="font-ui-label-sm text-ui-label-sm text-ink tabular-nums font-semibold">142</span>
+</div>
+<a class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white font-ui-label-sm font-semibold hover:bg-accent-hover transition-colors" href="../user-profile/index.html" title="Профиль пользователя">АИ</a>
+<button class="md:hidden text-ink-soft hover:text-accent transition-colors" aria-label="Меню">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">menu</span>
+</button>
+</div>
+</header>
 <!-- Background Context (Dimmed Catalog) -->
-<div class="absolute inset-0 pointer-events-none opacity-40 bg-surface-container flex flex-col pt-20 px-8">
+<div class="absolute inset-0 pointer-events-none opacity-40 bg-surface-sunk flex flex-col pt-20 px-8">
 <div class="max-w-max-width mx-auto w-full grid grid-cols-4 gap-8 opacity-50 blur-sm">
 <!-- Simulated Catalog Items -->
-<div class="col-span-1 h-64 bg-surface-container-lowest border border-border-hairline rounded shadow-sm"></div>
-<div class="col-span-1 h-64 bg-surface-container-lowest border border-border-hairline rounded shadow-sm"></div>
-<div class="col-span-1 h-64 bg-surface-container-lowest border border-border-hairline rounded shadow-sm"></div>
-<div class="col-span-1 h-64 bg-surface-container-lowest border border-border-hairline rounded shadow-sm"></div>
+<div class="col-span-1 h-64 bg-surface border border-line rounded shadow-sm"></div>
+<div class="col-span-1 h-64 bg-surface border border-line rounded shadow-sm"></div>
+<div class="col-span-1 h-64 bg-surface border border-line rounded shadow-sm"></div>
+<div class="col-span-1 h-64 bg-surface border border-line rounded shadow-sm"></div>
 </div>
 </div>
 <!-- Overlay Screen for Dimming -->
-<div class="absolute inset-0 bg-inverse-surface/30 pointer-events-auto backdrop-blur-[2px]"></div>
+<div class="absolute inset-0 bg-ink/30 pointer-events-auto backdrop-blur-[2px]"></div>
 <!-- Debug Console Dock (Dark Theme Forced via custom classes simulating dark mode context) -->
 <!-- Using specific dark colors from the brief or inverse tokens to simulate developer tool -->
-<div class="absolute bottom-0 left-0 w-full h-[460px] bg-[#1d1c15] text-[#f6f0e5] shadow-[0px_-8px_30px_rgba(36,31,27,0.4)] flex flex-col border-t border-[#333029] font-ui-label-sm z-50">
+<div id="debug-dock" class="absolute bottom-0 left-0 w-full h-[460px] bg-[#1d1c15] text-[#f6f0e5] shadow-[0px_-8px_30px_rgba(36,31,27,0.4)] flex flex-col border-t border-[#333029] font-ui-label-sm z-50">
 <!-- Console Header & Navigation -->
 <div class="flex items-center justify-between px-6 py-2 border-b border-[#333029] bg-[#1d1c15]">
 <div class="flex items-center gap-6 h-10">
-<div class="flex items-center gap-2 text-primary-fixed-dim">
+<div class="flex items-center gap-2 text-ink-faint">
 <span class="material-symbols-outlined text-sm">terminal</span>
 <span class="font-metadata tracking-wider uppercase">β→α Debug</span>
 </div>
 <nav class="flex h-full">
-<button class="px-4 h-full flex items-center text-[#d2c4b9] hover:text-primary-fixed transition-colors">Пользователи</button>
-<button class="px-4 h-full flex items-center text-primary-fixed-dim border-b-2 border-primary-fixed font-medium">Когорты</button>
-<button class="px-4 h-full flex items-center text-[#d2c4b9] hover:text-primary-fixed transition-colors">Симуляция</button>
-<button class="px-4 h-full flex items-center text-[#d2c4b9] hover:text-primary-fixed transition-colors">События</button>
+<button data-console-tab="0" class="px-4 h-full flex items-center text-[#d2c4b9] hover:text-accent-tint transition-colors">Пользователи</button>
+<button data-console-tab="1" class="px-4 h-full flex items-center text-ink-faint border-b-2 border-accent-tint font-medium">Когорты</button>
+<button data-console-tab="2" class="px-4 h-full flex items-center text-[#d2c4b9] hover:text-accent-tint transition-colors">Симуляция</button>
+<button data-console-tab="3" class="px-4 h-full flex items-center text-[#d2c4b9] hover:text-accent-tint transition-colors">События</button>
 </nav>
 </div>
 <div class="flex items-center gap-4">
 <div class="flex items-center gap-2 bg-[#333029] px-3 py-1 rounded text-xs text-[#d2c4b9]">
-<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-pulse"></div>
+<div class="w-2 h-2 rounded-full bg-slate animate-pulse"></div>
                     System Nominal
                 </div>
-<button class="p-1 hover:bg-[#333029] rounded text-[#d2c4b9] transition-colors">
-<span class="material-symbols-outlined text-sm">close</span>
+<button id="debug-close-btn" class="p-1 hover:bg-[#333029] rounded text-[#d2c4b9] transition-colors"><span class="material-symbols-outlined text-sm">close</span>
 </button>
 </div>
 </div>
 <!-- Console Content Split -->
-<div class="flex flex-1 overflow-hidden">
+<div id="debug-main-panel" class="flex flex-1 overflow-hidden">
 <!-- Left Side: Management (Cohorts Active) -->
 <div class="w-2/3 flex flex-col border-r border-[#333029] bg-[#1d1c15]">
 <!-- Toolbar -->
 <div class="px-6 py-3 border-b border-[#333029] flex justify-between items-center bg-[#211a13]">
 <span class="font-ui-label-lg text-[#f6f0e5]">Управление когортами</span>
-<button class="flex items-center gap-1 bg-primary-container text-on-primary-container px-3 py-1.5 rounded hover:bg-primary transition-colors text-xs font-medium">
+<button class="flex items-center gap-1 bg-accent text-white px-3 py-1.5 rounded hover:bg-accent transition-colors text-xs font-medium">
 <span class="material-symbols-outlined text-xs">add</span>
                         Добавить когорту
                     </button>
@@ -181,10 +128,10 @@
 <!-- Cohort List -->
 <div class="flex flex-col gap-3">
 <!-- Cohort Row: Active -->
-<div class="flex items-center justify-between p-3 rounded border border-primary-container/30 bg-primary-container/10">
+<div class="flex items-center justify-between p-3 rounded border border-accent/30 bg-accent/10">
 <div class="flex items-center gap-4">
 <div class="flex flex-col">
-<span class="font-medium text-primary-fixed-dim">Эксперты-рецензенты</span>
+<span class="font-medium text-ink-faint">Эксперты-рецензенты</span>
 <span class="text-xs text-[#d2c4b9] font-metadata">100 users · Level: High · Status: Running</span>
 </div>
 </div>
@@ -195,7 +142,7 @@
 <button class="p-1.5 rounded hover:bg-[#333029] text-[#d2c4b9] transition-colors" title="Settings">
 <span class="material-symbols-outlined text-sm">settings</span>
 </button>
-<button class="p-1.5 rounded hover:bg-error-container/20 text-error-container transition-colors" title="Delete">
+<button class="p-1.5 rounded hover:bg-danger/20 text-danger transition-colors" title="Delete">
 <span class="material-symbols-outlined text-sm">delete</span>
 </button>
 </div>
@@ -215,7 +162,7 @@
 <button class="p-1.5 rounded hover:bg-[#333029] text-[#d2c4b9] transition-colors" title="Settings">
 <span class="material-symbols-outlined text-sm">settings</span>
 </button>
-<button class="p-1.5 rounded hover:bg-error-container/20 text-error-container transition-colors" title="Delete">
+<button class="p-1.5 rounded hover:bg-danger/20 text-danger transition-colors" title="Delete">
 <span class="material-symbols-outlined text-sm">delete</span>
 </button>
 </div>
@@ -232,7 +179,7 @@
 <div class="flex gap-2">
 <button class="px-3 py-1 bg-[#333029] border border-[#333029] rounded text-xs hover:border-[#56423d]">1</button>
 <button class="px-3 py-1 bg-[#333029] border border-[#333029] rounded text-xs hover:border-[#56423d]">3</button>
-<button class="px-3 py-1 bg-primary-container/20 border border-primary-container text-primary-fixed-dim rounded text-xs">10</button>
+<button class="px-3 py-1 bg-accent/20 border border-accent text-ink-faint rounded text-xs">10</button>
 <button class="px-3 py-1 bg-[#333029] border border-[#333029] rounded text-xs hover:border-[#56423d]">100</button>
 </div>
 </div>
@@ -250,19 +197,19 @@
 <label class="block text-xs text-[#d2c4b9] font-metadata">Разрешенные действия</label>
 <div class="grid grid-cols-2 gap-2">
 <label class="flex items-center gap-2 text-xs">
-<input checked="" class="rounded border-[#333029] bg-[#1d1c15] text-primary-container focus:ring-primary-container/50 focus:ring-offset-0" type="checkbox">
+<input checked="" class="rounded border-[#333029] bg-[#1d1c15] text-accent focus:ring-accent/50 focus:ring-offset-0" type="checkbox">
                                         Чтение (Read)
                                     </label>
 <label class="flex items-center gap-2 text-xs">
-<input checked="" class="rounded border-[#333029] bg-[#1d1c15] text-primary-container focus:ring-primary-container/50 focus:ring-offset-0" type="checkbox">
+<input checked="" class="rounded border-[#333029] bg-[#1d1c15] text-accent focus:ring-accent/50 focus:ring-offset-0" type="checkbox">
                                         Комментарии
                                     </label>
 <label class="flex items-center gap-2 text-xs">
-<input checked="" class="rounded border-[#333029] bg-[#1d1c15] text-primary-container focus:ring-primary-container/50 focus:ring-offset-0" type="checkbox">
+<input checked="" class="rounded border-[#333029] bg-[#1d1c15] text-accent focus:ring-accent/50 focus:ring-offset-0" type="checkbox">
                                         Оценки (Vote)
                                     </label>
 <label class="flex items-center gap-2 text-xs">
-<input class="rounded border-[#333029] bg-[#1d1c15] text-primary-container focus:ring-primary-container/50 focus:ring-offset-0" type="checkbox">
+<input class="rounded border-[#333029] bg-[#1d1c15] text-accent focus:ring-accent/50 focus:ring-offset-0" type="checkbox">
                                         Рецензии (Review)
                                     </label>
 </div>
@@ -276,7 +223,7 @@
 <!-- Toolbar -->
 <div class="px-4 py-3 border-b border-[#333029] flex justify-between items-center bg-[#211a13]">
 <span class="font-ui-label-sm text-[#f6f0e5] flex items-center gap-2">
-<div class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-slate"></div>
                         Live Stream
                     </span>
 <div class="flex gap-2">
@@ -291,26 +238,92 @@
 <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-1 font-mono text-[11px] text-[#d2c4b9]">
 <div class="flex items-start gap-3 py-1.5 border-b border-[#333029]/50 hover:bg-[#211a13] px-2 rounded -mx-2 transition-colors">
 <span class="text-[#8a726c] whitespace-nowrap">14:02:11</span>
-<span class="text-tertiary-fixed-dim">[SIM]</span>
+<span class="text-ink-faint">[SIM]</span>
 <span class="text-[#f6f0e5]">Мария Соколова оставила комментарий</span>
 </div>
 <div class="flex items-start gap-3 py-1.5 border-b border-[#333029]/50 hover:bg-[#211a13] px-2 rounded -mx-2 transition-colors">
 <span class="text-[#8a726c] whitespace-nowrap">14:02:05</span>
-<span class="text-primary-fixed-dim">[REAL]</span>
+<span class="text-ink-faint">[REAL]</span>
 <span class="text-[#f6f0e5]">Книжный червь открыл ридер</span>
 </div>
 <div class="flex items-start gap-3 py-1.5 border-b border-[#333029]/50 hover:bg-[#211a13] px-2 rounded -mx-2 transition-colors">
 <span class="text-[#8a726c] whitespace-nowrap">14:01:58</span>
-<span class="text-tertiary-fixed-dim">[SIM]</span>
+<span class="text-ink-faint">[SIM]</span>
 <span class="text-[#f6f0e5]">Алексей В. оценил "Введение в психоанализ"</span>
 </div>
 <div class="flex items-start gap-3 py-1.5 border-b border-[#333029]/50 hover:bg-[#211a13] px-2 rounded -mx-2 transition-colors opacity-70">
 <span class="text-[#8a726c] whitespace-nowrap">14:01:42</span>
-<span class="text-tertiary-fixed-dim">[SIM]</span>
+<span class="text-ink-faint">[SIM]</span>
 <span class="text-[#f6f0e5]">Когорта 'Эксперты-рецензенты' сгенерировала 12 событий</span>
 </div>
 </div>
 </div>
 </div>
 </div>
+<footer class="bg-paper border-t border-line" id="site-footer">
+<div class="max-w-max-width mx-auto px-margin-page py-stack-md">
+<div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+<a class="font-display-serif text-[22px] text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="../about/index.html">β<span class="text-accent">→</span>α</a>
+<nav class="flex gap-6 flex-wrap" aria-label="Нижняя навигация">
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../catalog/index.html">Каталог</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../community/index.html">Сообщество</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../about/index.html">О проекте</a>
+</nav>
+<span class="font-metadata text-metadata text-ink-faint">v1.0.0-primer</span>
+</div>
+<div class="pt-4 border-t border-line font-metadata text-metadata text-ink-faint text-center">
+© 2026 beta→alpha. Для профессионального сообщества.
+</div>
+</div>
+</footer>
+<script>
+/* notif */
+(function(){
+  var b=document.getElementById('notif-btn'),p=document.getElementById('notif-panel');
+  if(!b||!p)return;
+  b.addEventListener('click',function(e){e.stopPropagation();p.classList.toggle('hidden');});
+  document.addEventListener('click',function(e){
+    if(!p.classList.contains('hidden')&&!p.contains(e.target)&&e.target!==b)
+      p.classList.add('hidden');
+  });
+})();
+/* debug dock */
+(function(){
+  var dock=document.getElementById('debug-dock');
+  var closeBtn=document.getElementById('debug-close-btn');
+  if(!dock)return;
+  if(closeBtn)closeBtn.addEventListener('click',function(){dock.classList.add('hidden');});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='`'){dock.classList.toggle('hidden');e.preventDefault();}
+  });
+  /* tab switching */
+  var tabBtns=document.querySelectorAll('[data-console-tab]');
+  var mainPanel=document.getElementById('debug-main-panel');
+  var savedContent=mainPanel?mainPanel.innerHTML:null;
+  var PLACEHOLDERS=[
+    '<div class="flex items-center justify-center flex-1 text-[#8a726c] font-metadata text-sm p-8">Управление пользователями — следующая фаза</div>',
+    null,
+    '<div class="flex items-center justify-center flex-1 text-[#8a726c] font-metadata text-sm p-8">Симуляция активности — следующая фаза</div>',
+    '<div class="flex items-center justify-center flex-1 text-[#8a726c] font-metadata text-sm p-8">Лента событий — следующая фаза</div>'
+  ];
+  tabBtns.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var idx=parseInt(this.getAttribute('data-console-tab'));
+      /* active tab style */
+      tabBtns.forEach(function(b){
+        var active=b===btn;
+        if(active){
+          b.className='px-4 h-full flex items-center text-ink-faint border-b-2 border-accent-tint font-medium';
+        } else {
+          b.className='px-4 h-full flex items-center text-[#d2c4b9] hover:text-accent-tint transition-colors';
+        }
+      });
+      /* swap content */
+      if(mainPanel){
+        mainPanel.innerHTML=(idx===1)?savedContent:(PLACEHOLDERS[idx]||'');
+      }
+    });
+  });
+})();
+</script>
 </body></html>

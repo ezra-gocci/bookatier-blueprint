@@ -4,90 +4,11 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="../assets/tokens.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-
-<script id="tailwind-config">
-        tailwind.config = {
-            theme: {
-                extend: {
-                    "colors": {
-                        "chip-amber": "#C98A3C",
-                        "on-error": "#ffffff",
-                        "on-secondary-container": "#6d6259",
-                        "surface-dim": "#dfd9cf",
-                        "error": "#ba1a1a",
-                        "primary-container": "#b85138",
-                        "on-primary": "#ffffff",
-                        "tertiary": "#006362",
-                        "surface-container-lowest": "#ffffff",
-                        "secondary-fixed": "#efe0d4",
-                        "on-surface": "#1d1c15",
-                        "outline-variant": "#ddc0ba",
-                        "surface-container-low": "#f9f3e8",
-                        "on-secondary-fixed": "#211a13",
-                        "surface-tint": "#a03f28",
-                        "surface-container-high": "#ede8dd",
-                        "secondary-container": "#efe0d4",
-                        "background": "#fff9ee",
-                        "on-primary-fixed-variant": "#812913",
-                        "on-secondary": "#ffffff",
-                        "chip-sage": "#4C6B5E",
-                        "on-error-container": "#93000a",
-                        "tertiary-fixed": "#94f2f0",
-                        "border-hairline": "#E4D9C6",
-                        "inverse-on-surface": "#f6f0e5",
-                        "secondary-fixed-dim": "#d2c4b9",
-                        "on-background": "#1d1c15",
-                        "on-secondary-fixed-variant": "#4f453c",
-                        "inverse-surface": "#333029",
-                        "surface-variant": "#e8e2d7",
-                        "surface": "#FFFDF8",
-                        "on-tertiary-fixed-variant": "#00504f",
-                        "surface-container-highest": "#e8e2d7",
-                        "primary": "#b85138",
-                        "tertiary-fixed-dim": "#78d6d4",
-                        "inverse-primary": "#ffb4a2",
-                        "outline": "#8a726c",
-                        "on-tertiary-fixed": "#002020",
-                        "on-primary-fixed": "#3d0700",
-                        "text-main": "#241F1B",
-                        "on-surface-variant": "#56423d",
-                        "chip-slate": "#3E5C73",
-                        "surface-container": "#f3ede2",
-                        "primary-fixed-dim": "#ffb4a2",
-                        "surface-bright": "#fff9ee",
-                        "tertiary-container": "#007e7d",
-                        "on-primary-container": "#fff4f1",
-                        "primary-fixed": "#ffdad2",
-                        "on-tertiary": "#ffffff",
-                        "on-tertiary-container": "#d2fffd",
-                        "secondary": "#675d53",
-                        "error-container": "#ffdad6"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "fontFamily": {
-                        "metadata": ["Inter"],
-                        "ui-label-lg": ["Inter"],
-                        "ui-label-sm": ["Inter"],
-                        "headline-h1": ["Source Serif 4"],
-                        "headline-h2": ["Source Serif 4"],
-                        "quote-text": ["Source Serif 4"],
-                        "body-reading": ["Source Serif 4"],
-                        "body-standard": ["Source Serif 4"],
-                        "display-serif": ["Source Serif 4"]
-                    }
-                }
-            }
-        }
-    </script>
 <style>
-        body { background-color: #fff9ee; color: #241F1B; }
+        body { background-color: var(--paper); color: var(--ink); }
         .book-shadow { box-shadow: 4px 4px 12px rgba(36, 31, 27, 0.08), 1px 0px 2px rgba(36, 31, 27, 0.04); }
         .soft-card-shadow { box-shadow: 0 4px 20px rgba(36, 31, 27, 0.03); }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -109,62 +30,64 @@
 </head>
 <body class="font-body-standard overflow-x-hidden">
 <!-- Shared TopAppBar Placeholder -->
-<header class="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border-hairline px-6 md:px-10 py-3">
-<div class="max-w-[1200px] mx-auto flex items-center justify-between gap-8">
-<!-- Brand & Navigation -->
-<div class="flex items-center gap-10">
-<div class="flex items-center gap-3">
-<div class="flex items-center text-primary">
-<span class="text-xs font-bold font-metadata tracking-tighter">β</span>
-<span class="material-symbols-outlined text-sm mx-0.5">trending_flat</span>
-<span class="text-xs font-bold font-metadata">α</span>
-</div>
-<h1 class="font-headline-h2 text-xl tracking-tight text-text-main">Bookatier</h1>
-</div>
-<nav class="hidden lg:flex items-center gap-6 text-ui-label-sm text-on-surface-variant">
-<a class="hover:text-primary transition-colors" href="../home-anon/index.html">Главная</a>
-<span class="text-outline-variant opacity-40">·</span>
-<a class="hover:text-primary transition-colors" href="../catalog/index.html">Каталог</a>
-<span class="text-outline-variant opacity-40">·</span>
-<a class="hover:text-primary transition-colors" href="#">Полка</a>
-<span class="text-outline-variant opacity-40">·</span>
-<a class="hover:text-primary transition-colors" href="../community/index.html">Сообщество</a>
+<header class="bg-paper flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-16 border-b border-line sticky top-0 z-50" id="site-header">
+<a class="font-display-serif text-headline-h1 text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="../home-auth/index.html">β<span class="text-accent">→</span>α</a>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../home-auth/index.html">Главная</a>
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../catalog/index.html">Каталог</a>
+<a class="text-accent font-semibold border-b-2 border-accent pb-0.5 font-ui-label-lg text-ui-label-lg" aria-current="page" href="../community/index.html">Сообщество</a>
 </nav>
-</div>
-<!-- Search -->
-<div class="flex-1 max-w-sm hidden md:block">
-<div class="relative group">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg group-focus-within:text-primary transition-colors">search</span>
-<input class="w-full bg-surface border-border-hairline rounded-full pl-10 pr-4 py-2 text-ui-label-sm focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none" placeholder="Поиск по библиотеке..." type="text"/>
-</div>
-</div>
-<!-- User Controls -->
 <div class="flex items-center gap-4">
-<div class="flex items-center bg-surface-container-high px-4 py-1.5 rounded-full border border-border-hairline gap-2 shrink-0">
-<span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
-<span class="font-ui-label-sm text-text-main">Эксперт <span class="text-outline-variant mx-1">·</span> 215</span>
-</div>
-<button class="relative p-2 text-on-surface-variant hover:text-primary transition-colors">
-<span class="material-symbols-outlined">notifications</span>
-<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-background"></span>
+<button class="text-ink-soft hover:text-accent transition-colors" aria-label="Поиск">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">search</span>
 </button>
-<div class="size-9 rounded-full overflow-hidden border border-border-hairline ring-2 ring-surface cursor-pointer">
-<img class="w-full h-full object-cover" data-alt="A professional and elegant portrait of a woman with a warm, intelligent expression, set against a blurred background of a modern academic library. The lighting is soft and natural, emphasizing a calm and studious atmosphere. The color palette is dominated by warm wood tones and cream paper textures, perfectly matching the literary and professional theme of the application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAUS8saOY97pc3FzBrU_3jn3LxxAdZHCEyC0VxvhzPdM1_41DdXY3uLP3e4wT-o38jx7FP5X_ljEk-3ER2BVYBF8x2XadieZOxibX2TSdsAPAY3C1pkacWZ7ITmbY8owxtrbE7yBj1YRBQ4VsZuP9SlbpVWtGQphr0SgLcRyb_YdNiZd-QQbmJZ6jAWFnhlgtc5nFqW9Ed4vp0quIplu_VXqsfazNhKd8JrUJQOMG387jIRD4ldBKI_VHvvm8oHUJ3jYvpeXTQ1bMz"/>
+<div class="relative" id="notif-wrapper">
+<button class="text-ink-soft hover:text-accent transition-colors relative" id="notif-btn" aria-label="Уведомления">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">notifications</span>
+<span class="absolute -top-1 -right-1 w-4 h-4 bg-accent text-white text-[10px] rounded-full flex items-center justify-center font-bold leading-none">3</span>
+</button>
+<div class="hidden absolute right-0 top-full mt-2 w-80 bg-surface rounded-lg border border-line shadow-[0_8px_30px_rgba(40,30,20,.08)] z-50" id="notif-panel">
+<div class="p-3 border-b border-line flex justify-between items-center">
+<span class="font-ui-label-sm text-ui-label-sm text-ink-faint uppercase tracking-wider">Уведомления</span>
+<a class="font-metadata text-metadata text-accent hover:underline" href="../notifications/index.html">Все</a>
+</div>
+<ul class="py-1 divide-y divide-line">
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Мария Соколова ответила на ваш комментарий</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">3 мин. назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Новая версия: «Научение на опыте»</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">1 час назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Ваш отзыв получил 4 одобрения</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">Вчера</p>
+</li>
+</ul>
 </div>
 </div>
+<div class="hidden sm:flex items-center gap-1 px-2 py-1 rounded-full border border-line bg-surface">
+<span class="material-symbols-outlined text-[14px] text-amber" style="font-variation-settings: 'FILL' 1, 'wght' 400;">star</span>
+<span class="font-ui-label-sm text-ui-label-sm text-ink tabular-nums font-semibold">142</span>
+</div>
+<a class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white font-ui-label-sm font-semibold hover:bg-accent-hover transition-colors" href="../user-profile/index.html" title="Профиль пользователя">АИ</a>
+<button class="md:hidden text-ink-soft hover:text-accent transition-colors" aria-label="Меню">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">menu</span>
+</button>
 </div>
 </header>
 <main class="max-w-[1200px] mx-auto px-6 md:px-10 py-10">
 <!-- Welcome Header -->
 <div class="flex flex-col gap-2 mb-10">
-<h2 class="font-display-serif text-3xl md:text-4xl text-text-main">Добрый вечер, Мария</h2>
-<p class="font-body-standard text-on-surface-variant opacity-80">Рады видеть вас снова в вашем кабинете.</p>
+<h2 class="font-display-serif text-3xl md:text-4xl text-ink">Добрый вечер, Мария</h2>
+<p class="font-body-standard text-ink-soft opacity-80">Рады видеть вас снова в вашем кабинете.</p>
 </div>
 <!-- Section 2: The Shelf Preview -->
 <section class="mb-16">
-<div class="flex items-end justify-between border-b border-border-hairline pb-4 mb-6">
-<h3 class="font-headline-h2 text-text-main">Полка</h3>
-<a class="font-ui-label-sm text-primary flex items-center gap-1 hover:underline group" href="#">
+<div class="flex items-end justify-between border-b border-line pb-4 mb-6">
+<h3 class="font-headline-h2 text-ink">Полка</h3>
+<a class="font-ui-label-sm text-accent flex items-center gap-1 hover:underline group" href="#">
                     Перейти в полный каталог
                     <span class="material-symbols-outlined text-sm group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
 </a>
@@ -172,16 +95,16 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 <!-- Book Card 1 -->
 <div class="group cursor-pointer">
-<div class="aspect-[3/4] rounded-lg bg-surface-container overflow-hidden book-shadow mb-4 transition-transform group-hover:-translate-y-1">
+<div class="aspect-[3/4] rounded-lg bg-surface-sunk overflow-hidden book-shadow mb-4 transition-transform group-hover:-translate-y-1">
 <img class="w-full h-full object-cover" data-alt="A vintage-style book cover for a classic Russian novel, featuring elegant typography and a subtle, textured paper background in warm cream and sepia tones. The design is minimalistic with a focus on classical geometry and scholarly aesthetics, evoking a sense of deep intellectual history and professional psychological study." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWczf2V82ckPx2u9O-WycUWUEJfPhHTlRtzz-xr2GcEyI5lucG22IIP_HuTKEPC7UEJTTp4XWQf0EtZ_ntrk8SIWrktkHyPTsQiTsMwbmBK2GNlQTFc0Ra8LMd1WbDHoSAysFAH1Ey2C432hngEWesSqGBYwJa1ZXYhreG-_6EEgdhva0FVcKocJ4MYwKn_GtoKTDEaJm8p1H-2LmpFGR7Y5ezddagkoWQCytxq8Lld5DQ8P79P_wOsRcyzVUa0u4zjwMEkXx7k_TP"/>
 </div>
 <div class="space-y-1.5">
 <div class="flex gap-2 mb-2">
-<span class="px-2 py-0.5 rounded-full bg-chip-amber/10 text-chip-amber font-ui-label-sm text-[11px] uppercase tracking-wider">Классика</span>
+<span class="px-2 py-0.5 rounded-full bg-amber/10 text-amber font-ui-label-sm text-[11px] uppercase tracking-wider">Классика</span>
 </div>
-<h4 class="font-headline-h2 text-lg leading-tight group-hover:text-primary transition-colors">Мастер и Маргарита</h4>
-<p class="font-body-standard text-sm text-on-surface-variant italic">М. Булгаков</p>
-<div class="flex items-center gap-1 text-chip-amber">
+<h4 class="font-headline-h2 text-lg leading-tight group-hover:text-accent transition-colors">Мастер и Маргарита</h4>
+<p class="font-body-standard text-sm text-ink-soft italic">М. Булгаков</p>
+<div class="flex items-center gap-1 text-amber">
 <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
 <span class="font-metadata text-sm font-medium">4.9</span>
 </div>
@@ -189,16 +112,16 @@
 </div>
 <!-- Book Card 2 -->
 <div class="group cursor-pointer">
-<div class="aspect-[3/4] rounded-lg bg-surface-container overflow-hidden book-shadow mb-4 transition-transform group-hover:-translate-y-1">
+<div class="aspect-[3/4] rounded-lg bg-surface-sunk overflow-hidden book-shadow mb-4 transition-transform group-hover:-translate-y-1">
 <img class="w-full h-full object-cover" data-alt="A modern academic book cover about psychoanalysis, featuring abstract line art reminiscent of neuro-pathways in deep slate blue and terracotta. The aesthetic is clean, professional, and editorial, reflecting a high-end digital library for therapists. The texture suggests a fine cloth-bound volume with embossed gold-leaf lettering." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArapOlA3Jeh6fYQWo6BhMvqFpTk8KlHMvmjnWzIcgYLyLJk2Uydr9VENFD0inkTnC667Ce30o644yTX9jOWf5QqDun_7pqnIQ-DWtIxUfLb6ztrxHxW2q0Pw8jQYidv9Sj4q66FW2JiwUvQopSGo5beCkCujgap13c1i4hpqr-1P-jrNIg2MvQ67DiUN3chLHdb1NA-GDkzQ6GxZpsj2EYZ7R1ZyYybFLZKMsTDR5VajBpUvjbjl8Q-Q-W2ZVJhzvhkJsTLhHe4I7u"/>
 </div>
 <div class="space-y-1.5">
 <div class="flex gap-2 mb-2">
-<span class="px-2 py-0.5 rounded-full bg-chip-slate/10 text-chip-slate font-ui-label-sm text-[11px] uppercase tracking-wider">Психология</span>
+<span class="px-2 py-0.5 rounded-full bg-slate/10 text-slate font-ui-label-sm text-[11px] uppercase tracking-wider">Психология</span>
 </div>
-<h4 class="font-headline-h2 text-lg leading-tight group-hover:text-primary transition-colors">Толкование сновидений</h4>
-<p class="font-body-standard text-sm text-on-surface-variant italic">З. Фрейд</p>
-<div class="flex items-center gap-1 text-chip-amber">
+<h4 class="font-headline-h2 text-lg leading-tight group-hover:text-accent transition-colors">Толкование сновидений</h4>
+<p class="font-body-standard text-sm text-ink-soft italic">З. Фрейд</p>
+<div class="flex items-center gap-1 text-amber">
 <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
 <span class="font-metadata text-sm font-medium">4.8</span>
 </div>
@@ -206,16 +129,16 @@
 </div>
 <!-- Book Card 3 -->
 <div class="group cursor-pointer">
-<div class="aspect-[3/4] rounded-lg bg-surface-container overflow-hidden book-shadow mb-4 transition-transform group-hover:-translate-y-1">
+<div class="aspect-[3/4] rounded-lg bg-surface-sunk overflow-hidden book-shadow mb-4 transition-transform group-hover:-translate-y-1">
 <img class="w-full h-full object-cover" data-alt="A minimalist book cover design for a philosophy text, dominated by a single large circle and subtle hairline rules. The color scheme is a sophisticated blend of parchment white and charcoal grey. The overall look is one of quiet contemplation and scholarly rigor, typical of a professional medical or philosophical journal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn_-HsM4XJtgri2Yta_KaLDdDNrvjfLOYdr1jPcpTo3yOQ5N-u71jUvUlwqpfVwjbLn2V69LEUiVIYDBlKbQ4kUmoJMDTA1AXpdxYq6cE_xG6BTZiTS5oKltTYD1r57MXKbFtpQO8aNW7zehPf2jegqGwq1e_PxpJhXzWNDK2k9LmpDhLhqezQwPKy8L7y5K7sac15Bz-siDRagNmW1y-orwuiQqbCM7VQu8aOFiMdda4zNuwhkVpVSqhyD_yampqjlwra6tU9hMEG"/>
 </div>
 <div class="space-y-1.5">
 <div class="flex gap-2 mb-2">
-<span class="px-2 py-0.5 rounded-full bg-chip-sage/10 text-chip-sage font-ui-label-sm text-[11px] uppercase tracking-wider">Философия</span>
+<span class="px-2 py-0.5 rounded-full bg-sage/10 text-sage font-ui-label-sm text-[11px] uppercase tracking-wider">Философия</span>
 </div>
-<h4 class="font-headline-h2 text-lg leading-tight group-hover:text-primary transition-colors">Так говорил Заратустра</h4>
-<p class="font-body-standard text-sm text-on-surface-variant italic">Ф. Ницше</p>
-<div class="flex items-center gap-1 text-chip-amber">
+<h4 class="font-headline-h2 text-lg leading-tight group-hover:text-accent transition-colors">Так говорил Заратустра</h4>
+<p class="font-body-standard text-sm text-ink-soft italic">Ф. Ницше</p>
+<div class="flex items-center gap-1 text-amber">
 <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
 <span class="font-metadata text-sm font-medium">4.7</span>
 </div>
@@ -223,16 +146,16 @@
 </div>
 <!-- Book Card 4 -->
 <div class="group cursor-pointer">
-<div class="aspect-[3/4] rounded-lg bg-surface-container overflow-hidden book-shadow mb-4 transition-transform group-hover:-translate-y-1">
+<div class="aspect-[3/4] rounded-lg bg-surface-sunk overflow-hidden book-shadow mb-4 transition-transform group-hover:-translate-y-1">
 <img class="w-full h-full object-cover" data-alt="A historical fiction book cover showcasing an intricate pattern of vintage botanical illustrations and fine line work in muted greens and browns. The title is set in an elegant, high-contrast serif typeface. The mood is atmospheric, nostalgic, and deeply intellectual, suggesting a private collection of rare academic works." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCm2aAY7N2pvsgoaU0fdjhLSzg3SqKeWezTZcqRjuLAWNv_EORLbdrjCUzCY_G8xqPjT0MO2lmOIn7d55jim7gSFeova8Ey4byl2t50kVVPLrz14gk5u0LrTa5kFQv2Wfdg29sDJ2hhXdvuP26-hcKG8jrd50ZbSvFcbEMT9pUVVmOKbpLgAVMWEtPjEUO6OKKuI-gkBYEIR44TDmfiIL84tvIJIWoUCPqoEbaU_ErNhDYUiIJWL16pj5oqiCUgoHzYP87mgBadLmSP"/>
 </div>
 <div class="space-y-1.5">
 <div class="flex gap-2 mb-2">
-<span class="px-2 py-0.5 rounded-full bg-chip-amber/10 text-chip-amber font-ui-label-sm text-[11px] uppercase tracking-wider">История</span>
+<span class="px-2 py-0.5 rounded-full bg-amber/10 text-amber font-ui-label-sm text-[11px] uppercase tracking-wider">История</span>
 </div>
-<h4 class="font-headline-h2 text-lg leading-tight group-hover:text-primary transition-colors">Война и мир</h4>
-<p class="font-body-standard text-sm text-on-surface-variant italic">Л. Толстой</p>
-<div class="flex items-center gap-1 text-chip-amber">
+<h4 class="font-headline-h2 text-lg leading-tight group-hover:text-accent transition-colors">Война и мир</h4>
+<p class="font-body-standard text-sm text-ink-soft italic">Л. Толстой</p>
+<div class="flex items-center gap-1 text-amber">
 <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
 <span class="font-metadata text-sm font-medium">4.9</span>
 </div>
@@ -252,7 +175,7 @@
 </h3>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 <!-- Resume Card 1 -->
-<div class="bg-surface rounded-xl p-5 border border-border-hairline soft-card-shadow flex gap-5 relative overflow-hidden group hover:border-outline-variant transition-colors">
+<div class="bg-surface rounded-xl p-5 border border-line soft-card-shadow flex gap-5 relative overflow-hidden group hover:border-line transition-colors">
 <div class="w-20 shrink-0">
 <div class="aspect-[3/4] rounded shadow-sm overflow-hidden">
 <img class="w-full h-full object-cover" data-alt="Close up of a professional book cover focused on a clean, ivory background with a simple minimalist symbol representing the human psyche. The aesthetic is extremely high-end and editorial, suitable for a professional therapist's workspace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdEjCTF2sUH5kxqCMel6K4C17fOQpQXFuf5NO2ReFUg6mpZ4vIbyEqEnMJEW9cA-BG813Xsg9cmadZSpF-NTljC5STnHRcFuA_ktEgqN08zocrJD13StAfBhEU1i0q-Uf5pzIjyV53krBNQp2TEvU6kTLHj1W-sWfyN22oFRbQXu6yXFgPtYLuPrYBJSlrjyl8cQJaohno-tzvJn-DFDwJfCd6Ej6hpdI6T5c2D643jq7XnNRcF_yfQahsJnRikOjkh7IfQJOEEx4R"/>
@@ -261,21 +184,21 @@
 <div class="flex-1 flex flex-col justify-between">
 <div>
 <h4 class="font-headline-h2 text-base mb-1">Идиот</h4>
-<p class="font-body-standard text-xs text-on-surface-variant opacity-70">Ф. Достоевский</p>
+<p class="font-body-standard text-xs text-ink-soft opacity-70">Ф. Достоевский</p>
 </div>
 <div class="space-y-2">
-<div class="flex justify-between text-[11px] font-metadata text-outline">
+<div class="flex justify-between text-[11px] font-metadata text-ink-faint">
 <span>Глава 4</span>
 <span>68%</span>
 </div>
-<div class="w-full h-1 bg-surface-container-high rounded-full overflow-hidden">
-<div class="h-full bg-primary" style="width: 68%;"></div>
+<div class="w-full h-1 bg-surface-sunk rounded-full overflow-hidden">
+<div class="h-full bg-accent" style="width: 68%;"></div>
 </div>
 </div>
 </div>
 </div>
 <!-- Resume Card 2 -->
-<div class="bg-surface rounded-xl p-5 border border-border-hairline soft-card-shadow flex gap-5 relative overflow-hidden group hover:border-outline-variant transition-colors">
+<div class="bg-surface rounded-xl p-5 border border-line soft-card-shadow flex gap-5 relative overflow-hidden group hover:border-line transition-colors">
 <div class="w-20 shrink-0">
 <div class="aspect-[3/4] rounded shadow-sm overflow-hidden">
 <img class="w-full h-full object-cover" data-alt="A book cover focusing on intricate golden geometric shapes on a matte navy background, suggesting a profound and structured philosophical work. The style is modern minimalist with classical influences." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAM-ClcVl1bhdB-5d2H-JVTCM1E96Z7pScjiTaz_ogS_j9UVkrzbJ89AVozdl2xjCKuvj1LUb0p0nkf8xkVjkZwOCQKWM9Kjeb6kZCYRzWby1tVufm1TYIBjqcZaVy0fvbOI9iVzHK-llMMAz1rbVCplq0f3C8ufsoWLHLj0FKlcugwX5tpPD5XNu880_c6OBuNpkL5EDzKdX7fOYKA62PwjAgZ12mjAn1evpSIVgXjT123n3s-tzUg03H6yGYpZAq-nXei_Z2ZzxYr"/>
@@ -284,15 +207,15 @@
 <div class="flex-1 flex flex-col justify-between">
 <div>
 <h4 class="font-headline-h2 text-base mb-1">Братья Карамазовы</h4>
-<p class="font-body-standard text-xs text-on-surface-variant opacity-70">Ф. Достоевский</p>
+<p class="font-body-standard text-xs text-ink-soft opacity-70">Ф. Достоевский</p>
 </div>
 <div class="space-y-2">
-<div class="flex justify-between text-[11px] font-metadata text-outline">
+<div class="flex justify-between text-[11px] font-metadata text-ink-faint">
 <span>Глава 12</span>
 <span>42%</span>
 </div>
-<div class="w-full h-1 bg-surface-container-high rounded-full overflow-hidden">
-<div class="h-full bg-primary" style="width: 42%;"></div>
+<div class="w-full h-1 bg-surface-sunk rounded-full overflow-hidden">
+<div class="h-full bg-accent" style="width: 42%;"></div>
 </div>
 </div>
 </div>
@@ -302,35 +225,35 @@
 <!-- Community Activity Section -->
 <div>
 <h3 class="font-headline-h2 mb-6">Активность сообщества</h3>
-<div class="bg-surface rounded-xl border border-border-hairline divide-y divide-border-hairline overflow-hidden">
+<div class="bg-surface rounded-xl border border-line divide-y divide-line overflow-hidden">
 <!-- Activity Item 1 -->
-<div class="p-6 flex gap-4 hover:bg-surface-container-low transition-colors cursor-pointer group">
-<div class="size-10 rounded-full bg-surface-container-highest shrink-0 flex items-center justify-center text-primary">
+<div class="p-6 flex gap-4 hover:bg-surface transition-colors cursor-pointer group">
+<div class="size-10 rounded-full bg-surface-sunk shrink-0 flex items-center justify-center text-accent">
 <span class="material-symbols-outlined">forum</span>
 </div>
 <div class="flex-1 space-y-1">
-<p class="font-body-standard text-sm text-text-main">
-<span class="font-semibold">Александр Петров</span> ответил на ваш комментарий к книге <span class="text-primary italic">«Идиот»</span>
+<p class="font-body-standard text-sm text-ink">
+<span class="font-semibold">Александр Петров</span> ответил на ваш комментарий к книге <span class="text-accent italic">«Идиот»</span>
 </p>
-<p class="text-on-surface-variant opacity-70 text-sm italic border-l-2 border-outline-variant pl-4 my-3">«Очень глубокое замечание о природе доброты Мышкина...»</p>
-<div class="flex items-center gap-4 text-[12px] font-metadata text-outline">
+<p class="text-ink-soft opacity-70 text-sm italic border-l-2 border-line pl-4 my-3">«Очень глубокое замечание о природе доброты Мышкина...»</p>
+<div class="flex items-center gap-4 text-[12px] font-metadata text-ink-faint">
 <span>2 часа назад</span>
-<span class="flex items-center gap-1 group-hover:text-primary"><span class="material-symbols-outlined text-xs">thumb_up</span> 14</span>
+<span class="flex items-center gap-1 group-hover:text-accent"><span class="material-symbols-outlined text-xs">thumb_up</span> 14</span>
 </div>
 </div>
 </div>
 <!-- Activity Item 2 -->
-<div class="p-6 flex gap-4 hover:bg-surface-container-low transition-colors cursor-pointer group">
-<div class="size-10 rounded-full bg-surface-container-highest shrink-0 flex items-center justify-center text-chip-sage">
+<div class="p-6 flex gap-4 hover:bg-surface transition-colors cursor-pointer group">
+<div class="size-10 rounded-full bg-surface-sunk shrink-0 flex items-center justify-center text-sage">
 <span class="material-symbols-outlined">auto_stories</span>
 </div>
 <div class="flex-1 space-y-1">
-<p class="font-body-standard text-sm text-text-main">
+<p class="font-body-standard text-sm text-ink">
                                     Новое эссе от <span class="font-semibold">Елены Соколовой</span>: <span class="font-medium">«Тень и Свет в работах Булгакова»</span>
 </p>
-<div class="flex items-center gap-4 text-[12px] font-metadata text-outline">
+<div class="flex items-center gap-4 text-[12px] font-metadata text-ink-faint">
 <span>Вчера</span>
-<span class="flex items-center gap-1 group-hover:text-primary"><span class="material-symbols-outlined text-xs">visibility</span> 428</span>
+<span class="flex items-center gap-1 group-hover:text-accent"><span class="material-symbols-outlined text-xs">visibility</span> 428</span>
 </div>
 </div>
 </div>
@@ -342,21 +265,21 @@
 <!-- Favorites Shelf -->
 <section>
 <h3 class="font-headline-h2 mb-6 text-xl">Ваше избранное</h3>
-<div class="grid grid-cols-3 gap-3 p-4 bg-surface rounded-xl border border-border-hairline">
-<div class="aspect-[3/4] bg-surface-container rounded-sm overflow-hidden shadow-sm hover:ring-2 hover:ring-primary transition-all cursor-pointer">
+<div class="grid grid-cols-3 gap-3 p-4 bg-surface rounded-xl border border-line">
+<div class="aspect-[3/4] bg-surface-sunk rounded-sm overflow-hidden shadow-sm hover:ring-2 hover:ring-accent transition-all cursor-pointer">
 <img class="w-full h-full object-cover" data-alt="Miniature book cover with a soft sage green background and delicate white leaf prints, representing a nature-inspired therapeutic guide. The lighting is diffused and peaceful." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMHc7WWtxapypmUcd2wqhI_vjdlcP2AtKghyJ7-knqF2qv15n0IpnxMAmVIXEw9ECJRcYGlqrXRxUCJmH_2MxqSx1S_eWwI0BIIZ12JyVVCT3F37j40kEn1E9sWVYrMDIOSCo2Uc5GnSOkl8GKM2Igvjm0YZicNhohkW9sibuyMcAw87hR7ArYhejPsNCRK0GM5iHWWxnnzfHX4_toX5i7kH-IDLDJHFUsriDSZPiiY1EnO4VYda1r56pscRQuYdoSS2tYfviNXffk"/>
 </div>
-<div class="aspect-[3/4] bg-surface-container rounded-sm overflow-hidden shadow-sm hover:ring-2 hover:ring-primary transition-all cursor-pointer">
+<div class="aspect-[3/4] bg-surface-sunk rounded-sm overflow-hidden shadow-sm hover:ring-2 hover:ring-accent transition-all cursor-pointer">
 <img class="w-full h-full object-cover" data-alt="Miniature book cover in deep terracotta with a stylized golden key icon, suggesting secret wisdom and historical discovery. Clean editorial design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBm8O915LE48seOp6ISjttxY2n1xPml0JBTP3KCJvRKJelKbPBbbmivaPI5jUX-5Atxw3-8g8KmrRTq6SVsDp_UQt5QdCH_Ia8B3v8Bblm_lkg4OpFmB6W3EUTHDlKCl9l9zwq2BqT1HYMkvNgzqV9tDftiCE2wF5A53KCU0SJPTQd2HmjpnvDRIgzCjO7irZs69S4DrV2Ks3hTavl4f81sUJ6jCPT3xLbQZ63fyD0Zx5R2lCTU1L4LnSuMIDRmDuC1ki_zXuvSFX12"/>
 </div>
-<div class="aspect-[3/4] bg-surface-container rounded-sm overflow-hidden shadow-sm hover:ring-2 hover:ring-primary transition-all cursor-pointer">
+<div class="aspect-[3/4] bg-surface-sunk rounded-sm overflow-hidden shadow-sm hover:ring-2 hover:ring-accent transition-all cursor-pointer">
 <img class="w-full h-full object-cover" data-alt="Miniature book cover featuring a stark, high-contrast photograph of a marble bust under dramatic lighting, typical of a classical arts or philosophy publication." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJPTVffMOTZluvqbhtnKoNxd2uJXDCLYXxLq7QZVTmL3iRQMPS8rXY_H8diYHTVUs_uFHdICYkM-V5K50fTSpVVQclG7yrlP2Ad9CfgmUXmgtCVavY-xmzQ776dixlDzH7v7QNglTV3-fzabvOpJyBuw52PWEadXLjaPH3jLF6xMN9nSHORwFLz3a5UcL0VH3ZhwpSUwwTM6wu2hxPEFhPAxB5s6qOHg_7zYFe_YUNcz_EO6ncUJqsvPPyIwZH1jj9LQUtDnUGf1ue"/>
 </div>
-<div class="aspect-[3/4] bg-surface-container rounded-sm overflow-hidden shadow-sm hover:ring-2 hover:ring-primary transition-all cursor-pointer">
+<div class="aspect-[3/4] bg-surface-sunk rounded-sm overflow-hidden shadow-sm hover:ring-2 hover:ring-accent transition-all cursor-pointer">
 <img class="w-full h-full object-cover" data-alt="Miniature book cover with abstract watercolor washes in calming blue and sand colors, suggesting a meditative and psychological tone." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6AZw0ydbX8A6DhUeLpUqamOe6jlELgMzJjaKkjHvDTZxW0X7Qc2sjfD9150bAaHi6f3EPNgfVkqo8caqTno3bP_YkKZW6PkfzZDXSwZK6LqM-XHRlYpBH441iBZIQz2BqylVRuz2ZEaBy9Lg24K_HGvqWU6qKu78SFVRLpftWmp1s0un9f9a7gSuk_VdMSXgk_nfZqAIIpUQaF3IJXhowXtIg0BWCwQraDs4j3N5pxVoo5wNcrfVqf4zh26Dw3dg3kYerd2vvKypM"/>
 </div>
-<div class="flex items-center justify-center aspect-[3/4] border-2 border-dashed border-border-hairline rounded-sm hover:border-primary hover:text-primary transition-all cursor-pointer group">
-<span class="material-symbols-outlined text-outline-variant group-hover:text-primary">add</span>
+<div class="flex items-center justify-center aspect-[3/4] border-2 border-dashed border-line rounded-sm hover:border-accent hover:text-accent transition-all cursor-pointer group">
+<span class="material-symbols-outlined text-ink-faint group-hover:text-accent">add</span>
 </div>
 </div>
 </section>
@@ -367,23 +290,23 @@
 <img class="size-4 opacity-40 grayscale" data-alt="A tiny, minimalist ink drawing of a fountain pen nib, executed with fine lines on an ivory background. This decorative detail adds a layer of professional craftsmanship and academic atmosphere to the user notes section." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmWQelgJ4kanbcgr4-4NNJoELcmH_wQU2h8bfIv6NwwXhfnkW9xa2mWNwcSMACueZXuzbcV7OBDFKQ4B-zeI4U1usfSYG3FZCL11kH323ZoLNV4WmXr0UeR-d1QLgekRa-fre7_SVl2d_ef4Mx3iso1qsgE0kGpZGJmmme1rmPqYD-7X_wI3cbOX7VqV3jSnJDZ9nwVy8J0144vNaf-Qmm30WhxieaIcxxbrvO95GuI19ECa6v8SYurHbT8Gi7gqdTewGKzglvHNRt"/>
 </div>
 <div class="space-y-4">
-<div class="bg-surface rounded-xl p-4 border border-border-hairline hover:border-outline-variant transition-all cursor-pointer">
+<div class="bg-surface rounded-xl p-4 border border-line hover:border-line transition-all cursor-pointer">
 <div class="flex justify-between items-start mb-2">
-<span class="text-[10px] font-metadata uppercase tracking-widest text-outline">Закладка · Стр. 142</span>
-<span class="text-[10px] font-metadata text-outline">Сегодня, 14:20</span>
+<span class="text-[10px] font-metadata uppercase tracking-widest text-ink-faint">Закладка · Стр. 142</span>
+<span class="text-[10px] font-metadata text-ink-faint">Сегодня, 14:20</span>
 </div>
 <p class="font-body-standard text-sm line-clamp-2">«Тут-то и обнаружилось, что Мышкин вовсе не так прост...»</p>
-<p class="font-metadata text-[11px] text-primary mt-2">Мастер и Маргарита</p>
+<p class="font-metadata text-[11px] text-accent mt-2">Мастер и Маргарита</p>
 </div>
-<div class="bg-surface rounded-xl p-4 border border-border-hairline hover:border-outline-variant transition-all cursor-pointer">
+<div class="bg-surface rounded-xl p-4 border border-line hover:border-line transition-all cursor-pointer">
 <div class="flex justify-between items-start mb-2">
-<span class="text-[10px] font-metadata uppercase tracking-widest text-chip-amber">Заметка</span>
-<span class="text-[10px] font-metadata text-outline">Вчера, 18:45</span>
+<span class="text-[10px] font-metadata uppercase tracking-widest text-amber">Заметка</span>
+<span class="text-[10px] font-metadata text-ink-faint">Вчера, 18:45</span>
 </div>
 <p class="font-body-standard text-sm line-clamp-2">Проверить связь между этим отрывком и теорией Юнга об архетипах.</p>
-<p class="font-metadata text-[11px] text-primary mt-2">Толкование сновидений</p>
+<p class="font-metadata text-[11px] text-accent mt-2">Толкование сновидений</p>
 </div>
-<button class="w-full py-3 rounded-lg border border-border-hairline text-ui-label-sm text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<button class="w-full py-3 rounded-lg border border-line text-ui-label-sm text-ink-soft hover:bg-surface transition-colors">
                             Показать всю историю
                         </button>
 </div>
@@ -391,29 +314,19 @@
 </div>
 </div>
 </main>
-<footer class="mt-24 border-t border-border-hairline bg-surface py-12 px-10">
-<div class="max-w-[1200px] mx-auto">
-<div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-8">
-<div class="flex items-center gap-3">
-<div class="flex items-center text-on-surface-variant opacity-60">
-<span class="text-xs font-bold font-metadata tracking-tighter">β</span>
-<span class="material-symbols-outlined text-sm mx-0.5">trending_flat</span>
-<span class="text-xs font-bold font-metadata">α</span>
+<footer class="bg-paper border-t border-line" id="site-footer">
+<div class="max-w-max-width mx-auto px-margin-page py-stack-md">
+<div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+<a class="font-display-serif text-[22px] text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="../about/index.html">β<span class="text-accent">→</span>α</a>
+<nav class="flex gap-6 flex-wrap" aria-label="Нижняя навигация">
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../catalog/index.html">Каталог</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../community/index.html">Сообщество</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../about/index.html">О проекте</a>
+</nav>
+<span class="font-metadata text-metadata text-ink-faint">v1.0.0-primer</span>
 </div>
-<span class="font-headline-h2 text-lg text-on-surface-variant opacity-60">Bookatier</span>
-</div>
-<div class="flex gap-10 text-ui-label-sm text-on-surface-variant opacity-60">
-<a class="hover:text-primary" href="#">Конфиденциальность</a>
-<a class="hover:text-primary" href="#">Условия</a>
-<a class="hover:text-primary" href="#">Поддержка</a>
-</div>
-</div>
-<div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-border-hairline/40 gap-4">
-<p class="font-metadata text-xs text-outline opacity-60">© 2024 Bookatier. Цифровая библиотека для профессионалов.</p>
-<div class="flex items-center gap-2">
-<span class="size-2 bg-chip-sage rounded-full animate-pulse"></span>
-<span class="font-metadata text-[10px] uppercase tracking-widest text-outline">v1.0.4-alpha</span>
-</div>
+<div class="pt-4 border-t border-line font-metadata text-metadata text-ink-faint text-center">
+© 2026 beta→alpha. Для профессионального сообщества.
 </div>
 </div>
 </footer>
@@ -434,4 +347,15 @@
             searchInput.parentElement.classList.remove('ring-offset-2');
         });
     </script>
+<script>
+(function(){
+  var b=document.getElementById('notif-btn'),p=document.getElementById('notif-panel');
+  if(!b||!p)return;
+  b.addEventListener('click',function(e){e.stopPropagation();p.classList.toggle('hidden');});
+  document.addEventListener('click',function(e){
+    if(!p.classList.contains('hidden')&&!p.contains(e.target)&&e.target!==b)
+      p.classList.add('hidden');
+  });
+})();
+</script>
 </body></html>

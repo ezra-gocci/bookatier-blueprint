@@ -3,185 +3,11 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>Д-р Александр Воронов - Профиль Эксперта</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="../assets/tokens.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com" rel="preconnect">
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&amp;display=swap" rel="stylesheet">
-
-<script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              "colors": {
-                      "on-background": "#1d1c15",
-                      "inverse-surface": "#333029",
-                      "border-hairline": "#E4D9C6",
-                      "outline": "#8a726c",
-                      "surface-container": "#f3ede2",
-                      "surface-container-lowest": "#ffffff",
-                      "on-surface-variant": "#56423d",
-                      "inverse-primary": "#ffb4a2",
-                      "chip-amber": "#C98A3C",
-                      "tertiary-container": "#007e7d",
-                      "outline-variant": "#ddc0ba",
-                      "secondary-fixed": "#efe0d4",
-                      "surface-container-highest": "#e8e2d7",
-                      "on-tertiary-fixed": "#002020",
-                      "on-secondary-fixed": "#211a13",
-                      "inverse-on-surface": "#f6f0e5",
-                      "text-main": "#241F1B",
-                      "on-tertiary-fixed-variant": "#00504f",
-                      "tertiary-fixed-dim": "#78d6d4",
-                      "surface-dim": "#dfd9cf",
-                      "on-surface": "#1d1c15",
-                      "primary": "#b85138",
-                      "surface-container-high": "#ede8dd",
-                      "tertiary": "#006362",
-                      "surface-tint": "#a03f28",
-                      "secondary-container": "#efe0d4",
-                      "on-secondary-container": "#6d6259",
-                      "error": "#ba1a1a",
-                      "background": "#fff9ee",
-                      "on-error": "#ffffff",
-                      "primary-container": "#b85138",
-                      "surface-container-low": "#f9f3e8",
-                      "primary-fixed-dim": "#ffb4a2",
-                      "tertiary-fixed": "#94f2f0",
-                      "surface": "#FFFDF8",
-                      "on-tertiary": "#ffffff",
-                      "on-secondary-fixed-variant": "#4f453c",
-                      "on-tertiary-container": "#d2fffd",
-                      "surface-bright": "#fff9ee",
-                      "on-error-container": "#93000a",
-                      "secondary": "#675d53",
-                      "secondary-fixed-dim": "#d2c4b9",
-                      "on-primary-fixed-variant": "#812913",
-                      "chip-slate": "#3E5C73",
-                      "on-secondary": "#ffffff",
-                      "on-primary": "#ffffff",
-                      "on-primary-fixed": "#3d0700",
-                      "chip-sage": "#4C6B5E",
-                      "primary-fixed": "#ffdad2",
-                      "surface-variant": "#e8e2d7",
-                      "on-primary-container": "#fff4f1",
-                      "error-container": "#ffdad6"
-              },
-              "borderRadius": {
-                      "DEFAULT": "0.25rem",
-                      "lg": "0.5rem",
-                      "xl": "0.75rem",
-                      "full": "9999px"
-              },
-              "spacing": {
-                      "stack-sm": "16px",
-                      "max-width": "1200px",
-                      "stack-lg": "64px",
-                      "margin-page": "40px",
-                      "stack-md": "32px",
-                      "gutter": "24px"
-              },
-              "fontFamily": {
-                      "display-serif": [
-                              "Source Serif 4"
-                      ],
-                      "ui-label-sm": [
-                              "Inter"
-                      ],
-                      "headline-h2": [
-                              "Source Serif 4"
-                      ],
-                      "headline-h1": [
-                              "Source Serif 4"
-                      ],
-                      "body-standard": [
-                              "Source Serif 4"
-                      ],
-                      "metadata": [
-                              "Inter"
-                      ],
-                      "quote-text": [
-                              "Source Serif 4"
-                      ],
-                      "body-reading": [
-                              "Source Serif 4"
-                      ],
-                      "ui-label-lg": [
-                              "Inter"
-                      ]
-              },
-              "fontSize": {
-                      "display-serif": [
-                              "42px",
-                              {
-                                      "lineHeight": "52px",
-                                      "letterSpacing": "-0.01em",
-                                      "fontWeight": "600"
-                              }
-                      ],
-                      "ui-label-sm": [
-                              "13px",
-                              {
-                                      "lineHeight": "18px",
-                                      "letterSpacing": "0.03em",
-                                      "fontWeight": "500"
-                              }
-                      ],
-                      "headline-h2": [
-                              "24px",
-                              {
-                                      "lineHeight": "32px",
-                                      "fontWeight": "500"
-                              }
-                      ],
-                      "headline-h1": [
-                              "30px",
-                              {
-                                      "lineHeight": "38px",
-                                      "fontWeight": "600"
-                              }
-                      ],
-                      "body-standard": [
-                              "16px",
-                              {
-                                      "lineHeight": "24px",
-                                      "fontWeight": "400"
-                              }
-                      ],
-                      "metadata": [
-                              "12px",
-                              {
-                                      "lineHeight": "16px",
-                                      "fontWeight": "400"
-                              }
-                      ],
-                      "quote-text": [
-                              "20px",
-                              {
-                                      "lineHeight": "30px",
-                                      "fontWeight": "400"
-                              }
-                      ],
-                      "body-reading": [
-                              "18px",
-                              {
-                                      "lineHeight": "28px",
-                                      "fontWeight": "400"
-                              }
-                      ],
-                      "ui-label-lg": [
-                              "15px",
-                              {
-                                      "lineHeight": "20px",
-                                      "letterSpacing": "0.02em",
-                                      "fontWeight": "500"
-                              }
-                      ]
-              }
-      },
-          },
-        }
-      </script>
 <style>
         /* Paper texture */
         body::before {
@@ -197,30 +23,30 @@
         }
 </style>
 </head>
-<body class="bg-[#fff9ee] text-text-main antialiased selection:bg-primary/20 selection:text-text-main min-h-screen flex flex-col">
+<body class="bg-[#fff9ee] text-ink antialiased selection:bg-accent/20 selection:text-ink min-h-screen flex flex-col">
 <!-- TopNavBar -->
-<nav class="bg-surface dark:bg-surface-container-low border-b border-border-hairline dark:border-outline-variant shadow-[0px_4px_20px_rgba(36,31,27,0.04)] docked full-width top-0 z-50">
+<nav class="bg-surface dark:bg-surface border-b border-line dark:border-line shadow-[0px_4px_20px_rgba(36,31,27,0.04)] docked full-width top-0 z-50">
 <div class="flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-20">
 <!-- Brand -->
 <div class="flex items-center gap-2">
-<span class="font-display-serif text-headline-h2 text-text-main dark:text-inverse-on-surface tracking-tight">β→α Bookatier</span>
+<span class="font-display-serif text-headline-h2 text-ink dark:text-paper tracking-tight">β→α Bookatier</span>
 </div>
 <!-- Navigation Links (Web) -->
 <div class="hidden md:flex gap-8 items-center">
-<a class="text-secondary dark:text-secondary-fixed-dim hover:text-text-main hover:bg-surface-container-lowest transition-colors duration-200 opacity-80 hover:opacity-100 font-ui-label-lg text-ui-label-lg" href="../home-anon/index.html">Главная</a>
-<a class="text-secondary dark:text-secondary-fixed-dim hover:text-text-main hover:bg-surface-container-lowest transition-colors duration-200 opacity-80 hover:opacity-100 font-ui-label-lg text-ui-label-lg" href="../catalog/index.html">Каталог</a>
-<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary opacity-90 transition-all duration-300 font-ui-label-lg text-ui-label-lg py-6" href="../community/index.html">Сообщество</a>
+<a class="text-ink-soft dark:text-ink-faint hover:text-ink hover:bg-surface transition-colors duration-200 opacity-80 hover:opacity-100 font-ui-label-lg text-ui-label-lg" href="../home-anon/index.html">Главная</a>
+<a class="text-ink-soft dark:text-ink-faint hover:text-ink hover:bg-surface transition-colors duration-200 opacity-80 hover:opacity-100 font-ui-label-lg text-ui-label-lg" href="../catalog/index.html">Каталог</a>
+<a class="text-accent dark:text-accent-tint font-bold border-b-2 border-accent opacity-90 transition-all duration-300 font-ui-label-lg text-ui-label-lg py-6" href="../community/index.html">Сообщество</a>
 </div>
 <!-- Trailing Actions -->
 <div class="flex items-center gap-4">
-<button aria-label="Notifications" class="text-secondary hover:text-primary transition-colors">
+<button aria-label="Notifications" class="text-ink-soft hover:text-accent transition-colors">
 <span class="material-symbols-outlined">notifications</span>
 </button>
-<div class="hidden sm:flex items-center gap-2 px-3 py-1 bg-surface-container-low rounded-full border border-border-hairline">
-<span class="material-symbols-outlined text-primary text-sm">workspace_premium</span>
-<span class="font-metadata text-metadata text-secondary">Эксперт · 215</span>
+<div class="hidden sm:flex items-center gap-2 px-3 py-1 bg-surface rounded-full border border-line">
+<span class="material-symbols-outlined text-accent text-sm">workspace_premium</span>
+<span class="font-metadata text-metadata text-ink-soft">Эксперт · 215</span>
 </div>
-<div class="w-8 h-8 rounded-full overflow-hidden border border-border-hairline">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-line">
 <img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAASoDkWAq3rH4rQBRdNUxhLPOnqXapVt3J37_yNAlozBCKdc6Dl6_F6zL8MYkIhj_a_IDFplGMzzZHqLreOo3bssM4PgHZUqxwzn9gkaAnWy6glqFeJUSDrt0HRXpv-JJqx0yJeE2lCtSLDLrft5ytmyIMTjpF3q51VhEVNSqUkSDDuCtaxltu8LaaDXluAS2lEj4RiMqmj31CpcEMN6N1iCsSM6_Dlum-H8XnHg3yZCTrix6ZY2PY1hubCyXxlvIy_T4IKR4Qm0JL">
 </div>
 </div>
@@ -231,82 +57,112 @@
 <!-- Center Canvas (Profile Details) -->
 <article class="flex-1 space-y-stack-lg">
 <!-- Header Section -->
-<header class="flex flex-col sm:flex-row items-start gap-stack-md pb-stack-sm border-b border-border-hairline">
-<div class="w-32 h-32 rounded-full overflow-hidden border border-border-hairline shadow-[0px_8px_24px_rgba(36,31,27,0.08)] flex-shrink-0">
-<img alt="Dr. Alexander Voronov portrait" class="w-full h-full object-cover" data-alt="A professional, high-end portrait photograph of a thoughtful middle-aged male therapist with a neat beard and glasses, wearing a tailored tweed jacket over a subtle earth-toned shirt. The lighting is soft and cinematic, resembling natural light in a refined, minimalist literary reading room with cream walls. The composition is a medium close-up, exuding academic rigor, calm authority, and approachability. The background is slightly out of focus, hinting at a curated library." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoSqf16NEeSTM83RdzB1PHOH0kT7woSOBplRJHrNLXzAT9uG_F2MdTQAPku0FAZNoQ4WGlREr6yvSf1UxN3iECV_BG9GiZEPKvFGxt4bCfuB7LdhVU5HU1iCu_1L8b6t58jtY2-iA7GSIAiQp7uRtCUhkiAsac10st3S9CTDkpqXQmC3E-P4n3UrNjfbU_IUu8jKE8_kwLpIxAjJPba8ZfveiVIFCMMhPAUhDgieCqiRhGsasg01jAR9jJivC--_PdDSC4N9b1zdul">
+<header class="bg-paper flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-16 border-b border-line sticky top-0 z-50" id="site-header">
+<a class="font-display-serif text-headline-h1 text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="../home-auth/index.html">β<span class="text-accent">→</span>α</a>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../home-auth/index.html">Главная</a>
+<a class="text-accent font-semibold border-b-2 border-accent pb-0.5 font-ui-label-lg text-ui-label-lg" aria-current="page" href="../catalog/index.html">Каталог</a>
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../community/index.html">Сообщество</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-ink-soft hover:text-accent transition-colors" aria-label="Поиск">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">search</span>
+</button>
+<div class="relative" id="notif-wrapper">
+<button class="text-ink-soft hover:text-accent transition-colors relative" id="notif-btn" aria-label="Уведомления">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">notifications</span>
+<span class="absolute -top-1 -right-1 w-4 h-4 bg-accent text-white text-[10px] rounded-full flex items-center justify-center font-bold leading-none">3</span>
+</button>
+<div class="hidden absolute right-0 top-full mt-2 w-80 bg-surface rounded-lg border border-line shadow-[0_8px_30px_rgba(40,30,20,.08)] z-50" id="notif-panel">
+<div class="p-3 border-b border-line flex justify-between items-center">
+<span class="font-ui-label-sm text-ui-label-sm text-ink-faint uppercase tracking-wider">Уведомления</span>
+<a class="font-metadata text-metadata text-accent hover:underline" href="../notifications/index.html">Все</a>
 </div>
-<div class="flex-1 flex flex-col justify-center pt-2">
-<h1 class="font-headline-h1 text-headline-h1 text-text-main mb-2">Д-р Александр Воронов</h1>
-<p class="font-ui-label-lg text-ui-label-lg text-secondary mb-4">Аналитик-тренер · Доктор психологических наук</p>
-<div class="flex items-center gap-2">
-<div class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface rounded-full border border-border-hairline shadow-[0px_2px_8px_rgba(36,31,27,0.03)]">
-<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
-<span class="font-metadata text-metadata text-text-main uppercase tracking-wider">Эксперт</span>
-<span class="text-border-hairline mx-1">|</span>
-<span class="font-metadata text-metadata text-secondary tabular-nums">215</span>
+<ul class="py-1 divide-y divide-line">
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Мария Соколова ответила на ваш комментарий</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">3 мин. назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Новая версия: «Научение на опыте»</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">1 час назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Ваш отзыв получил 4 одобрения</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">Вчера</p>
+</li>
+</ul>
 </div>
 </div>
+<div class="hidden sm:flex items-center gap-1 px-2 py-1 rounded-full border border-line bg-surface">
+<span class="material-symbols-outlined text-[14px] text-amber" style="font-variation-settings: 'FILL' 1, 'wght' 400;">star</span>
+<span class="font-ui-label-sm text-ui-label-sm text-ink tabular-nums font-semibold">142</span>
+</div>
+<a class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white font-ui-label-sm font-semibold hover:bg-accent-hover transition-colors" href="../user-profile/index.html" title="Профиль пользователя">АИ</a>
+<button class="md:hidden text-ink-soft hover:text-accent transition-colors" aria-label="Меню">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">menu</span>
+</button>
 </div>
 </header>
 <!-- Bio Section -->
 <section class="space-y-stack-sm">
-<div class="bg-surface border border-border-hairline p-stack-md rounded-lg shadow-[0px_4px_20px_rgba(36,31,27,0.02)] relative overflow-hidden">
-<span class="material-symbols-outlined absolute top-4 left-4 text-surface-container-highest text-6xl opacity-30 select-none">format_quote</span>
-<blockquote class="font-quote-text text-quote-text text-text-main italic relative z-10 pl-6 border-l-2 border-primary">
+<div class="bg-surface border border-line p-stack-md rounded-lg shadow-[0px_4px_20px_rgba(36,31,27,0.02)] relative overflow-hidden">
+<span class="material-symbols-outlined absolute top-4 left-4 text-surface-sunk text-6xl opacity-30 select-none">format_quote</span>
+<blockquote class="font-quote-text text-quote-text text-ink italic relative z-10 pl-6 border-l-2 border-accent">
                         "В клинической практике истина часто обнаруживается не в том, что сказано прямо, а в паузах, оговорках и структурах языка, которые ускользают от сознательного контроля. Задача аналитика — создать пространство, где этот скрытый текст может быть прочитан."
                     </blockquote>
 </div>
-<div class="font-body-reading text-body-reading text-on-surface-variant space-y-4">
+<div class="font-body-reading text-body-reading text-ink-soft space-y-4">
 <p>Александр Воронов специализируется на лакановском психоанализе и структурном подходе в психотерапии. Более 12 лет он исследует пересечения между лингвистикой, философией субъекта и клинической практикой, уделяя особое внимание неврозам навязчивых состояний и вопросам идентичности в современном мире.</p>
 </div>
 </section>
 <!-- Scientific Activity Section -->
-<section class="space-y-stack-sm pt-stack-md border-t border-border-hairline">
-<h2 class="font-headline-h2 text-headline-h2 text-text-main flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary">history_edu</span>
+<section class="space-y-stack-sm pt-stack-md border-t border-line">
+<h2 class="font-headline-h2 text-headline-h2 text-ink flex items-center gap-2">
+<span class="material-symbols-outlined text-ink-soft">history_edu</span>
                     Научная деятельность
                 </h2>
 <div class="grid grid-cols-1 gap-4">
 <!-- Publication Item -->
-<div class="group flex gap-4 p-4 rounded-lg hover:bg-surface transition-colors duration-300 border border-transparent hover:border-border-hairline">
-<div class="w-12 h-16 bg-surface-container-highest border border-border-hairline rounded shadow-[2px_2px_8px_rgba(36,31,27,0.05)] flex-shrink-0 flex items-center justify-center relative overflow-hidden">
+<div class="group flex gap-4 p-4 rounded-lg hover:bg-surface transition-colors duration-300 border border-transparent hover:border-line">
+<div class="w-12 h-16 bg-surface-sunk border border-line rounded shadow-[2px_2px_8px_rgba(36,31,27,0.05)] flex-shrink-0 flex items-center justify-center relative overflow-hidden">
 <div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent z-10"></div>
-<span class="material-symbols-outlined text-secondary opacity-50 z-0">menu_book</span>
+<span class="material-symbols-outlined text-ink-soft opacity-50 z-0">menu_book</span>
 </div>
 <div>
-<h3 class="font-body-standard text-body-standard font-medium text-text-main group-hover:text-primary transition-colors">Структура субъекта в эпоху цифровой меланхолии</h3>
-<p class="font-metadata text-metadata text-secondary mt-1">Журнал «Аналитический дискурс» · 2023</p>
+<h3 class="font-body-standard text-body-standard font-medium text-ink group-hover:text-accent transition-colors">Структура субъекта в эпоху цифровой меланхолии</h3>
+<p class="font-metadata text-metadata text-ink-soft mt-1">Журнал «Аналитический дискурс» · 2023</p>
 </div>
 </div>
 <!-- Publication Item -->
-<div class="group flex gap-4 p-4 rounded-lg hover:bg-surface transition-colors duration-300 border border-transparent hover:border-border-hairline">
-<div class="w-12 h-16 bg-surface-container-highest border border-border-hairline rounded shadow-[2px_2px_8px_rgba(36,31,27,0.05)] flex-shrink-0 flex items-center justify-center relative overflow-hidden">
+<div class="group flex gap-4 p-4 rounded-lg hover:bg-surface transition-colors duration-300 border border-transparent hover:border-line">
+<div class="w-12 h-16 bg-surface-sunk border border-line rounded shadow-[2px_2px_8px_rgba(36,31,27,0.05)] flex-shrink-0 flex items-center justify-center relative overflow-hidden">
 <div class="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent z-10"></div>
-<span class="material-symbols-outlined text-secondary opacity-50 z-0">menu_book</span>
+<span class="material-symbols-outlined text-ink-soft opacity-50 z-0">menu_book</span>
 </div>
 <div>
-<h3 class="font-body-standard text-body-standard font-medium text-text-main group-hover:text-primary transition-colors">Перечитывая Лакана: Возвращение к семинару об идентификации</h3>
-<p class="font-metadata text-metadata text-secondary mt-1">Монография · Издательство β→α · 2021</p>
+<h3 class="font-body-standard text-body-standard font-medium text-ink group-hover:text-accent transition-colors">Перечитывая Лакана: Возвращение к семинару об идентификации</h3>
+<p class="font-metadata text-metadata text-ink-soft mt-1">Монография · Издательство β→α · 2021</p>
 </div>
 </div>
 </div>
 </section>
 <!-- Community Section -->
-<section class="space-y-stack-sm pt-stack-md border-t border-border-hairline">
-<h2 class="font-headline-h2 text-headline-h2 text-text-main flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary">groups</span>
+<section class="space-y-stack-sm pt-stack-md border-t border-line">
+<h2 class="font-headline-h2 text-headline-h2 text-ink flex items-center gap-2">
+<span class="material-symbols-outlined text-ink-soft">groups</span>
                     Участие в сообществе
                 </h2>
 <div class="flex flex-wrap gap-3">
-<span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-chip-slate/10 text-chip-slate font-ui-label-sm text-ui-label-sm border border-chip-slate/20">
+<span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-slate/10 text-slate font-ui-label-sm text-ui-label-sm border border-slate/20">
 <span class="material-symbols-outlined text-[16px]">forum</span>
                         Лакановский психоанализ (Ведущий)
                     </span>
-<span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-chip-sage/10 text-chip-sage font-ui-label-sm text-ui-label-sm border border-chip-sage/20">
+<span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-sage/10 text-sage font-ui-label-sm text-ui-label-sm border border-sage/20">
 <span class="material-symbols-outlined text-[16px]">psychology</span>
                         Клинические разборы
                     </span>
-<span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-chip-amber/10 text-chip-amber font-ui-label-sm text-ui-label-sm border border-chip-amber/20">
+<span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-amber/10 text-amber font-ui-label-sm text-ui-label-sm border border-amber/20">
 <span class="material-symbols-outlined text-[16px]">translate</span>
                         Переводческая группа
                     </span>
@@ -316,47 +172,47 @@
 <!-- Sidebar (Stats & Actions) -->
 <aside class="w-full md:w-80 flex-shrink-0 space-y-stack-md">
 <!-- Primary Action -->
-<div class="bg-surface border border-border-hairline p-stack-sm rounded-lg shadow-[0px_8px_30px_rgba(36,31,27,0.03)] text-center">
-<button class="w-full bg-primary hover:bg-surface-tint text-on-primary font-ui-label-lg text-ui-label-lg py-3 px-6 rounded transition-colors duration-200 flex items-center justify-center gap-2 shadow-[0px_2px_4px_rgba(152,58,35,0.2)]">
+<div class="bg-surface border border-line p-stack-sm rounded-lg shadow-[0px_8px_30px_rgba(36,31,27,0.03)] text-center">
+<button class="w-full bg-accent hover:bg-accent text-white font-ui-label-lg text-ui-label-lg py-3 px-6 rounded transition-colors duration-200 flex items-center justify-center gap-2 shadow-[0px_2px_4px_rgba(152,58,35,0.2)]">
 <span class="material-symbols-outlined text-[20px]">calendar_month</span>
                     Запрос на супервизию
                 </button>
-<p class="font-metadata text-metadata text-secondary mt-3">Отвечает в течение 48 часов</p>
+<p class="font-metadata text-metadata text-ink-soft mt-3">Отвечает в течение 48 часов</p>
 </div>
 <!-- Stats -->
-<div class="grid grid-cols-2 gap-4 border-y border-border-hairline py-stack-sm">
+<div class="grid grid-cols-2 gap-4 border-y border-line py-stack-sm">
 <div class="text-center">
-<div class="font-display-serif text-3xl font-medium text-text-main mb-1">12</div>
-<div class="font-metadata text-metadata text-secondary uppercase tracking-wider">Лет практики</div>
+<div class="font-display-serif text-3xl font-medium text-ink mb-1">12</div>
+<div class="font-metadata text-metadata text-ink-soft uppercase tracking-wider">Лет практики</div>
 </div>
-<div class="text-center border-l border-border-hairline">
-<div class="font-display-serif text-3xl font-medium text-text-main mb-1">45</div>
-<div class="font-metadata text-metadata text-secondary uppercase tracking-wider">Публикаций</div>
+<div class="text-center border-l border-line">
+<div class="font-display-serif text-3xl font-medium text-ink mb-1">45</div>
+<div class="font-metadata text-metadata text-ink-soft uppercase tracking-wider">Публикаций</div>
 </div>
 </div>
 <!-- Credentials List -->
 <div class="space-y-4">
-<h3 class="font-ui-label-lg text-ui-label-lg text-text-main uppercase tracking-widest mb-4">Образование &amp; Статус</h3>
-<ul class="space-y-4 font-body-standard text-body-standard text-on-surface-variant">
+<h3 class="font-ui-label-lg text-ui-label-lg text-ink uppercase tracking-widest mb-4">Образование &amp; Статус</h3>
+<ul class="space-y-4 font-body-standard text-body-standard text-ink-soft">
 <li class="flex items-start gap-3">
-<span class="material-symbols-outlined text-secondary mt-0.5" style="font-variation-settings: 'FILL' 1;">school</span>
+<span class="material-symbols-outlined text-ink-soft mt-0.5" style="font-variation-settings: 'FILL' 1;">school</span>
 <div>
-<span class="block text-text-main font-medium">МГУ им. М.В. Ломоносова</span>
-<span class="block font-metadata text-metadata text-secondary mt-0.5">Клиническая психология (2010)</span>
+<span class="block text-ink font-medium">МГУ им. М.В. Ломоносова</span>
+<span class="block font-metadata text-metadata text-ink-soft mt-0.5">Клиническая психология (2010)</span>
 </div>
 </li>
 <li class="flex items-start gap-3">
-<span class="material-symbols-outlined text-secondary mt-0.5" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+<span class="material-symbols-outlined text-ink-soft mt-0.5" style="font-variation-settings: 'FILL' 1;">account_balance</span>
 <div>
-<span class="block text-text-main font-medium">Парижский университет VIII</span>
-<span class="block font-metadata text-metadata text-secondary mt-0.5">PhD in Psychoanalysis (2015)</span>
+<span class="block text-ink font-medium">Парижский университет VIII</span>
+<span class="block font-metadata text-metadata text-ink-soft mt-0.5">PhD in Psychoanalysis (2015)</span>
 </div>
 </li>
 <li class="flex items-start gap-3">
-<span class="material-symbols-outlined text-secondary mt-0.5" style="font-variation-settings: 'FILL' 1;">card_membership</span>
+<span class="material-symbols-outlined text-ink-soft mt-0.5" style="font-variation-settings: 'FILL' 1;">card_membership</span>
 <div>
-<span class="block text-text-main font-medium">Член NLS</span>
-<span class="block font-metadata text-metadata text-secondary mt-0.5">Новая Лакановская Школа</span>
+<span class="block text-ink font-medium">Член NLS</span>
+<span class="block font-metadata text-metadata text-ink-soft mt-0.5">Новая Лакановская Школа</span>
 </div>
 </li>
 </ul>
@@ -364,18 +220,31 @@
 </aside>
 </main>
 <!-- Footer -->
-<footer class="bg-surface-container-low dark:bg-surface-container-highest border-t border-border-hairline full-width mt-auto">
-<div class="flex flex-col items-center py-stack-lg w-full px-margin-page max-w-max-width mx-auto gap-stack-sm opacity-80 hover:opacity-100 transition-opacity">
-<div class="font-display-serif text-headline-h2 text-secondary mb-2">β→α</div>
-<div class="flex flex-wrap justify-center gap-6 font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim">
-<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Об издательстве β→α</a>
-<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Помощь</a>
-<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Конфиденциальность</a>
-<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Контакты</a>
+<footer class="bg-paper border-t border-line" id="site-footer">
+<div class="max-w-max-width mx-auto px-margin-page py-stack-md">
+<div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+<a class="font-display-serif text-[22px] text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="../about/index.html">β<span class="text-accent">→</span>α</a>
+<nav class="flex gap-6 flex-wrap" aria-label="Нижняя навигация">
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../catalog/index.html">Каталог</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../community/index.html">Сообщество</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../about/index.html">О проекте</a>
+</nav>
+<span class="font-metadata text-metadata text-ink-faint">v1.0.0-primer</span>
 </div>
-<div class="font-body-standard text-body-standard text-secondary dark:text-secondary-fixed-dim mt-4">
-                © 2024 Bookatier. v1.0.4-alpha
-            </div>
+<div class="pt-4 border-t border-line font-metadata text-metadata text-ink-faint text-center">
+© 2026 beta→alpha. Для профессионального сообщества.
+</div>
 </div>
 </footer>
+<script>
+(function(){
+  var b=document.getElementById('notif-btn'),p=document.getElementById('notif-panel');
+  if(!b||!p)return;
+  b.addEventListener('click',function(e){e.stopPropagation();p.classList.toggle('hidden');});
+  document.addEventListener('click',function(e){
+    if(!p.classList.contains('hidden')&&!p.contains(e.target)&&e.target!==b)
+      p.classList.add('hidden');
+  });
+})();
+</script>
 </body></html>

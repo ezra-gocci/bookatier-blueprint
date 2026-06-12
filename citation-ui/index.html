@@ -5,110 +5,11 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Bookatier - Citation Interface</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="../assets/tokens.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "on-secondary": "#ffffff",
-                        "primary-fixed": "#ffdad2",
-                        "on-primary-container": "#fff4f1",
-                        "inverse-surface": "#333029",
-                        "error-container": "#ffdad6",
-                        "surface-tint": "#a03f28",
-                        "surface-container-lowest": "#ffffff",
-                        "tertiary-container": "#007e7d",
-                        "on-secondary-fixed-variant": "#4f453c",
-                        "primary-fixed-dim": "#ffb4a2",
-                        "tertiary-fixed": "#94f2f0",
-                        "secondary-fixed": "#efe0d4",
-                        "secondary": "#675d53",
-                        "surface-container": "#f3ede2",
-                        "border-hairline": "#E4D9C6",
-                        "on-secondary-fixed": "#211a13",
-                        "chip-slate": "#3E5C73",
-                        "on-tertiary-container": "#d2fffd",
-                        "on-tertiary-fixed": "#002020",
-                        "chip-sage": "#4C6B5E",
-                        "surface-dim": "#dfd9cf",
-                        "tertiary-fixed-dim": "#78d6d4",
-                        "on-primary-fixed": "#3d0700",
-                        "on-error": "#ffffff",
-                        "surface-bright": "#fff9ee",
-                        "inverse-primary": "#ffb4a2",
-                        "chip-amber": "#C98A3C",
-                        "on-background": "#1d1c15",
-                        "surface": "#FFFDF8",
-                        "secondary-fixed-dim": "#d2c4b9",
-                        "on-tertiary-fixed-variant": "#00504f",
-                        "error": "#ba1a1a",
-                        "surface-container-low": "#f9f3e8",
-                        "on-error-container": "#93000a",
-                        "surface-variant": "#e8e2d7",
-                        "outline": "#8a726c",
-                        "on-secondary-container": "#6d6259",
-                        "text-main": "#241F1B",
-                        "secondary-container": "#efe0d4",
-                        "on-surface-variant": "#56423d",
-                        "tertiary": "#006362",
-                        "outline-variant": "#ddc0ba",
-                        "on-primary-fixed-variant": "#812913",
-                        "inverse-on-surface": "#f6f0e5",
-                        "on-surface": "#1d1c15",
-                        "primary-container": "#b85138",
-                        "background": "#fff9ee",
-                        "on-tertiary": "#ffffff",
-                        "surface-container-high": "#ede8dd",
-                        "primary": "#b85138",
-                        "on-primary": "#ffffff",
-                        "surface-container-highest": "#e8e2d7"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "max-width": "1200px",
-                        "margin-page": "40px",
-                        "stack-sm": "16px",
-                        "stack-lg": "64px",
-                        "gutter": "24px",
-                        "stack-md": "32px"
-                    },
-                    "fontFamily": {
-                        "ui-label-lg": ["Inter"],
-                        "quote-text": ["Source Serif 4"],
-                        "body-reading": ["Source Serif 4"],
-                        "headline-h1": ["Source Serif 4"],
-                        "display-serif": ["Source Serif 4"],
-                        "body-standard": ["Source Serif 4"],
-                        "ui-label-sm": ["Inter"],
-                        "metadata": ["Inter"],
-                        "headline-h2": ["Source Serif 4"]
-                    },
-                    "fontSize": {
-                        "ui-label-lg": ["15px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500" }],
-                        "quote-text": ["20px", { "lineHeight": "30px", "fontWeight": "400" }],
-                        "body-reading": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
-                        "headline-h1": ["30px", { "lineHeight": "38px", "fontWeight": "600" }],
-                        "display-serif": ["42px", { "lineHeight": "52px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
-                        "body-standard": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
-                        "ui-label-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.03em", "fontWeight": "500" }],
-                        "metadata": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
-                        "headline-h2": ["24px", { "lineHeight": "32px", "fontWeight": "500" }]
-                    }
-                }
-            }
-        }
-    </script>
 <style>
-        body { background-color: #fff9ee; }
+        body { background-color: var(--paper); }
         .text-justified { text-align: justify; }
         .highlight { background-color: rgba(201, 138, 60, 0.2); }
         .shadow-paper { box-shadow: 0 10px 40px -10px rgba(36, 31, 27, 0.08), 0 4px 10px -4px rgba(36, 31, 27, 0.04); }
@@ -127,28 +28,53 @@
         }
         </style>
 </head>
-<body class="min-h-screen text-text-main flex flex-col font-body-reading">
+<body class="min-h-screen text-ink flex flex-col font-body-reading">
 <!-- TopAppBar -->
-<header class="bg-surface w-full top-0 sticky border-b border-border-hairline z-50">
-<div class="max-w-max-width mx-auto px-margin-page flex justify-between items-center h-16">
-<div class="flex items-center gap-4">
-<span class="font-display-serif text-headline-h2 text-text-main font-semibold flex items-center gap-1">
-                    Bookatier <span class="text-primary text-sm font-metadata relative -top-2">β→α</span>
-</span>
-</div>
-<nav class="hidden md:flex items-center gap-8 font-ui-label-sm text-ui-label-sm text-secondary">
-<a class="hover:text-primary transition-colors duration-200" href="../home-anon/index.html">Главная</a>
-<span class="text-border-hairline">·</span>
-<a class="text-primary font-bold border-b-2 border-primary pb-1" href="../catalog/index.html">Каталог</a>
-<span class="text-border-hairline">·</span>
-<a class="hover:text-primary transition-colors duration-200" href="#">Моя полка</a>
-<span class="text-border-hairline">·</span>
-<a class="hover:text-primary transition-colors duration-200" href="#">Заметки</a>
+<header class="bg-paper flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-16 border-b border-line sticky top-0 z-50" id="site-header">
+<a class="font-display-serif text-headline-h1 text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="../home-auth/index.html">β<span class="text-accent">→</span>α</a>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../home-auth/index.html">Главная</a>
+<a class="text-accent font-semibold border-b-2 border-accent pb-0.5 font-ui-label-lg text-ui-label-lg" aria-current="page" href="../catalog/index.html">Каталог</a>
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../community/index.html">Сообщество</a>
 </nav>
-<div class="flex items-center gap-4 text-primary">
-<button class="hover:opacity-80 transition-opacity"><span class="material-symbols-outlined">menu_book</span></button>
-<button class="hover:opacity-80 transition-opacity"><span class="material-symbols-outlined">person</span></button>
+<div class="flex items-center gap-4">
+<button class="text-ink-soft hover:text-accent transition-colors" aria-label="Поиск">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">search</span>
+</button>
+<div class="relative" id="notif-wrapper">
+<button class="text-ink-soft hover:text-accent transition-colors relative" id="notif-btn" aria-label="Уведомления">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">notifications</span>
+<span class="absolute -top-1 -right-1 w-4 h-4 bg-accent text-white text-[10px] rounded-full flex items-center justify-center font-bold leading-none">3</span>
+</button>
+<div class="hidden absolute right-0 top-full mt-2 w-80 bg-surface rounded-lg border border-line shadow-[0_8px_30px_rgba(40,30,20,.08)] z-50" id="notif-panel">
+<div class="p-3 border-b border-line flex justify-between items-center">
+<span class="font-ui-label-sm text-ui-label-sm text-ink-faint uppercase tracking-wider">Уведомления</span>
+<a class="font-metadata text-metadata text-accent hover:underline" href="../notifications/index.html">Все</a>
 </div>
+<ul class="py-1 divide-y divide-line">
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Мария Соколова ответила на ваш комментарий</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">3 мин. назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Новая версия: «Научение на опыте»</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">1 час назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Ваш отзыв получил 4 одобрения</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">Вчера</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="hidden sm:flex items-center gap-1 px-2 py-1 rounded-full border border-line bg-surface">
+<span class="material-symbols-outlined text-[14px] text-amber" style="font-variation-settings: 'FILL' 1, 'wght' 400;">star</span>
+<span class="font-ui-label-sm text-ui-label-sm text-ink tabular-nums font-semibold">142</span>
+</div>
+<a class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white font-ui-label-sm font-semibold hover:bg-accent-hover transition-colors" href="../user-profile/index.html" title="Профиль пользователя">АИ</a>
+<button class="md:hidden text-ink-soft hover:text-accent transition-colors" aria-label="Меню">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">menu</span>
+</button>
 </div>
 </header>
 <!-- Main Content Canvas -->
@@ -156,8 +82,8 @@
 <!-- Book Content Area -->
 <article class="max-w-[700px] w-full relative">
 <header class="mb-stack-md text-center">
-<h1 class="font-headline-h1 text-headline-h1 text-text-main mb-2">Избегание эмоций, проживание эмоций</h1>
-<p class="font-metadata text-metadata text-secondary uppercase tracking-widest">Антонино Ферро</p>
+<h1 class="font-headline-h1 text-headline-h1 text-ink mb-2">Избегание эмоций, проживание эмоций</h1>
+<p class="font-metadata text-metadata text-ink-soft uppercase tracking-widest">Антонино Ферро</p>
 </header>
 <div class="space-y-6 text-justified leading-relaxed">
 <p>
@@ -173,65 +99,79 @@
                 </p>
 </div>
 <!-- Selection Toolbar (Floating above text) -->
-<div class="absolute left-1/2 -translate-x-1/2 top-40 -mt-16 bg-surface shadow-paper border border-border-hairline rounded-full px-4 py-2 flex items-center gap-4 z-40 transition-all">
-<button class="flex items-center gap-1.5 text-text-main hover:text-primary transition-colors group">
+<div class="absolute left-1/2 -translate-x-1/2 top-40 -mt-16 bg-surface shadow-paper border border-line rounded-full px-4 py-2 flex items-center gap-4 z-40 transition-all">
+<button class="flex items-center gap-1.5 text-ink hover:text-accent transition-colors group">
 <span class="material-symbols-outlined text-[18px]">format_quote</span>
 <span class="font-ui-label-sm text-ui-label-sm font-medium">Цитировать</span>
 </button>
-<span class="text-border-hairline text-sm">·</span>
-<button class="flex items-center gap-1.5 text-secondary hover:text-primary transition-colors">
+<span class="text-line text-sm">·</span>
+<button class="flex items-center gap-1.5 text-ink-soft hover:text-accent transition-colors">
 <span class="material-symbols-outlined text-[18px]">link</span>
 <span class="font-ui-label-sm text-ui-label-sm">Ссылка</span>
 </button>
-<span class="text-border-hairline text-sm">·</span>
-<button class="flex items-center gap-1.5 text-secondary hover:text-primary transition-colors">
+<span class="text-line text-sm">·</span>
+<button class="flex items-center gap-1.5 text-ink-soft hover:text-accent transition-colors">
 <span class="material-symbols-outlined text-[18px]">edit_note</span>
 <span class="font-ui-label-sm text-ui-label-sm">Заметка</span>
 </button>
-<span class="text-border-hairline text-sm">·</span>
-<button class="flex items-center gap-1.5 text-secondary hover:text-primary transition-colors">
+<span class="text-line text-sm">·</span>
+<button class="flex items-center gap-1.5 text-ink-soft hover:text-accent transition-colors">
 <span class="material-symbols-outlined text-[18px]">bookmark</span>
 <span class="font-ui-label-sm text-ui-label-sm">Закладка</span>
 </button>
 </div>
 <!-- Citation Popover -->
-<div class="absolute right-0 top-60 translate-x-full ml-8 w-80 bg-surface shadow-paper border border-border-hairline rounded-lg p-5 z-50">
-<div class="flex items-center justify-between mb-4 border-b border-border-hairline pb-3">
-<h3 class="font-ui-label-sm text-ui-label-sm font-semibold text-secondary uppercase tracking-wider">Оформление цитаты</h3>
-<button class="text-secondary hover:text-text-main">
+<div class="absolute right-0 top-60 translate-x-full ml-8 w-80 bg-surface shadow-paper border border-line rounded-lg p-5 z-50">
+<div class="flex items-center justify-between mb-4 border-b border-line pb-3">
+<h3 class="font-ui-label-sm text-ui-label-sm font-semibold text-ink-soft uppercase tracking-wider">Оформление цитаты</h3>
+<button class="text-ink-soft hover:text-ink">
 <span class="material-symbols-outlined text-[20px]">close</span>
 </button>
 </div>
-<div class="bg-surface-container-low p-4 rounded mb-4 font-body-standard text-body-standard border border-surface-variant">
+<div class="bg-surface p-4 rounded mb-4 font-body-standard text-body-standard border border-surface-sunk">
                     «Ферро А., 2023. Избегание эмоций, проживание эмоций. Издание 1.0. β→α. P. 84.»
                 </div>
 <div class="mb-5">
-<label class="block font-metadata text-metadata text-secondary mb-2">Ссылка на фрагмент</label>
-<div class="flex items-center justify-between bg-surface-container-low border border-border-hairline rounded px-3 py-2">
-<span class="font-metadata text-metadata text-text-main truncate w-48">beta2alpha.com/b/izbeganie/84#f=...</span>
-<button class="text-secondary hover:text-primary">
+<label class="block font-metadata text-metadata text-ink-soft mb-2">Ссылка на фрагмент</label>
+<div class="flex items-center justify-between bg-surface border border-line rounded px-3 py-2">
+<span class="font-metadata text-metadata text-ink truncate w-48">beta2alpha.com/b/izbeganie/84#f=...</span>
+<button class="text-ink-soft hover:text-accent">
 <span class="material-symbols-outlined text-[18px]">content_copy</span>
 </button>
 </div>
 </div>
-<button class="w-full bg-primary hover:bg-primary-container text-on-primary font-ui-label-lg text-ui-label-lg py-2.5 rounded transition-colors duration-200">
+<button class="w-full bg-accent hover:bg-accent text-white font-ui-label-lg text-ui-label-lg py-2.5 rounded transition-colors duration-200">
                     Скопировать всё
                 </button>
 </div>
 </article>
 </main>
 <!-- Footer -->
-<footer class="bg-surface-container-low border-t border-border-hairline w-full py-stack-md mt-auto">
-<div class="max-w-max-width mx-auto px-margin-page flex flex-col md:flex-row justify-between items-center gap-4">
-<div class="font-metadata text-metadata text-secondary">
-                β→α Bookatier v1.0.4-alpha
-            </div>
-<nav class="flex gap-6 font-metadata text-metadata text-secondary">
-<a class="hover:text-primary transition-colors" href="../about/index.html">О проекте</a>
-<a class="hover:text-primary transition-colors" href="#">Методология</a>
-<a class="hover:text-primary transition-colors" href="#">Архив</a>
-<a class="hover:text-primary transition-colors" href="#">Помощь</a>
+<footer class="bg-paper border-t border-line" id="site-footer">
+<div class="max-w-max-width mx-auto px-margin-page py-stack-md">
+<div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+<a class="font-display-serif text-[22px] text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="../about/index.html">β<span class="text-accent">→</span>α</a>
+<nav class="flex gap-6 flex-wrap" aria-label="Нижняя навигация">
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../catalog/index.html">Каталог</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../community/index.html">Сообщество</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../about/index.html">О проекте</a>
 </nav>
+<span class="font-metadata text-metadata text-ink-faint">v1.0.0-primer</span>
+</div>
+<div class="pt-4 border-t border-line font-metadata text-metadata text-ink-faint text-center">
+© 2026 beta→alpha. Для профессионального сообщества.
+</div>
 </div>
 </footer>
+<script>
+(function(){
+  var b=document.getElementById('notif-btn'),p=document.getElementById('notif-panel');
+  if(!b||!p)return;
+  b.addEventListener('click',function(e){e.stopPropagation();p.classList.toggle('hidden');});
+  document.addEventListener('click',function(e){
+    if(!p.classList.contains('hidden')&&!p.contains(e.target)&&e.target!==b)
+      p.classList.add('hidden');
+  });
+})();
+</script>
 </body></html>

@@ -5,12 +5,13 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Bookatier — Избегание эмоций, проживание эмоций</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="../assets/tokens.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 
 <style>
         body {
-            background-color: #fff9ee; /* background token */
+            background-color: var(--paper); /* background token */
             -webkit-font-smoothing: antialiased;
         }
         .material-symbols-outlined {
@@ -34,138 +35,63 @@
             z-index: 0;
         }
         </style>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "on-secondary-fixed": "#211a13",
-                        "chip-amber": "#C98A3C",
-                        "on-secondary": "#ffffff",
-                        "on-error-container": "#93000a",
-                        "inverse-surface": "#333029",
-                        "text-main": "#241F1B",
-                        "tertiary": "#006362",
-                        "secondary-container": "#efe0d4",
-                        "outline": "#8a726c",
-                        "on-tertiary-fixed-variant": "#00504f",
-                        "on-secondary-fixed-variant": "#4f453c",
-                        "chip-sage": "#4C6B5E",
-                        "surface-container-highest": "#e8e2d7",
-                        "surface-container": "#f3ede2",
-                        "on-error": "#ffffff",
-                        "on-primary-container": "#fff4f1",
-                        "border-hairline": "#E4D9C6",
-                        "on-tertiary-container": "#d2fffd",
-                        "surface": "#FFFDF8",
-                        "primary-container": "#b85138",
-                        "on-secondary-container": "#6d6259",
-                        "surface-dim": "#dfd9cf",
-                        "primary-fixed": "#ffdad2",
-                        "chip-slate": "#3E5C73",
-                        "inverse-primary": "#ffb4a2",
-                        "surface-container-low": "#f9f3e8",
-                        "tertiary-fixed": "#94f2f0",
-                        "error-container": "#ffdad6",
-                        "secondary-fixed": "#efe0d4",
-                        "background": "#fff9ee",
-                        "on-primary": "#ffffff",
-                        "secondary-fixed-dim": "#d2c4b9",
-                        "surface-tint": "#a03f28",
-                        "on-surface": "#1d1c15",
-                        "on-primary-fixed-variant": "#812913",
-                        "secondary": "#675d53",
-                        "on-tertiary": "#ffffff",
-                        "primary-fixed-dim": "#ffb4a2",
-                        "surface-container-high": "#ede8dd",
-                        "primary": "#b85138",
-                        "tertiary-container": "#007e7d",
-                        "inverse-on-surface": "#f6f0e5",
-                        "on-primary-fixed": "#3d0700",
-                        "error": "#ba1a1a",
-                        "tertiary-fixed-dim": "#78d6d4",
-                        "surface-container-lowest": "#ffffff",
-                        "on-background": "#1d1c15",
-                        "surface-bright": "#fff9ee",
-                        "on-tertiary-fixed": "#002020",
-                        "on-surface-variant": "#56423d",
-                        "surface-variant": "#e8e2d7",
-                        "outline-variant": "#ddc0ba"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "stack-md": "32px",
-                        "max-width": "1200px",
-                        "margin-page": "40px",
-                        "gutter": "24px",
-                        "stack-sm": "16px",
-                        "stack-lg": "64px"
-                    },
-                    "fontFamily": {
-                        "ui-label-lg": ["Inter"],
-                        "body-reading": ["Source Serif 4"],
-                        "headline-h2": ["Source Serif 4"],
-                        "metadata": ["Inter"],
-                        "quote-text": ["Source Serif 4"],
-                        "ui-label-sm": ["Inter"],
-                        "headline-h1": ["Source Serif 4"],
-                        "body-standard": ["Source Serif 4"],
-                        "display-serif": ["Source Serif 4"]
-                    },
-                    "fontSize": {
-                        "ui-label-lg": ["15px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
-                        "body-reading": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-                        "headline-h2": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
-                        "metadata": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
-                        "quote-text": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
-                        "ui-label-sm": ["13px", {"lineHeight": "18px", "letterSpacing": "0.03em", "fontWeight": "500"}],
-                        "headline-h1": ["30px", {"lineHeight": "38px", "fontWeight": "600"}],
-                        "body-standard": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                        "display-serif": ["42px", {"lineHeight": "52px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
-                    }
-                },
-            },
-        }
-    </script>
 </head>
-<body class="font-body-standard text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
+<body class="font-body-standard text-ink selection:bg-accent-tint selection:text-white">
 <div class="fixed inset-0 paper-texture"></div>
 <!-- TopNavBar -->
-<header class="bg-background dark:bg-background border-b border-border-hairline sticky top-0 z-50 h-20 transition-all">
-<nav class="flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-full">
-<div class="flex items-center gap-12">
-<a class="font-display-serif text-headline-h1 text-text-main dark:text-inverse-on-surface flex items-center" href="#">
-                    Bookatier
-                </a>
-<div class="hidden md:flex items-center gap-6 font-ui-label-lg text-ui-label-lg">
-<a class="text-primary font-bold border-b-2 border-primary pb-1" href="../catalog/index.html">Каталог</a>
-<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors duration-200" href="#">Библиотека</a>
-<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors duration-200" href="../community/index.html">Сообщество</a>
-<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary transition-colors duration-200" href="#">Профиль</a>
-</div>
-</div>
-<div class="flex items-center gap-4">
-<button class="material-symbols-outlined text-secondary text-2xl hover:text-primary transition-colors">search</button>
-<button class="material-symbols-outlined text-secondary text-2xl md:hidden">menu</button>
-<div class="hidden md:flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded-full border border-border-hairline">
-<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
-<span class="font-ui-label-sm text-ui-label-sm text-on-secondary-container">Эксперт · 1420</span>
-</div>
-</div>
+<header class="bg-paper flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-16 border-b border-line sticky top-0 z-50" id="site-header">
+<a class="font-display-serif text-headline-h1 text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="../home-auth/index.html">β<span class="text-accent">→</span>α</a>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../home-auth/index.html">Главная</a>
+<a class="text-accent font-semibold border-b-2 border-accent pb-0.5 font-ui-label-lg text-ui-label-lg" aria-current="page" href="../catalog/index.html">Каталог</a>
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="../community/index.html">Сообщество</a>
 </nav>
+<div class="flex items-center gap-4">
+<button class="text-ink-soft hover:text-accent transition-colors" aria-label="Поиск">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">search</span>
+</button>
+<div class="relative" id="notif-wrapper">
+<button class="text-ink-soft hover:text-accent transition-colors relative" id="notif-btn" aria-label="Уведомления">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">notifications</span>
+<span class="absolute -top-1 -right-1 w-4 h-4 bg-accent text-white text-[10px] rounded-full flex items-center justify-center font-bold leading-none">3</span>
+</button>
+<div class="hidden absolute right-0 top-full mt-2 w-80 bg-surface rounded-lg border border-line shadow-[0_8px_30px_rgba(40,30,20,.08)] z-50" id="notif-panel">
+<div class="p-3 border-b border-line flex justify-between items-center">
+<span class="font-ui-label-sm text-ui-label-sm text-ink-faint uppercase tracking-wider">Уведомления</span>
+<a class="font-metadata text-metadata text-accent hover:underline" href="../notifications/index.html">Все</a>
+</div>
+<ul class="py-1 divide-y divide-line">
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Мария Соколова ответила на ваш комментарий</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">3 мин. назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Новая версия: «Научение на опыте»</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">1 час назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Ваш отзыв получил 4 одобрения</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">Вчера</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="hidden sm:flex items-center gap-1 px-2 py-1 rounded-full border border-line bg-surface">
+<span class="material-symbols-outlined text-[14px] text-amber" style="font-variation-settings: 'FILL' 1, 'wght' 400;">star</span>
+<span class="font-ui-label-sm text-ui-label-sm text-ink tabular-nums font-semibold">142</span>
+</div>
+<a class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white font-ui-label-sm font-semibold hover:bg-accent-hover transition-colors" href="../user-profile/index.html" title="Профиль пользователя">АИ</a>
+<button class="md:hidden text-ink-soft hover:text-accent transition-colors" aria-label="Меню">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">menu</span>
+</button>
+</div>
 </header>
 <main class="max-w-max-width mx-auto px-margin-page py-stack-lg relative z-10">
 <!-- Hero Section -->
 <div class="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-16 items-start">
 <!-- Book Cover -->
 <div class="relative group">
-<div class="book-shadow rounded-sm overflow-hidden bg-surface-dim transition-transform duration-500 hover:scale-[1.02]">
+<div class="book-shadow rounded-sm overflow-hidden bg-surface-sunk transition-transform duration-500 hover:scale-[1.02]">
 <img alt="Избегание эмоций, проживание эмоций by Antonino Ferro cover" class="w-full aspect-[3/4] object-cover" src="../assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png"/>
 </div>
 <div class="absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-black/5 to-transparent"></div>
@@ -173,71 +99,71 @@
 <!-- Book Details -->
 <div class="flex flex-col">
 <div class="flex flex-wrap gap-2 mb-6">
-<span class="px-3 py-1 bg-chip-slate/10 text-chip-slate rounded-full font-ui-label-sm text-ui-label-sm">Постбионианство</span>
-<span class="px-3 py-1 bg-chip-amber/10 text-chip-amber rounded-full font-ui-label-sm text-ui-label-sm">Эмоции и аффект</span>
-<span class="px-3 py-1 bg-chip-sage/10 text-chip-sage rounded-full font-ui-label-sm text-ui-label-sm">Контейнирование</span>
+<span class="px-3 py-1 bg-slate/10 text-slate rounded-full font-ui-label-sm text-ui-label-sm">Постбионианство</span>
+<span class="px-3 py-1 bg-amber/10 text-amber rounded-full font-ui-label-sm text-ui-label-sm">Эмоции и аффект</span>
+<span class="px-3 py-1 bg-sage/10 text-sage rounded-full font-ui-label-sm text-ui-label-sm">Контейнирование</span>
 </div>
-<h1 class="font-display-serif text-display-serif text-text-main mb-2 leading-tight">
+<h1 class="font-display-serif text-display-serif text-ink mb-2 leading-tight">
                     Избегание эмоций, проживание эмоций
                 </h1>
-<p class="font-headline-h2 text-headline-h2 text-secondary mb-4">Антонино Ферро</p>
-<div class="flex items-center gap-4 mb-8 font-metadata text-metadata text-secondary">
+<p class="font-headline-h2 text-headline-h2 text-ink-soft mb-4">Антонино Ферро</p>
+<div class="flex items-center gap-4 mb-8 font-metadata text-metadata text-ink-soft">
 <span>β→α · 2023 · Издание 1.0</span>
-<span class="w-1 h-1 bg-border-hairline rounded-full"></span>
-<a class="text-primary hover:underline transition-all" href="#">History of editions</a>
+<span class="w-1 h-1 bg-line rounded-full"></span>
+<a class="text-accent hover:underline transition-all" href="#">History of editions</a>
 </div>
 <div class="flex items-center gap-4 mb-12">
-<button class="bg-primary hover:bg-on-primary-fixed-variant text-white px-10 py-3 rounded-lg font-ui-label-lg text-ui-label-lg transition-all active:scale-95">
+<button class="bg-accent hover:bg-accent text-white px-10 py-3 rounded-lg font-ui-label-lg text-ui-label-lg transition-all active:scale-95">
                         Читать
                     </button>
-<button class="flex items-center gap-2 border border-outline px-8 py-3 rounded-lg font-ui-label-lg text-ui-label-lg text-text-main hover:bg-surface-container transition-all active:scale-95">
+<button class="flex items-center gap-2 border border-ink-faint px-8 py-3 rounded-lg font-ui-label-lg text-ui-label-lg text-ink hover:bg-surface-sunk transition-all active:scale-95">
 <span class="material-symbols-outlined text-xl">favorite</span>
                         В избранное
                     </button>
 </div>
 <!-- Tabs -->
-<div class="border-b border-border-hairline flex gap-8 mb-8">
-<button class="pb-4 border-b-2 border-primary text-primary font-bold font-ui-label-lg text-ui-label-lg">Обзор</button>
-<button class="pb-4 border-b-2 border-transparent text-secondary hover:text-text-main transition-colors font-ui-label-lg text-ui-label-lg">Оценка</button>
-<button class="pb-4 border-b-2 border-transparent text-secondary hover:text-text-main transition-colors font-ui-label-lg text-ui-label-lg">Комментарии</button>
-<button class="pb-4 border-b-2 border-transparent text-secondary hover:text-text-main transition-colors font-ui-label-lg text-ui-label-lg">Отзывы</button>
-<button class="pb-4 border-b-2 border-transparent text-secondary hover:text-text-main transition-colors font-ui-label-lg text-ui-label-lg">Реквизиты</button>
+<div id="book-tab-bar" class="border-b border-line flex gap-8 mb-8">
+<button class="pb-4 border-b-2 border-accent text-accent font-bold font-ui-label-lg text-ui-label-lg">Обзор</button>
+<button class="pb-4 border-b-2 border-transparent text-ink-soft hover:text-ink transition-colors font-ui-label-lg text-ui-label-lg">Оценка</button>
+<button class="pb-4 border-b-2 border-transparent text-ink-soft hover:text-ink transition-colors font-ui-label-lg text-ui-label-lg">Комментарии</button>
+<button class="pb-4 border-b-2 border-transparent text-ink-soft hover:text-ink transition-colors font-ui-label-lg text-ui-label-lg">Отзывы</button>
+<button class="pb-4 border-b-2 border-transparent text-ink-soft hover:text-ink transition-colors font-ui-label-lg text-ui-label-lg">Реквизиты</button>
 </div>
 <!-- Content Area with Sidebar -->
-<div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-12">
+<div id="tab-content-main" class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-12">
 <div class="space-y-stack-md">
-<div class="font-body-reading text-body-reading text-on-surface-variant leading-relaxed">
+<div class="font-body-reading text-body-reading text-ink-soft leading-relaxed">
 <p class="mb-4">Антонино Ферро исследует динамику «аналитического поля», где эмоции не просто обсуждаются, а проживаются и трансформируются в реальном времени. Автор предлагает радикальный взгляд на постбионианский психоанализ, акцентируя внимание на способности аналитика контейнировать и символизировать самые тяжелые аффекты пациента.</p>
 <p>Книга служит путеводителем по лабиринтам психической жизни, помогая специалистам различать защитное избегание и подлинное эмоциональное присутствие в сессии.</p>
 </div>
 <!-- Quote block -->
-<div class="bg-surface-container-low border-l-4 border-primary p-stack-md rounded-r-xl">
-<blockquote class="font-quote-text text-quote-text text-on-surface italic leading-snug">
+<div class="bg-surface border-l-4 border-accent p-stack-md rounded-r-xl">
+<blockquote class="font-quote-text text-quote-text text-ink italic leading-snug">
                                 «Психоанализ — это не поиск истины, а развитие способности грезить вместе с пациентом, превращая сырые аффекты в ткань мысли.»
                             </blockquote>
 </div>
 <!-- TOC -->
 <div class="pt-8">
-<h3 class="font-headline-h2 text-headline-h2 mb-6 border-b border-border-hairline pb-2">Содержание</h3>
-<ul class="space-y-4 font-body-standard text-on-surface">
-<li class="flex justify-between items-center group cursor-pointer hover:text-primary transition-colors">
+<h3 class="font-headline-h2 text-headline-h2 mb-6 border-b border-line pb-2">Содержание</h3>
+<ul class="space-y-4 font-body-standard text-ink">
+<li class="flex justify-between items-center group cursor-pointer hover:text-accent transition-colors">
 <span>Предисловие</span>
-<span class="flex-grow border-b border-dotted border-border-hairline mx-4 mb-1"></span>
+<span class="flex-grow border-b border-dotted border-line mx-4 mb-1"></span>
 <span class="font-metadata">5</span>
 </li>
-<li class="flex justify-between items-center group cursor-pointer hover:text-primary transition-colors">
+<li class="flex justify-between items-center group cursor-pointer hover:text-accent transition-colors">
 <span>Глава 1. Избегание эмоций в поле</span>
-<span class="flex-grow border-b border-dotted border-border-hairline mx-4 mb-1"></span>
+<span class="flex-grow border-b border-dotted border-line mx-4 mb-1"></span>
 <span class="font-metadata">11</span>
 </li>
-<li class="flex justify-between items-center group cursor-pointer hover:text-primary transition-colors">
+<li class="flex justify-between items-center group cursor-pointer hover:text-accent transition-colors">
 <span>Глава 2. Трансформации в сновидение</span>
-<span class="flex-grow border-b border-dotted border-border-hairline mx-4 mb-1"></span>
+<span class="flex-grow border-b border-dotted border-line mx-4 mb-1"></span>
 <span class="font-metadata">48</span>
 </li>
-<li class="flex justify-between items-center group cursor-pointer hover:text-primary transition-colors">
+<li class="flex justify-between items-center group cursor-pointer hover:text-accent transition-colors">
 <span>Глава 3. Техника контейнирования</span>
-<span class="flex-grow border-b border-dotted border-border-hairline mx-4 mb-1"></span>
+<span class="flex-grow border-b border-dotted border-line mx-4 mb-1"></span>
 <span class="font-metadata">92</span>
 </li>
 </ul>
@@ -246,27 +172,27 @@
 <!-- Sidebar: Reviews -->
 <aside class="space-y-6">
 <div class="flex items-center justify-between">
-<h4 class="font-ui-label-lg text-ui-label-lg text-secondary">Рецензии</h4>
-<a class="text-primary font-ui-label-sm text-ui-label-sm hover:underline" href="#">Все (12)</a>
+<h4 class="font-ui-label-lg text-ui-label-lg text-ink-soft">Рецензии</h4>
+<a class="text-accent font-ui-label-sm text-ui-label-sm hover:underline" href="#">Все (12)</a>
 </div>
-<div class="bg-surface border border-border-hairline p-5 rounded-lg book-shadow-sm">
+<div class="bg-surface border border-line p-5 rounded-lg book-shadow-sm">
 <div class="flex items-center gap-3 mb-3">
-<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-xs">AR</div>
+<div class="w-8 h-8 rounded-full bg-accent-tint flex items-center justify-center text-ink-soft font-bold text-xs">AR</div>
 <div>
-<div class="font-ui-label-sm text-ui-label-sm text-text-main flex items-center gap-1">
+<div class="font-ui-label-sm text-ui-label-sm text-ink flex items-center gap-1">
                                         Anna Reich
-                                        <span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+                                        <span class="material-symbols-outlined text-[14px] text-accent" style="font-variation-settings: 'FILL' 1;">verified</span>
 </div>
-<div class="text-[10px] text-secondary uppercase tracking-wider">Expert Tier · Pro</div>
+<div class="text-[10px] text-ink-soft uppercase tracking-wider">Expert Tier · Pro</div>
 </div>
 </div>
-<p class="font-body-standard text-sm italic text-on-surface-variant leading-normal">
+<p class="font-body-standard text-sm italic text-ink-soft leading-normal">
                                 «Ферро возвращает эмоции в центр аналитической работы — щедрая и точная книга.»
                             </p>
 </div>
-<div class="p-4 border border-dashed border-border-hairline rounded-lg text-center hover:bg-surface-container transition-colors cursor-pointer">
-<span class="material-symbols-outlined text-secondary block mb-1">rate_review</span>
-<span class="font-ui-label-sm text-ui-label-sm text-secondary">Оставить свой отзыв</span>
+<div class="p-4 border border-dashed border-line rounded-lg text-center hover:bg-surface-sunk transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-ink-soft block mb-1">rate_review</span>
+<span class="font-ui-label-sm text-ui-label-sm text-ink-soft">Оставить свой отзыв</span>
 </div>
 </aside>
 </div>
@@ -274,50 +200,100 @@
 </div>
 </main>
 <!-- Footer -->
-<footer class="bg-background dark:bg-background border-t border-border-hairline mt-stack-lg transition-all relative z-10">
-<div class="flex flex-col items-center justify-center py-stack-md w-full px-margin-page max-w-max-width mx-auto">
-<div class="flex items-center gap-2 mb-4 bg-white/50 px-3 py-1 rounded border border-border-hairline">
-<span class="font-display-serif text-sm font-bold text-text-main">beta→alpha</span>
-<span class="w-1.5 h-1.5 rounded-full bg-primary/40"></span>
-<span class="font-metadata text-[11px] text-secondary">v1.0.4-alpha</span>
+<footer class="bg-paper border-t border-line" id="site-footer">
+<div class="max-w-max-width mx-auto px-margin-page py-stack-md">
+<div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+<a class="font-display-serif text-[22px] text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="../about/index.html">β<span class="text-accent">→</span>α</a>
+<nav class="flex gap-6 flex-wrap" aria-label="Нижняя навигация">
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../catalog/index.html">Каталог</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../community/index.html">Сообщество</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="../about/index.html">О проекте</a>
+</nav>
+<span class="font-metadata text-metadata text-ink-faint">v1.0.0-primer</span>
 </div>
-<div class="flex flex-wrap justify-center gap-x-8 gap-y-2 mb-6 font-metadata text-metadata text-secondary">
-<a class="hover:text-text-main underline transition-all" href="../about/index.html">О проекте</a>
-<a class="hover:text-text-main underline transition-all" href="#">Этика</a>
-<a class="hover:text-text-main underline transition-all" href="#">Контакты</a>
-</div>
-<div class="text-center space-y-2">
-<p class="font-metadata text-metadata text-secondary leading-relaxed">
-                    © 2024 Bookatier. β→α Издание для психотерапевтов.
-                </p>
-<p class="font-metadata text-[10px] text-secondary/60 max-w-lg mx-auto italic">
-                    Антонино Ферро (2023). Избегание эмоций, проживание эмоций. Серия «Полевые исследования». Издательство Bookatier Press. ISBN 978-5-0000-0000-0.
-                </p>
+<div class="pt-4 border-t border-line font-metadata text-metadata text-ink-faint text-center">
+© 2026 beta→alpha. Для профессионального сообщества.
 </div>
 </div>
 </footer>
 <script>
-        // Micro-interactions for tabs
-        document.querySelectorAll('button').forEach(btn => {
-            btn.addEventListener('mousedown', () => {
-                btn.style.transform = 'scale(0.98)';
-            });
-            btn.addEventListener('mouseup', () => {
-                btn.style.transform = 'scale(1)';
-            });
-            btn.addEventListener('mouseleave', () => {
-                btn.style.transform = 'scale(1)';
-            });
-        });
-
-        // Sticky header opacity on scroll
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 20) {
-                header.classList.add('bg-opacity-95', 'backdrop-blur-sm', 'shadow-sm');
-            } else {
-                header.classList.remove('bg-opacity-95', 'backdrop-blur-sm', 'shadow-sm');
-            }
-        });
-    </script>
+/* notif */
+(function(){
+  var b=document.getElementById('notif-btn'),p=document.getElementById('notif-panel');
+  if(!b||!p)return;
+  b.addEventListener('click',function(e){e.stopPropagation();p.classList.toggle('hidden');});
+  document.addEventListener('click',function(e){
+    if(!p.classList.contains('hidden')&&!p.contains(e.target)&&e.target!==b)
+      p.classList.add('hidden');
+  });
+})();
+/* tab bar */
+(function(){
+  var tabBar=document.getElementById('book-tab-bar');
+  var contentGrid=document.getElementById('tab-content-main');
+  if(!tabBar||!contentGrid)return;
+  /* wrap existing content as panel-0 */
+  var wrapper=document.createElement('div');
+  wrapper.id='tab-panels';
+  contentGrid.parentNode.insertBefore(wrapper,contentGrid);
+  wrapper.appendChild(contentGrid);
+  contentGrid.id='tab-panel-0';
+  /* placeholder panels for tabs 1-4 */
+  var labels=['Оценка','Комментарии','Отзывы','Реквизиты'];
+  var icons=['grade','chat_bubble_outline','rate_review','info'];
+  var msgs=[
+    'Система оценок будет доступна в следующей фазе.',
+    'Обсуждения появятся после запуска платформы.',
+    'Профессиональные рецензии — в Фазе 2.',
+    'Библиографические реквизиты скоро будут здесь.'
+  ];
+  for(var i=0;i<4;i++){
+    var p=document.createElement('div');
+    p.id='tab-panel-'+(i+1);
+    p.className='hidden py-16 text-center text-ink-soft font-body-standard';
+    p.innerHTML='<span class="material-symbols-outlined text-4xl block mb-4 opacity-40">'+icons[i]+'</span><p>'+msgs[i]+'</p>';
+    wrapper.appendChild(p);
+  }
+  var tabs=Array.from(tabBar.querySelectorAll('button'));
+  var ACTIVE_CLS=['border-accent','text-accent','font-bold'];
+  var INACTIVE_CLS=['border-transparent','text-ink-soft'];
+  function activateTab(idx){
+    tabs.forEach(function(t,j){
+      ACTIVE_CLS.forEach(function(c){t.classList.toggle(c,j===idx);});
+      INACTIVE_CLS.forEach(function(c){t.classList.toggle(c,j!==idx);});
+      if(j!==idx)t.classList.remove('font-bold');
+    });
+    wrapper.querySelectorAll('[id^="tab-panel-"]').forEach(function(panel,j){
+      panel.classList.toggle('hidden',j!==idx);
+    });
+  }
+  tabs.forEach(function(btn,idx){
+    btn.addEventListener('click',function(){activateTab(idx);});
+  });
+})();
+/* favorite / vote toggle */
+(function(){
+  document.querySelectorAll('button').forEach(function(btn){
+    var icon=btn.querySelector('.material-symbols-outlined');
+    if(!icon||icon.textContent.trim()!=='favorite')return;
+    var countEl=Array.from(btn.querySelectorAll('span')).find(function(s){
+      return s!==icon&&/^\d+$/.test(s.textContent.trim());
+    });
+    var on=false;
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      on=!on;
+      icon.style.fontVariationSettings=on?"'FILL' 1, 'wght' 400":"'FILL' 0, 'wght' 300";
+      icon.style.color=on?'var(--accent)':'';
+      if(countEl){countEl.textContent=String(parseInt(countEl.textContent)+(on?1:-1));}
+    });
+  });
+})();
+/* micro press effect */
+document.querySelectorAll('button').forEach(function(btn){
+  btn.addEventListener('mousedown',function(){this.style.transform='scale(0.97)';});
+  btn.addEventListener('mouseup',function(){this.style.transform='';});
+  btn.addEventListener('mouseleave',function(){this.style.transform='';});
+});
+</script>
 </body></html>
