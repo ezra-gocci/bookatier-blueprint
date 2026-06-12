@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="assets/tokens.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { background-color: var(--paper); color: var(--ink); }
+        .book-shadow { box-shadow: 4px 4px 12px rgba(36, 31, 27, 0.08), 1px 0px 2px rgba(36, 31, 27, 0.04); }
+        .soft-card-shadow { box-shadow: 0 4px 20px rgba(36, 31, 27, 0.03); }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+    
+        /* Paper texture — replaces inline SVG noise */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url('assets/backgrounds/manuscript.png');
+            background-repeat: repeat;
+            background-size: 300px;
+            opacity: 0.045;
+            pointer-events: none;
+            z-index: 0;
+        }
+        </style>
+</head>
+<body class="font-body-standard overflow-x-hidden">
+<!-- Shared TopAppBar Placeholder -->
+<header class="bg-paper flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-16 border-b border-line sticky top-0 z-50" id="site-header">
+<a class="font-display-serif text-headline-h1 text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="home-auth.html">β<span class="text-accent">→</span>α</a>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="home-auth.html">Главная</a>
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="catalog.html">Каталог</a>
+<a class="text-accent font-semibold border-b-2 border-accent pb-0.5 font-ui-label-lg text-ui-label-lg" aria-current="page" href="community.html">Сообщество</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-ink-soft hover:text-accent transition-colors" aria-label="Поиск">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">search</span>
+</button>
+<div class="relative" id="notif-wrapper">
+<button class="text-ink-soft hover:text-accent transition-colors relative" id="notif-btn" aria-label="Уведомления">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">notifications</span>
+<span class="absolute -top-1 -right-1 w-4 h-4 bg-accent text-white text-[10px] rounded-full flex items-center justify-center font-bold leading-none">3</span>
+</button>
+<div class="hidden absolute right-0 top-full mt-2 w-80 bg-surface rounded-lg border border-line shadow-[0_8px_30px_rgba(40,30,20,.08)] z-50" id="notif-panel">
+<div class="p-3 border-b border-line flex justify-between items-center">
+<span class="font-ui-label-sm text-ui-label-sm text-ink-faint uppercase tracking-wider">Уведомления</span>
+<a class="font-metadata text-metadata text-accent hover:underline" href="notifications.html">Все</a>
+</div>
+<ul class="py-1 divide-y divide-line">
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Мария Соколова ответила на ваш комментарий</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">3 мин. назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Новая версия: «Научение на опыте»</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">1 час назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Ваш отзыв получил 4 одобрения</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">Вчера</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="hidden sm:flex items-center gap-1 px-2 py-1 rounded-full border border-line bg-surface">
+<span class="material-symbols-outlined text-[14px] text-amber" style="font-variation-settings: 'FILL' 1, 'wght' 400;">star</span>
+<span class="font-ui-label-sm text-ui-label-sm text-ink tabular-nums font-semibold">142</span>
+</div>
+<a class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white font-ui-label-sm font-semibold hover:bg-accent-hover transition-colors" href="account.html" title="Личный кабинет">АИ</a>
+<button class="md:hidden text-ink-soft hover:text-accent transition-colors" aria-label="Меню">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">menu</span>
+</button>
+</div>
+</header>
+<!-- Blueprint component nav — design reference pages only, not real routes -->
+<div class="bg-surface-sunk border-b border-line">
+  <div class="max-w-max-width mx-auto px-margin-page flex items-center gap-6 h-8">
+    <span class="font-metadata text-metadata text-ink-faint uppercase tracking-wider">UI</span>
+    <a href="citation-ui.html" class="font-metadata text-metadata text-ink-faint hover:text-ink-soft transition-colors">Цитирование</a>
+    <a href="citation-in-discussion.html" class="font-metadata text-metadata text-ink-faint hover:text-ink-soft transition-colors">Цитата в треде</a>
+    <a href="quick-preview.html" class="font-metadata text-metadata text-ink-faint hover:text-ink-soft transition-colors">Быстрый просмотр</a>
+    <a href="reader-variants.html" class="font-metadata text-metadata text-ink-faint hover:text-ink-soft transition-colors">Варианты ридера</a>
+    <a href="empty-states.html" class="font-metadata text-metadata text-ink-faint hover:text-ink-soft transition-colors">Пустые состояния</a>
+  </div>
+</div>
+
+<main class="max-w-[1200px] mx-auto px-6 md:px-10 py-10">
+<!-- Welcome Header -->
+<div class="flex flex-col gap-2 mb-10">
+<h2 class="font-display-serif text-3xl md:text-4xl text-ink">Добрый вечер, Мария</h2>
+<p class="font-body-standard text-ink-soft opacity-80">Рады видеть вас снова в вашем кабинете.</p>
+</div>
+<!-- Section 2: The Shelf Preview -->
+<section class="mb-16">
+<div class="flex items-end justify-between border-b border-line pb-4 mb-6">
+<h3 class="font-headline-h2 text-ink">Полка</h3>
+<a class="font-ui-label-sm text-accent flex items-center gap-1 hover:underline group" href="#">
+                    Перейти в полный каталог
+                    <span class="material-symbols-outlined text-sm group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+<!-- Book Card 1 -->
+<div class="group cursor-pointer">
+<div class="aspect-[3/4] rounded-lg bg-surface-sunk overflow-hidden book-shadow mb-4 transition-transform group-hover:-translate-y-1">
+<div class="w-full h-full bg-surface-sunk flex items-end p-1"><span class="font-display-serif text-[8px] text-ink-soft leading-tight">β→α</span></div>
+</div>
+<div class="space-y-1.5">
+<div class="flex gap-2 mb-2">
+<span class="px-2 py-0.5 rounded-full bg-amber/10 text-amber font-ui-label-sm text-[11px] uppercase tracking-wider">Классика</span>
+</div>
+<h4 class="font-headline-h2 text-lg leading-tight group-hover:text-accent transition-colors">Мастер и Маргарита</h4>
+<p class="font-body-standard text-sm text-ink-soft italic">М. Булгаков</p>
+<div class="flex items-center gap-1 text-amber">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-metadata text-sm font-medium">4.9</span>
+</div>
+</div>
+</div>
+<!-- Book Card 2 -->
+<div class="group cursor-pointer">
+<div class="aspect-[3/4] rounded-lg bg-surface-sunk overflow-hidden book-shadow mb-4 transition-transform group-hover:-translate-y-1">
+<div class="w-full h-full bg-surface-sunk flex items-end p-1"><span class="font-display-serif text-[8px] text-ink-soft leading-tight">β→α</span></div>
+</div>
+<div class="space-y-1.5">
+<div class="flex gap-2 mb-2">
+<span class="px-2 py-0.5 rounded-full bg-slate/10 text-slate font-ui-label-sm text-[11px] uppercase tracking-wider">Психология</span>
+</div>
+<h4 class="font-headline-h2 text-lg leading-tight group-hover:text-accent transition-colors">Толкование сновидений</h4>
+<p class="font-body-standard text-sm text-ink-soft italic">З. Фрейд</p>
+<div class="flex items-center gap-1 text-amber">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-metadata text-sm font-medium">4.8</span>
+</div>
+</div>
+</div>
+<!-- Book Card 3 -->
+<div class="group cursor-pointer">
+<div class="aspect-[3/4] rounded-lg bg-surface-sunk overflow-hidden book-shadow mb-4 transition-transform group-hover:-translate-y-1">
+<div class="w-full h-full bg-surface-sunk flex items-end p-1"><span class="font-display-serif text-[8px] text-ink-soft leading-tight">β→α</span></div>
+</div>
+<div class="space-y-1.5">
+<div class="flex gap-2 mb-2">
+<span class="px-2 py-0.5 rounded-full bg-sage/10 text-sage font-ui-label-sm text-[11px] uppercase tracking-wider">Философия</span>
+</div>
+<h4 class="font-headline-h2 text-lg leading-tight group-hover:text-accent transition-colors">Так говорил Заратустра</h4>
+<p class="font-body-standard text-sm text-ink-soft italic">Ф. Ницше</p>
+<div class="flex items-center gap-1 text-amber">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-metadata text-sm font-medium">4.7</span>
+</div>
+</div>
+</div>
+<!-- Book Card 4 -->
+<div class="group cursor-pointer">
+<div class="aspect-[3/4] rounded-lg bg-surface-sunk overflow-hidden book-shadow mb-4 transition-transform group-hover:-translate-y-1">
+<div class="w-full h-full bg-surface-sunk flex items-end p-1"><span class="font-display-serif text-[8px] text-ink-soft leading-tight">β→α</span></div>
+</div>
+<div class="space-y-1.5">
+<div class="flex gap-2 mb-2">
+<span class="px-2 py-0.5 rounded-full bg-amber/10 text-amber font-ui-label-sm text-[11px] uppercase tracking-wider">История</span>
+</div>
+<h4 class="font-headline-h2 text-lg leading-tight group-hover:text-accent transition-colors">Война и мир</h4>
+<p class="font-body-standard text-sm text-ink-soft italic">Л. Толстой</p>
+<div class="flex items-center gap-1 text-amber">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-metadata text-sm font-medium">4.9</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Content: Two Column Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Left Column: Wide (8/12) -->
+<div class="lg:col-span-8 space-y-12">
+<!-- Resume Reading Section -->
+<div>
+<h3 class="font-headline-h2 mb-6 flex items-center gap-3">
+                        Продолжить чтение
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300; font-size: 1em; opacity: 0.4;">auto_stories</span>
+</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Resume Card 1 -->
+<div class="bg-surface rounded-xl p-5 border border-line soft-card-shadow flex gap-5 relative overflow-hidden group hover:border-line transition-colors">
+<div class="w-20 shrink-0">
+<div class="aspect-[3/4] rounded shadow-sm overflow-hidden">
+<div class="w-full h-full bg-surface-sunk flex items-end p-1"><span class="font-display-serif text-[8px] text-ink-soft leading-tight">β→α</span></div>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<h4 class="font-headline-h2 text-base mb-1">Идиот</h4>
+<p class="font-body-standard text-xs text-ink-soft opacity-70">Ф. Достоевский</p>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[11px] font-metadata text-ink-faint">
+<span>Глава 4</span>
+<span>68%</span>
+</div>
+<div class="w-full h-1 bg-surface-sunk rounded-full overflow-hidden">
+<div class="h-full bg-accent" style="width: 68%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Resume Card 2 -->
+<div class="bg-surface rounded-xl p-5 border border-line soft-card-shadow flex gap-5 relative overflow-hidden group hover:border-line transition-colors">
+<div class="w-20 shrink-0">
+<div class="aspect-[3/4] rounded shadow-sm overflow-hidden">
+<div class="w-full h-full bg-surface-sunk flex items-end p-1"><span class="font-display-serif text-[8px] text-ink-soft leading-tight">β→α</span></div>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<h4 class="font-headline-h2 text-base mb-1">Братья Карамазовы</h4>
+<p class="font-body-standard text-xs text-ink-soft opacity-70">Ф. Достоевский</p>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[11px] font-metadata text-ink-faint">
+<span>Глава 12</span>
+<span>42%</span>
+</div>
+<div class="w-full h-1 bg-surface-sunk rounded-full overflow-hidden">
+<div class="h-full bg-accent" style="width: 42%;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Community Activity Section -->
+<div>
+<h3 class="font-headline-h2 mb-6">Активность сообщества</h3>
+<div class="bg-surface rounded-xl border border-line divide-y divide-line overflow-hidden">
+<!-- Activity Item 1 -->
+<div class="p-6 flex gap-4 hover:bg-surface transition-colors cursor-pointer group">
+<div class="size-10 rounded-full bg-surface-sunk shrink-0 flex items-center justify-center text-accent">
+<span class="material-symbols-outlined">forum</span>
+</div>
+<div class="flex-1 space-y-1">
+<p class="font-body-standard text-sm text-ink">
+<span class="font-semibold">Александр Петров</span> ответил на ваш комментарий к книге <span class="text-accent italic">«Идиот»</span>
+</p>
+<p class="text-ink-soft opacity-70 text-sm italic border-l-2 border-line pl-4 my-3">«Очень глубокое замечание о природе доброты Мышкина...»</p>
+<div class="flex items-center gap-4 text-[12px] font-metadata text-ink-faint">
+<span>2 часа назад</span>
+<span class="flex items-center gap-1 group-hover:text-accent"><span class="material-symbols-outlined text-xs">thumb_up</span> 14</span>
+</div>
+</div>
+</div>
+<!-- Activity Item 2 -->
+<div class="p-6 flex gap-4 hover:bg-surface transition-colors cursor-pointer group">
+<div class="size-10 rounded-full bg-surface-sunk shrink-0 flex items-center justify-center text-sage">
+<span class="material-symbols-outlined">auto_stories</span>
+</div>
+<div class="flex-1 space-y-1">
+<p class="font-body-standard text-sm text-ink">
+                                    Новое эссе от <span class="font-semibold">Елены Соколовой</span>: <span class="font-medium">«Тень и Свет в работах Булгакова»</span>
+</p>
+<div class="flex items-center gap-4 text-[12px] font-metadata text-ink-faint">
+<span>Вчера</span>
+<span class="flex items-center gap-1 group-hover:text-accent"><span class="material-symbols-outlined text-xs">visibility</span> 428</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Narrow (4/12) -->
+<div class="lg:col-span-4 space-y-12">
+<!-- Favorites Shelf -->
+<section>
+<h3 class="font-headline-h2 mb-6 text-xl">Ваше избранное</h3>
+<div class="grid grid-cols-3 gap-3 p-4 bg-surface rounded-xl border border-line">
+<div class="aspect-[3/4] bg-surface-sunk rounded-sm overflow-hidden shadow-sm hover:ring-2 hover:ring-accent transition-all cursor-pointer">
+<div class="w-full h-full bg-surface-sunk flex items-end p-1"><span class="font-display-serif text-[8px] text-ink-soft leading-tight">β→α</span></div>
+</div>
+<div class="aspect-[3/4] bg-surface-sunk rounded-sm overflow-hidden shadow-sm hover:ring-2 hover:ring-accent transition-all cursor-pointer">
+<div class="w-full h-full bg-surface-sunk flex items-end p-1"><span class="font-display-serif text-[8px] text-ink-soft leading-tight">β→α</span></div>
+</div>
+<div class="aspect-[3/4] bg-surface-sunk rounded-sm overflow-hidden shadow-sm hover:ring-2 hover:ring-accent transition-all cursor-pointer">
+<div class="w-full h-full bg-surface-sunk flex items-end p-1"><span class="font-display-serif text-[8px] text-ink-soft leading-tight">β→α</span></div>
+</div>
+<div class="aspect-[3/4] bg-surface-sunk rounded-sm overflow-hidden shadow-sm hover:ring-2 hover:ring-accent transition-all cursor-pointer">
+<div class="w-full h-full bg-surface-sunk flex items-end p-1"><span class="font-display-serif text-[8px] text-ink-soft leading-tight">β→α</span></div>
+</div>
+<div class="flex items-center justify-center aspect-[3/4] border-2 border-dashed border-line rounded-sm hover:border-accent hover:text-accent transition-all cursor-pointer group">
+<span class="material-symbols-outlined text-ink-faint group-hover:text-accent">add</span>
+</div>
+</div>
+</section>
+<!-- History & Notes -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-h2 text-xl">История и заметки</h3>
+<div class="flex items-center gap-4">
+<a href="notes.html" class="font-ui-label-sm text-ui-label-sm text-ink-soft hover:text-accent transition-colors">Заметки</a>
+<a href="notes-citations.html" class="font-ui-label-sm text-ui-label-sm text-ink-soft hover:text-accent transition-colors">Цитаты</a>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300; font-size: 1em; opacity: 0.4;">edit</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-surface rounded-xl p-4 border border-line hover:border-line transition-all cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-metadata uppercase tracking-widest text-ink-faint">Закладка · Стр. 142</span>
+<span class="text-[10px] font-metadata text-ink-faint">Сегодня, 14:20</span>
+</div>
+<p class="font-body-standard text-sm line-clamp-2">«Тут-то и обнаружилось, что Мышкин вовсе не так прост...»</p>
+<p class="font-metadata text-[11px] text-accent mt-2">Мастер и Маргарита</p>
+</div>
+<div class="bg-surface rounded-xl p-4 border border-line hover:border-line transition-all cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-metadata uppercase tracking-widest text-amber">Заметка</span>
+<span class="text-[10px] font-metadata text-ink-faint">Вчера, 18:45</span>
+</div>
+<p class="font-body-standard text-sm line-clamp-2">Проверить связь между этим отрывком и теорией Юнга об архетипах.</p>
+<p class="font-metadata text-[11px] text-accent mt-2">Толкование сновидений</p>
+</div>
+<button class="w-full py-3 rounded-lg border border-line text-ui-label-sm text-ink-soft hover:bg-surface transition-colors">
+                            Показать всю историю
+                        </button>
+</div>
+</section>
+</div>
+</div>
+</main>
+<footer class="bg-paper border-t border-line" id="site-footer">
+<div class="max-w-max-width mx-auto px-margin-page py-stack-md">
+<div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+<a class="font-display-serif text-[22px] text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="about.html">β<span class="text-accent">→</span>α</a>
+<nav class="flex gap-6 flex-wrap" aria-label="Нижняя навигация">
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="catalog.html">Каталог</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="community.html">Сообщество</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="about.html">О проекте</a>
+</nav>
+<span class="font-metadata text-metadata text-ink-faint">v1.0.0-primer</span>
+</div>
+<div class="pt-4 border-t border-line font-metadata text-metadata text-ink-faint flex items-center justify-between">
+<span>© 2026 beta→alpha. Для профессионального сообщества.</span>
+<a href="debug-console.html" class="font-metadata text-metadata text-ink-faint hover:text-ink-soft transition-colors opacity-50">Консоль</a>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions and atmospheric effects
+        document.querySelectorAll('.group').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                // Subtle shadow play or opacity shifts could be added here
+            });
+        });
+
+        // Search input animation logic
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-offset-2');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-offset-2');
+        });
+    </script>
+<script>
+(function(){
+  var b=document.getElementById('notif-btn'),p=document.getElementById('notif-panel');
+  if(!b||!p)return;
+  b.addEventListener('click',function(e){e.stopPropagation();p.classList.toggle('hidden');});
+  document.addEventListener('click',function(e){
+    if(!p.classList.contains('hidden')&&!p.contains(e.target)&&e.target!==b)
+      p.classList.add('hidden');
+  });
+})();
+</script>
+</body></html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html><html lang="ru"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Quick Preview Panel - Bookatier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="assets/tokens.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&amp;display=swap" rel="stylesheet">
+<style>
+        /* Custom scrollbar for the reading panel */
+        .scrolling-area::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrolling-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .scrolling-area::-webkit-scrollbar-thumb {
+            background-color: #E4D9C6;
+            border-radius: 10px;
+        }
+        
+        /* Object Shadow for Book Covers */
+        .shadow-book {
+            box-shadow: 4px 4px 15px rgba(36, 31, 27, 0.08), 1px 1px 3px rgba(36, 31, 27, 0.04);
+        }
+    
+        /* Paper texture — replaces inline SVG noise */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url('assets/backgrounds/manuscript.png');
+            background-repeat: repeat;
+            background-size: 300px;
+            opacity: 0.045;
+            pointer-events: none;
+            z-index: 0;
+        }
+        </style>
+</head>
+<body class="bg-paper text-ink font-body-standard min-h-screen relative overflow-hidden">
+<!-- Background context: Catalog Page (Blurred out slightly to focus on panel) -->
+<div class="absolute inset-0 bg-cover bg-center bg-no-repeat blur-[2px] opacity-40 transition-all duration-300 pointer-events-none" style="background-image: url('assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png');"></div>
+<!-- Dimmer Overlay -->
+<div class="absolute inset-0 bg-ink/10 backdrop-blur-sm z-40" id="overlay"></div>
+<!-- Right Side Drawer -->
+<aside class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-surface shadow-[-4px_0_24px_rgba(36,31,27,0.06)] flex flex-col transform transition-transform duration-300 border-l border-line" id="preview-panel">
+<!-- 1. Header -->
+<header class="bg-paper flex justify-between items-center w-full px-margin-page max-w-max-width mx-auto h-16 border-b border-line sticky top-0 z-50" id="site-header">
+<a class="font-display-serif text-headline-h1 text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="home-auth.html">β<span class="text-accent">→</span>α</a>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="home-auth.html">Главная</a>
+<a class="text-accent font-semibold border-b-2 border-accent pb-0.5 font-ui-label-lg text-ui-label-lg" aria-current="page" href="catalog.html">Каталог</a>
+<a class="text-ink-soft hover:text-accent transition-colors duration-150 font-ui-label-lg text-ui-label-lg" href="community.html">Сообщество</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-ink-soft hover:text-accent transition-colors" aria-label="Поиск">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">search</span>
+</button>
+<div class="relative" id="notif-wrapper">
+<button class="text-ink-soft hover:text-accent transition-colors relative" id="notif-btn" aria-label="Уведомления">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">notifications</span>
+<span class="absolute -top-1 -right-1 w-4 h-4 bg-accent text-white text-[10px] rounded-full flex items-center justify-center font-bold leading-none">3</span>
+</button>
+<div class="hidden absolute right-0 top-full mt-2 w-80 bg-surface rounded-lg border border-line shadow-[0_8px_30px_rgba(40,30,20,.08)] z-50" id="notif-panel">
+<div class="p-3 border-b border-line flex justify-between items-center">
+<span class="font-ui-label-sm text-ui-label-sm text-ink-faint uppercase tracking-wider">Уведомления</span>
+<a class="font-metadata text-metadata text-accent hover:underline" href="notifications.html">Все</a>
+</div>
+<ul class="py-1 divide-y divide-line">
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Мария Соколова ответила на ваш комментарий</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">3 мин. назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Новая версия: «Научение на опыте»</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">1 час назад</p>
+</li>
+<li class="px-4 py-3 hover:bg-surface-sunk transition-colors cursor-pointer">
+<p class="font-ui-label-sm text-ui-label-sm text-ink leading-snug">Ваш отзыв получил 4 одобрения</p>
+<p class="font-metadata text-metadata text-ink-faint mt-0.5">Вчера</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="hidden sm:flex items-center gap-1 px-2 py-1 rounded-full border border-line bg-surface">
+<span class="material-symbols-outlined text-[14px] text-amber" style="font-variation-settings: 'FILL' 1, 'wght' 400;">star</span>
+<span class="font-ui-label-sm text-ui-label-sm text-ink tabular-nums font-semibold">142</span>
+</div>
+<a class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white font-ui-label-sm font-semibold hover:bg-accent-hover transition-colors" href="account.html" title="Личный кабинет">АИ</a>
+<button class="md:hidden text-ink-soft hover:text-accent transition-colors" aria-label="Меню">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0, 'wght' 300;">menu</span>
+</button>
+</div>
+</header>
+<!-- Blueprint component nav — design reference pages only, not real routes -->
+<div class="bg-surface-sunk border-b border-line">
+  <div class="max-w-max-width mx-auto px-margin-page flex items-center gap-6 h-8">
+    <span class="font-metadata text-metadata text-ink-faint uppercase tracking-wider">UI</span>
+    <a href="citation-ui.html" class="font-metadata text-metadata text-ink-faint hover:text-ink-soft transition-colors">Цитирование</a>
+    <a href="citation-in-discussion.html" class="font-metadata text-metadata text-ink-faint hover:text-ink-soft transition-colors">Цитата в треде</a>
+    <a href="quick-preview.html" class="font-metadata text-metadata text-ink-faint hover:text-ink-soft transition-colors">Быстрый просмотр</a>
+    <a href="reader-variants.html" class="font-metadata text-metadata text-ink-faint hover:text-ink-soft transition-colors">Варианты ридера</a>
+    <a href="empty-states.html" class="font-metadata text-metadata text-ink-faint hover:text-ink-soft transition-colors">Пустые состояния</a>
+  </div>
+</div>
+
+<!-- 2. Body (Scrolling Area) -->
+<div class="flex-1 overflow-y-auto scrolling-area px-gutter py-stack-md flex flex-col gap-stack-md relative">
+<!-- Book Cover & Quick Meta -->
+<div class="flex gap-6 items-start">
+<div class="flex-shrink-0 w-32 relative group">
+<img alt="Обложка книги Антонино Ферро — Избегание эмоций, проживание эмоций. Классический редакционный дизайн на светлом фоне." class="w-full aspect-[0.71] object-cover shadow-book border border-black/5 rounded-sm" src="assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png">
+</div>
+<div class="flex flex-col gap-3 pt-2">
+<div class="flex flex-col gap-1">
+<span class="font-metadata text-metadata text-ink-soft uppercase tracking-wider">Год издания</span>
+<span class="font-ui-label-sm text-ui-label-sm text-ink">2014</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-metadata text-metadata text-ink-soft uppercase tracking-wider">Редакция</span>
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 border border-line rounded bg-surface text-ink font-metadata text-[11px] w-max">
+<span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+                           v1.0.4-alpha
+                        </div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-metadata text-metadata text-ink-soft uppercase tracking-wider">Оценка</span>
+<div class="flex items-center gap-1">
+<div class="flex text-amber">
+<span class="material-symbols-outlined text-[16px] text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] text-amber-500/30" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="font-ui-label-sm text-ui-label-sm text-ink ml-1">4.2</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Topic Chips -->
+<div class="flex flex-wrap gap-2 pt-2 border-t border-line">
+<span class="px-3 py-1 rounded-full bg-slate/10 text-slate font-metadata text-metadata">Психоанализ</span>
+<span class="px-3 py-1 rounded-full bg-amber/10 text-amber font-metadata text-metadata">Клиническая практика</span>
+<span class="px-3 py-1 rounded-full bg-sage/10 text-sage font-metadata text-metadata">Бионика</span>
+</div>
+<!-- About Section -->
+<section class="flex flex-col gap-3">
+<h3 class="font-ui-label-sm text-ui-label-sm text-ink-soft uppercase tracking-wider">О книге</h3>
+<p class="font-body-reading text-body-reading text-ink">
+                    В этой новаторской работе Антонино Ферро исследует тонкую грань между избеганием и подлинным проживанием эмоционального опыта в аналитическом сеттинге. Автор опирается на пост-бионианскую перспективу, предлагая инструменты для трансформации невыносимых аффектов в нарративные структуры.
+                </p>
+</section>
+<!-- Table of Contents Preview -->
+<section class="flex flex-col gap-3">
+<h3 class="font-ui-label-sm text-ui-label-sm text-ink-soft uppercase tracking-wider">Оглавление (Фрагмент)</h3>
+<ul class="font-body-standard text-[15px] leading-relaxed text-ink space-y-2">
+<li class="flex justify-between items-baseline gap-4">
+<span class="truncate">1. Введение: Поле и его обитатели</span>
+<span class="text-ink-soft font-metadata whitespace-nowrap">Стр. 9</span>
+</li>
+<li class="flex justify-between items-baseline gap-4">
+<span class="truncate">2. Избегание как защита поля</span>
+<span class="text-ink-soft font-metadata whitespace-nowrap">Стр. 25</span>
+</li>
+<li class="flex justify-between items-baseline gap-4">
+<span class="truncate">3. Сновидение наяву</span>
+<span class="text-ink-soft font-metadata whitespace-nowrap">Стр. 54</span>
+</li>
+<li class="flex justify-between items-baseline gap-4">
+<span class="truncate">4. Персонажи аналитической сессии</span>
+<span class="text-ink-soft font-metadata whitespace-nowrap">Стр. 89</span>
+</li>
+<li class="flex justify-between items-baseline gap-4">
+<span class="truncate text-ink-soft italic">...и еще 8 глав</span>
+</li>
+</ul>
+</section>
+<!-- Excerpt Block -->
+<section class="mt-2">
+<div class="bg-surface p-5 rounded border border-line/50 shadow-inner">
+<h3 class="font-ui-label-sm text-[11px] text-ink-soft uppercase tracking-wider mb-3">Отрывок</h3>
+<p class="font-quote-text text-quote-text text-ink italic text-opacity-90">
+                        «Аналитик не просто контейнирует тревогу пациента; он участвует в совместном создании сновидения, которое еще не было увидено. Избегание эмоций часто является единственным доступным способом выжить в условиях отсутствия такого сновидческого пространства.»
+                    </p>
+</div>
+</section>
+<!-- Spacer to ensure bottom content isn't hidden behind fixed footer -->
+<div class="h-4"></div>
+</div>
+<!-- 3. Footer (Fixed Actions) -->
+<footer class="bg-paper border-t border-line" id="site-footer">
+<div class="max-w-max-width mx-auto px-margin-page py-stack-md">
+<div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+<a class="font-display-serif text-[22px] text-ink flex items-center gap-0.5 hover:text-accent transition-colors" href="about.html">β<span class="text-accent">→</span>α</a>
+<nav class="flex gap-6 flex-wrap" aria-label="Нижняя навигация">
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="catalog.html">Каталог</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="community.html">Сообщество</a>
+<a class="font-metadata text-metadata text-ink-soft hover:text-ink transition-colors" href="about.html">О проекте</a>
+</nav>
+<span class="font-metadata text-metadata text-ink-faint">v1.0.0-primer</span>
+</div>
+<div class="pt-4 border-t border-line font-metadata text-metadata text-ink-faint flex items-center justify-between">
+<span>© 2026 beta→alpha. Для профессионального сообщества.</span>
+<a href="debug-console.html" class="font-metadata text-metadata text-ink-faint hover:text-ink-soft transition-colors opacity-50">Консоль</a>
+</div>
+</div>
+</footer>
+</aside>
+<script>
+        // Simple script to handle close interaction for preview panel
+        document.addEventListener('DOMContentLoaded', () => {
+            const closeBtn = document.querySelector('button[aria-label="Close panel"]');
+            const panel = document.getElementById('preview-panel');
+            const overlay = document.getElementById('overlay');
+            
+            function closePanel() {
+                panel.classList.add('translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 300);
+            }
+
+            closeBtn.addEventListener('click', closePanel);
+            overlay.addEventListener('click', closePanel);
+        });
+    </script>
+<script>
+(function(){
+  var b=document.getElementById('notif-btn'),p=document.getElementById('notif-panel');
+  if(!b||!p)return;
+  b.addEventListener('click',function(e){e.stopPropagation();p.classList.toggle('hidden');});
+  document.addEventListener('click',function(e){
+    if(!p.classList.contains('hidden')&&!p.contains(e.target)&&e.target!==b)
+      p.classList.add('hidden');
+  });
+})();
+</script>
+</body></html>
