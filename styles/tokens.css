@@ -1,0 +1,306 @@
+/* ============================================================================
+   Bookatier — Design Tokens
+   Single source of colour, type, spacing, radii, shadows for the blueprint.
+   Derived from grounds/briefs/design-brief.md §1–4 (committed brand palette).
+   No page may write a raw hex / px that bypasses these tokens.
+
+   The blueprint chrome ships ONE applied style: sepia-contrast (set on <html>),
+   a sepia ground punctuated by warm near-black [data-band="noir"] accents.
+   The light / sepia / dark sets remain DEFINED but DORMANT — reserved for the
+   Phase-2 reader's own reading modes; there is no switcher UI in the chrome.
+     [data-theme="sepia-contrast"] → the applied chrome style
+     :root (light), [data-theme="sepia"], [data-theme="dark"] → dormant
+   ========================================================================== */
+
+:root {
+  /* ---- Colour — Light (default) -------------------------------------- */
+  --paper:        #F7F1E6;  /* app background (warm cream) */
+  --surface:      #FFFDF8;  /* cards, sheets, modals */
+  --surface-sunk: #F0E8D8;  /* wells, inputs, code */
+  --ink:          #241F1B;  /* primary text (warm near-black) */
+  --ink-soft:     #5C5249;  /* secondary text */
+  --ink-faint:    #8B8073;  /* tertiary / captions */
+  --line:         #E4D9C6;  /* hairline borders, rules */
+  --accent:       #B85138;  /* terracotta — primary actions, links */
+  --accent-hover: #9E4530;  /* hover / pressed */
+  --accent-tint:  #F0DCD2;  /* accent backgrounds, selection */
+  --amber:        #C98A3C;  /* category chip / "new edition" */
+  --slate:        #3E5C73;  /* category chip / scholarly */
+  --sage:         #4C6B5E;  /* category chip / restful */
+  --success:      #5B7553;
+  --warning:      #C08A2E;
+  --danger:       #A8412E;
+
+  /* On-accent text colour (for filled terracotta buttons) */
+  --on-accent:    #FFFDF8;
+
+  /* ---- Recessive content-area wash (theme-swapped) ------------------- */
+  --wash-image: url("../assets/backgrounds/hero-bg-01-light.webp");
+  --wash-opacity: 0.10;
+  --grain-opacity: 0.045;
+
+  /* ---- Type families ------------------------------------------------- */
+  /* Serif (house face Charter) — titles, quotes, book chrome. Web fallback Source Serif 4. */
+  --font-serif: "Source Serif 4", Charter, Georgia, "Times New Roman", serif;
+  /* Sans (Golos Text — Paratype, Russian-first humanist) — all UI text, controls, labels,
+     metadata. Variable wght 400–700; strong Cyrillic; warm but not SaaS-generic. */
+  --font-sans:  "Golos Text", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* ---- Type scale (design-brief §2, desktop) ------------------------- */
+  --fs-display: 2.5rem;    --lh-display: 3rem;      /* 40 / 48 */
+  --fs-h1:      1.875rem;  --lh-h1:      2.375rem;  /* 30 / 38 */
+  --fs-h2:      1.375rem;  --lh-h2:      1.875rem;  /* 22 / 30 */
+  --fs-h3:      1.125rem;  --lh-h3:      1.625rem;  /* 18 / 26 */
+  --fs-body:    1rem;      --lh-body:    1.5rem;    /* 16 / 24 */
+  --fs-small:   0.875rem;  --lh-small:   1.25rem;   /* 14 / 20 */
+  --fs-caption: 0.75rem;   --lh-caption: 1rem;      /* 12 / 16 */
+  --fs-quote:   1.375rem;  --lh-quote:   2rem;      /* 22 / 32 italic */
+
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+
+  --tracking-display: -0.01em;
+  --tracking-label:    0.02em;
+  --tracking-caption:  0.04em;
+
+  /* ---- Spacing scale (4px base: 4·8·12·16·24·32·48·64·96) ------------ */
+  --space-1:  0.25rem;  /*  4 */
+  --space-2:  0.5rem;   /*  8 */
+  --space-3:  0.75rem;  /* 12 */
+  --space-4:  1rem;     /* 16 */
+  --space-6:  1.5rem;   /* 24 */
+  --space-8:  2rem;     /* 32 */
+  --space-12: 3rem;     /* 48 */
+  --space-16: 4rem;     /* 64 */
+  --space-24: 6rem;     /* 96 */
+
+  /* ---- Radii --------------------------------------------------------- */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   16px;
+  --radius-pill: 9999px;
+
+  /* ---- Borders ------------------------------------------------------- */
+  --hairline: 1px;
+
+  /* ---- Elevation — soft, low, warm-tinted ---------------------------- */
+  --shadow-soft: 0 1px 2px rgba(40, 30, 20, 0.06), 0 8px 24px rgba(40, 30, 20, 0.06);
+  --shadow-raise: 0 2px 4px rgba(40, 30, 20, 0.08), 0 12px 32px rgba(40, 30, 20, 0.10);
+
+  /* ---- Layout primitives (page rhythm — locked in the frame) --------- */
+  --container-max: 1200px;
+  --header-height: 64px;
+  --gutter: 2.5rem;     /* 40px — generous page gutter */
+  --measure: 68ch;      /* readable prose column */
+
+  /* ---- Motion -------------------------------------------------------- */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --dur-fast: 140ms;
+  --dur-base: 200ms;
+
+  /* ---- Semantic z-index scale ---------------------------------------- */
+  --z-sticky: 100;
+  --z-dropdown: 200;
+  --z-modal: 400;
+  --z-toast: 600;
+
+  color-scheme: light;
+}
+
+/* ---- Sepia (reading) ------------------------------------------------- */
+html[data-theme="sepia"] {
+  --paper:        #ECE0C8;
+  --surface:      #F3E9D4;
+  --surface-sunk: #E6DCC0;
+  --ink:          #3A2F22;
+  --ink-soft:     #6A5A45;
+  --ink-faint:    #8A7B65;
+  --line:         #D8C8A8;
+  --accent:       #A8482F;
+  --accent-hover: #8F3D27;
+  --accent-tint:  #E0C8BC;
+  --on-accent:    #F3E9D4;
+
+  /* sepia reuses the light wash per imagery.md (sepia may reuse light in Primer) */
+  --wash-image: url("../assets/backgrounds/hero-bg-01-light.webp");
+  --wash-opacity: 0.09;
+  --grain-opacity: 0.05;
+
+  color-scheme: light;
+}
+
+/* ---- Dark ------------------------------------------------------------ */
+html[data-theme="dark"] {
+  --paper:        #1F1B18;
+  --surface:      #272220;
+  --surface-sunk: #171413;
+  --ink:          #ECE3D6;
+  --ink-soft:     #B4A899;
+  --ink-faint:    #7A6E62;
+  --line:         #3A332D;
+  --accent:       #D2674A;
+  --accent-hover: #B8593F;
+  --accent-tint:  #3A271F;
+  --amber:        #D4994A;
+  --slate:        #5A7A91;
+  --sage:         #6A907F;
+  --success:      #7A9A6F;
+  --warning:      #D4A04A;
+  --danger:       #C85F4A;
+  --on-accent:    #1F1B18;
+
+  --wash-image: url("../assets/backgrounds/hero-bg-01-dark.webp");
+  --wash-opacity: 0.22;
+  --grain-opacity: 0.035;
+
+  /* warm shadows read as nothing on dark — deepen them */
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.30), 0 8px 24px rgba(0, 0, 0, 0.36);
+  --shadow-raise: 0 2px 4px rgba(0, 0, 0, 0.36), 0 12px 32px rgba(0, 0, 0, 0.44);
+
+  color-scheme: dark;
+}
+
+/* ---- Sepia-contrast --------------------------------------------------
+   A sepia BASE (identical to the sepia theme — ~80% of the page) with
+   occasional warm near-black "noir" bands (~20%) for rhythm and focus.
+   Base values are duplicated from sepia on purpose so the three original
+   theme blocks above stay byte-for-byte untouched.
+   --------------------------------------------------------------------- */
+html[data-theme="sepia-contrast"] {
+  --paper:        #ECE0C8;
+  --surface:      #F3E9D4;
+  --surface-sunk: #E6DCC0;
+  --ink:          #3A2F22;
+  --ink-soft:     #6A5A45;
+  --ink-faint:    #8A7B65;
+  --line:         #D8C8A8;
+  --accent:       #A8482F;
+  --accent-hover: #8F3D27;
+  --accent-tint:  #E0C8BC;
+  --on-accent:    #F3E9D4;
+
+  --wash-image: url("../assets/backgrounds/hero-bg-01-light.webp");
+  --wash-opacity: 0.09;
+  --grain-opacity: 0.05;
+
+  color-scheme: light;
+}
+
+/* Scoped inversion: only [data-band="noir"] flips to warm near-black, and
+   only inside this theme. The same markup in light/sepia/dark inherits the
+   theme normally (no matching rule). Children read entirely from these vars. */
+html[data-theme="sepia-contrast"] [data-band="noir"] {
+  --paper:        #1F1B18;  /* warm near-black — the dark theme's own paper */
+  --surface:      #272220;
+  --surface-sunk: #171413;
+  --ink:          #ECE3D6;
+  --ink-soft:     #B4A899;
+  --ink-faint:    #7A6E62;
+  --line:         #3A332D;
+  --accent:       #D2674A;  /* terracotta brightened for the dark ground */
+  --accent-hover: #B8593F;
+  --accent-tint:  #3A271F;
+  --on-accent:    #1F1B18;
+  /* jewel tones follow the dark theme so chips/states inside a band stay true */
+  --amber:        #D4994A;
+  --slate:        #5A7A91;
+  --sage:         #6A907F;
+  --success:      #7A9A6F;
+  --warning:      #D4A04A;
+  --danger:       #C85F4A;
+
+  /* re-point the wash to the DARK hero variant so the sepia paper texture
+     never bleeds into a noir band; deepen shadows for the dark ground */
+  --wash-image: url("../assets/backgrounds/hero-bg-01-dark.webp");
+  --wash-opacity: 0.22;
+  --grain-opacity: 0.035;
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.30), 0 8px 24px rgba(0, 0, 0, 0.36);
+  --shadow-raise: 0 2px 4px rgba(0, 0, 0, 0.36), 0 12px 32px rgba(0, 0, 0, 0.44);
+
+  background-color: var(--paper);
+  color: var(--ink);  /* flip inherited text too, so bare text in a band stays legible */
+  color-scheme: dark;
+}
+
+/* ----------------------------------------------------------------------
+   AUTHORING RULES — deploying noir bands consistently (sepia-contrast)
+   ----------------------------------------------------------------------
+   • Use data-band="noir" on FULL-BLEED bands only — hero / positioning
+     line, a featured pull-quote, a CTA / subscription band, the footer.
+     Target ~20% of the page's vertical area, no more.
+   • At most 1–2 noir bands per page. Never two adjacent. Never a grid of
+     dark cards (no checkerboard). Never nest a noir band inside another.
+   • Never wrap a long reading / body-text column in noir. Noir is for
+     short, high-impact content — a line, a quote, a CTA — not paragraphs.
+   • Noir is warm near-black, never pure or cold black. It carries the
+     brightened accent (--accent #D2674A) for its one emphasised action.
+   • Children must read colour only from the scoped vars above — no
+     hardcoded hex on any element inside a band.
+   --------------------------------------------------------------------- */
+
+/* ============================================================================
+   Base layer — wires tokens to elements. Chrome/composition CSS lives with
+   each page; this is only the shared foundation every page inherits.
+   ========================================================================== */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-weight: var(--fw-regular);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-serif);
+  font-weight: var(--fw-semibold);
+  margin: 0;
+  color: var(--ink);
+  text-wrap: balance;
+}
+h1 { font-size: var(--fs-h1);      line-height: var(--lh-h1); }
+h2 { font-size: var(--fs-h2);      line-height: var(--lh-h2); }
+h3 {
+  font-family: var(--font-sans);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-h3);
+}
+
+p { margin: 0; }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); }
+
+img, picture { max-width: 100%; display: block; }
+
+button { font-family: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+::selection { background: var(--accent-tint); color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
