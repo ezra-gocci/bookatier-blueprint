@@ -16,11 +16,9 @@
 
   <style>
     /* ===================================================================
-       frame.html — shared chrome. Composition only; all colour / type /
-       spacing comes from styles/tokens.css. ONE applied style:
-       sepia-contrast (set on <html>), no switcher. This file is the
-       spacing-rhythm reference every page inherits: header height,
-       container, gutters, content min-height, footer.
+       CHROME — shared layout skeleton.
+       All colour / type / spacing from styles/tokens.css.
+       One applied theme: sepia-contrast (set on <html>).
        =================================================================== */
 
     body {
@@ -29,17 +27,18 @@
       flex-direction: column;
     }
 
-    /* Global paper grain — recessive, fixed, theme-aware opacity */
+    /* Global parchment texture — fixed full-cover, geometric corner ornaments */
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      background-image: url("assets/backgrounds/monogram-cream.png");
-      background-repeat: repeat;
-      background-size: 320px;
-      opacity: var(--grain-opacity);
+      background-image: url("assets/backgrounds/page-bg.png");
+      background-size: cover;
+      background-position: center;
+      opacity: 0.12;
       pointer-events: none;
       z-index: 0;
+      will-change: transform;
     }
 
     .container {
@@ -49,7 +48,7 @@
       padding-inline: var(--gutter);
     }
 
-    /* Skip link — keyboard accessibility */
+    /* Skip link */
     .skip-link {
       position: absolute;
       left: var(--space-4);
@@ -65,16 +64,18 @@
     }
     .skip-link:focus { top: var(--space-2); }
 
-    /* ---- Header (height locked here) -------------------------------- */
+    /* ---- Header -------------------------------------------------------- */
     .site-header {
       position: sticky;
       top: 0;
       z-index: var(--z-sticky);
-      background: color-mix(in srgb, var(--paper) 88%, transparent);
-      backdrop-filter: saturate(140%) blur(8px);
-      border-bottom: var(--hairline) solid var(--line);
+      background: transparent;
+      transition: box-shadow 200ms ease;
     }
-    /* Three-column grid → wordmark left, nav perfectly centered, actions right */
+    .site-header.is-scrolled {
+      background: color-mix(in srgb, var(--paper) 95%, transparent);
+      box-shadow: 0 4px 24px color-mix(in srgb, var(--noir-paper) 18%, transparent);
+    }
     .header-inner {
       display: grid;
       grid-template-columns: 1fr auto 1fr;
@@ -83,9 +84,14 @@
       height: var(--header-height);
     }
 
-    /* Header top-left: image-based wordmark (beta→alpha banner logo) */
-    .wordmark {
+    .header-left {
       justify-self: start;
+      display: flex;
+      align-items: center;
+      gap: var(--space-8);
+      padding-bottom: 10px;
+    }
+    .wordmark {
       display: inline-flex;
       align-items: center;
       flex-shrink: 0;
@@ -95,7 +101,6 @@
     .wordmark:hover { opacity: 0.82; }
     .wordmark-img { height: 32px; width: auto; display: block; }
 
-    /* Serif text mark — used in nav home item, footer, placeholder seal */
     .text-mark {
       font-family: var(--font-serif);
       font-size: var(--fs-h1);
@@ -112,14 +117,14 @@
     .text-mark .arrow { color: var(--accent); }
     .text-mark:hover { color: var(--accent); }
 
-    /* ---- Centered primary nav + shared animated indicator ----------- */
+    /* Centered primary nav + shared animated indicator */
     .primary-nav {
       justify-self: center;
-      position: relative;        /* offset parent for the moving indicator */
+      position: relative;
       display: flex;
       align-items: center;
       gap: var(--space-6);
-      padding-bottom: 10px;      /* reserves the band the indicator lives in */
+      padding-bottom: 10px;
     }
     .nav-link {
       font-family: var(--font-sans);
@@ -134,53 +139,37 @@
     .nav-link:hover,
     .nav-link[aria-current="page"] { color: var(--accent); }
 
-    /* Home nav item — a β→α badge matching the footer noir mark. The badge
-       can't use the data-band="noir" scope, so the noir token values are
-       hardcoded here: background #1F1B18, letters #ECE3D6, arrow #D2674A. */
     .nav-link-home {
       font-family: var(--font-serif);
       font-size: var(--fs-body);
       font-weight: var(--fw-semibold);
       letter-spacing: var(--tracking-display);
-      /* badge — extra ~3px on the BOTTOM only (top edge unchanged) so the
-         dark background gives the straddling dot a little more room below */
-      background: #1F1B18;
-      color: #ECE3D6;
+      background: var(--noir-paper);
+      color: var(--noir-ink);
       padding: var(--space-1) var(--space-3) calc(var(--space-1) + 3px);
       border-radius: var(--radius-md);
       transition: opacity var(--dur-fast) var(--ease-out-quart);
     }
-    .nav-link-home .arrow { color: #D2674A; }
+    .nav-link-home .arrow { color: var(--noir-accent); }
+    .nav-link-home:hover { color: var(--noir-ink); opacity: 0.85; }
+    .nav-link-home:hover .arrow { color: var(--noir-accent); }
 
-    /* Override the base .nav-link hover/active colour rules for this item —
-       the badge is always the same; only opacity changes on hover */
-    .nav-link-home:hover,
-    .nav-link-home[aria-current="page"] {
-      color: #ECE3D6;   /* keep cream — not accent */
-      opacity: 0.85;
+    .nav-link-home[aria-current="page"],
+    .nav-link-home:hover {
+      color: rgba(255, 255, 255, 0.92);
     }
-    .nav-link-home:hover .arrow,
-    .nav-link-home[aria-current="page"] .arrow {
-      color: #D2674A;   /* keep terracotta — not inherit */
+    .nav-link-home[aria-current="page"] .arrow,
+    .nav-link-home:hover .arrow {
+      color: var(--noir-accent);
     }
 
-    /* Selected-item indicator: line · gap · dot · gap · line.
-       A single shared STRIP (a 2px rule with a centered hole) and a single
-       shared DOT (thick, interrupting the rule). Both move to the active
-       item — the strip SLIDES (ease-out), the dot BOUNCES (spring overshoot,
-       the one sanctioned exception to the no-bounce rule). */
     .nav-strip,
-    .nav-dot {
-      position: absolute;
-      pointer-events: none;
-    }
-    /* The line is terracotta. */
+    .nav-dot { position: absolute; pointer-events: none; }
     .nav-strip {
       background: var(--accent);
-      bottom: 7px;               /* lifted ~7px → sits about twice as close to the labels */
-      height: var(--hairline);   /* thin hairline rule under the side items */
+      bottom: 7px;
+      height: var(--hairline);
       border-radius: var(--radius-pill);
-      /* Cut a centered ~14px window so the dot interrupts the rule */
       -webkit-mask: linear-gradient(90deg,
         #000 0, #000 calc(50% - 7px),
         transparent calc(50% - 7px), transparent calc(50% + 7px),
@@ -189,48 +178,40 @@
         #000 0, #000 calc(50% - 7px),
         transparent calc(50% - 7px), transparent calc(50% + 7px),
         #000 calc(50% + 7px), #000 100%);
-      /* The line slides toward the target, but its opacity fades faster than
-         it travels — so when switching to the centre badge it disappears
-         BEFORE reaching the middle. */
       transition: left 280ms var(--ease-out-quart),
                   width 280ms var(--ease-out-quart),
                   opacity 160ms var(--ease-out-quart);
     }
-    /* The dot is amber — a warm orange, distinct from the terracotta line. */
     .nav-dot {
-      background: var(--amber);
-      bottom: 4px;               /* centers the 7px dot on the lifted 1px strip */
+      background: #E04B00;
+      bottom: 4px;
       width: 7px;
       height: 7px;
       border-radius: var(--radius-pill);
       transform: translateX(-50%);
-      /* Spring / overshoot on BOTH axes — the dot jumps like a ball and
-         bounces into place (the one sanctioned bounce). `bottom` is animated
-         so the dot can hop up to straddle the centre badge's lower edge. */
-      transition: left 360ms cubic-bezier(0.34, 1.56, 0.64, 1),
-                  bottom 360ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: left 360ms var(--ease-out-quart),
+                  bottom 360ms var(--ease-out-quart);
     }
-    /* Before JS positions them, keep them invisible to avoid a flash at 0,0 */
     .nav-strip:not([style]),
     .nav-dot:not([style]) { opacity: 0; }
-
-    /* REQUIRED reduced-motion path: no slide, no bounce — instant move */
     @media (prefers-reduced-motion: reduce) {
-      .nav-strip,
-      .nav-dot { transition: none; }
+      .nav-strip, .nav-dot { transition: none; }
     }
 
     .header-actions {
       justify-self: end;
       display: flex;
       align-items: center;
-      gap: var(--space-3);
+      gap: var(--space-2);
       flex-shrink: 0;
     }
-    /* Mobile-only "О проекте" — compensates for the hidden primary-nav */
-    .nav-about { display: none; }
-
-    /* ---- Buttons ---------------------------------------------------- */
+    .header-actions .btn-landing-primary,
+    .header-actions .btn-landing-ghost {
+      font-size: 0.6875rem;
+      padding: 5px 1.25rem;
+      letter-spacing: var(--tracking-label);
+    }
+    /* ---- Buttons ------------------------------------------------------- */
     .btn {
       font-family: var(--font-sans);
       font-size: var(--fs-small);
@@ -248,11 +229,9 @@
       color: var(--ink-soft);
       border: var(--hairline) solid transparent;
       padding: var(--space-2) var(--space-4);
+      min-height: 44px;
     }
-    .btn-ghost:hover {
-      color: var(--ink);
-      border-color: var(--line);
-    }
+    .btn-ghost:hover { color: var(--ink); border-color: var(--line); }
     .btn-primary {
       background: var(--accent);
       color: var(--on-accent);
@@ -265,8 +244,6 @@
       color: var(--on-accent);
       transform: translateY(-1px);
     }
-    /* Softened primary — accent at 88%, just a breath lighter than full.
-       Warm lift shadow separates it from the textured grain background. */
     .btn-soft-fill {
       display: inline-flex;
       align-items: center;
@@ -282,7 +259,9 @@
       text-decoration: none;
       cursor: pointer;
       padding: 9px 24px;
-      box-shadow: 0 1px 3px rgba(168,72,47,0.12), 0 4px 12px rgba(168,72,47,0.14);
+      min-height: 44px;
+      box-shadow: 0 1px 3px color-mix(in srgb, var(--accent) 12%, transparent),
+                  0 4px 12px color-mix(in srgb, var(--accent) 14%, transparent);
       transition: background var(--dur-base) var(--ease-out-quart),
         box-shadow var(--dur-base) var(--ease-out-quart),
         transform var(--dur-fast) var(--ease-out-quart);
@@ -290,49 +269,38 @@
     .btn-soft-fill:hover {
       color: var(--on-accent);
       background: var(--accent-hover);
-      box-shadow: 0 2px 6px rgba(168,72,47,0.18), 0 8px 20px rgba(168,72,47,0.20);
+      box-shadow: 0 2px 6px color-mix(in srgb, var(--accent) 18%, transparent),
+                  0 8px 20px color-mix(in srgb, var(--accent) 20%, transparent);
       transform: translateY(-1px);
     }
     @media (prefers-reduced-motion: reduce) {
       .btn-soft-fill { transition: none; transform: none !important; }
     }
-    /* Inner cream halo separates accent ring from accent fill on this button */
     .btn-soft-fill:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
       border-radius: var(--radius-md);
       box-shadow: 0 0 0 2px var(--surface),
-                  0 1px 3px rgba(168,72,47,0.12),
-                  0 4px 12px rgba(168,72,47,0.14);
+                  0 1px 3px color-mix(in srgb, var(--accent) 12%, transparent),
+                  0 4px 12px color-mix(in srgb, var(--accent) 14%, transparent);
     }
-
-    /* Keyboard focus: keep the system terracotta ring, but preserve the
-       button's own --radius-md corners (the global :focus-visible rule in
-       tokens.css drops to --radius-sm) so corners don't snap on Tab. */
     .btn:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
       border-radius: var(--radius-md);
     }
-    /* On the filled primary button the terracotta ring would blend with the
-       terracotta fill; a cream (--surface) halo separates fill from ring so
-       the focus state reads unambiguously. Static — no transition to gate. */
-    .btn-primary:focus-visible {
-      box-shadow: 0 0 0 2px var(--surface);
-    }
+    .btn-primary:focus-visible { box-shadow: 0 0 0 2px var(--surface); }
 
-    /* ---- Main content well ------------------------------------------ */
+    /* ---- Main / Footer ------------------------------------------------- */
     .site-main {
       position: relative;
       flex: 1;
       isolation: isolate;
     }
-
-    /* ---- Footer — menu-free NOIR band (proportions locked here) ----- */
     .site-footer {
       position: relative;
       z-index: 1;
-      background: var(--paper);   /* noir scope swaps this to warm near-black */
+      background: var(--paper);
       border-top: var(--hairline) solid var(--line);
     }
     .footer-inner {
@@ -363,39 +331,32 @@
       color: var(--ink-soft);
     }
 
-    /* ---- Responsive: degrade gracefully (desktop-first) ------------- */
+    /* ---- Responsive chrome --------------------------------------------- */
     @media (max-width: 760px) {
       .primary-nav { display: none; }
-      .nav-about { display: inline-flex; }
+      .header-about { display: none; }
       :root { --gutter: var(--space-6); }
     }
     @media (max-width: 460px) {
-      /* Desktop-first chrome degrades to fit small screens without overflow */
       .header-inner { gap: var(--space-3); }
       .header-actions { gap: var(--space-2); }
-      /* О проекте stays; Войти ghost hides (users reach login via Регистрация flow) */
-      .header-actions > .btn-ghost:not(.nav-about) { display: none; }
+      .header-actions > .btn-ghost { display: none; }
       .btn-ghost { padding: var(--space-2) var(--space-3); }
       .btn-primary { padding: var(--space-2) var(--space-4); }
     }
 
     /* ===================================================================
-       Modal overlays — Login (A) + Registration (B)
-       Backdrop uses visibility+opacity so CSS transitions work without
-       JS-managed display toggling. Card gets a separate fade+rise.
+       MODAL OVERLAYS — Login (A) + Registration (B)
        =================================================================== */
-
-    /* Backdrop */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(36, 31, 27, 0.52);
+      background: color-mix(in srgb, var(--ink) 52%, transparent);
       backdrop-filter: blur(2px);
       z-index: var(--z-modal);
       display: flex;
       align-items: center;
       justify-content: center;
-      /* Hidden state */
       visibility: hidden;
       opacity: 0;
       pointer-events: none;
@@ -407,8 +368,6 @@
       opacity: 1;
       pointer-events: auto;
     }
-
-    /* Card */
     .modal-card {
       background: var(--surface);
       border: var(--hairline) solid var(--line);
@@ -418,36 +377,27 @@
       width: min(440px, calc(100vw - 2 * var(--space-6)));
       max-height: 90vh;
       overflow-y: auto;
-      /* Closed: slightly low */
       opacity: 0;
       transform: translateY(8px);
       transition: opacity var(--dur-base) var(--ease-out-quart),
                   transform var(--dur-base) var(--ease-out-quart);
     }
-    .modal-backdrop.is-open .modal-card {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
+    .modal-backdrop.is-open .modal-card { opacity: 1; transform: translateY(0); }
     @media (prefers-reduced-motion: reduce) {
-      .modal-backdrop,
-      .modal-card { transition: none; }
+      .modal-backdrop, .modal-card { transition: none; }
     }
-
-    /* ---- Header section -------------------------------------------- */
     .modal-header {
       position: relative;
       text-align: center;
       margin-bottom: var(--space-6);
     }
-
-    /* Close button: top-right, 32×32 tap target, ghost */
     .modal-close {
       position: absolute;
       top: 0;
       right: 0;
-      width: 32px;
-      height: 32px;
+      width: 44px;
+      height: 44px;
+      margin: -6px -6px 0 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -462,12 +412,7 @@
       padding: 0;
     }
     .modal-close:hover { color: var(--ink); }
-    .modal-close:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-
-    /* β→α brand seal — dark-pill variant, body-scale */
+    .modal-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .modal-seal {
       display: inline-flex;
       gap: 0.04em;
@@ -476,17 +421,14 @@
       font-size: var(--fs-body);
       font-weight: var(--fw-semibold);
       letter-spacing: var(--tracking-display);
-      /* Noir token values hardcoded (same as .nav-link-home) */
-      background: #1F1B18;
-      color: #ECE3D6;
+      background: var(--noir-paper);
+      color: var(--noir-ink);
       padding: 3px var(--space-3) 5px;
       border-radius: var(--radius-md);
       margin-bottom: var(--space-4);
       line-height: 1;
     }
-    .modal-seal .arrow { color: #D2674A; }
-
-    /* Title + subtitle */
+    .modal-seal .arrow { color: var(--noir-accent); }
     .modal-title {
       font-family: var(--font-serif);
       font-size: var(--fs-h2);
@@ -502,31 +444,15 @@
       color: var(--ink-soft);
       margin: 0;
     }
-
-    /* ---- Form elements --------------------------------------------- */
-    .modal-form {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-4);
-    }
-
-    .form-field {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-1);
-    }
-
+    .modal-form { display: flex; flex-direction: column; gap: var(--space-4); }
+    .form-field { display: flex; flex-direction: column; gap: var(--space-1); }
     .form-label {
       font-family: var(--font-sans);
       font-size: var(--fs-small);
       font-weight: var(--fw-medium);
       color: var(--ink-soft);
     }
-    .form-label-opt {
-      font-weight: var(--fw-regular);
-      color: var(--ink-faint);
-    }
-
+    .form-label-opt { font-weight: var(--fw-regular); color: var(--ink-soft); }
     .form-input {
       background: var(--surface-sunk);
       border: var(--hairline) solid var(--line);
@@ -539,15 +465,13 @@
       transition: border-color var(--dur-fast) var(--ease-out-quart),
                   box-shadow var(--dur-fast) var(--ease-out-quart);
     }
-    /* Remove browser default focus ring; replace with design-system ring */
     .form-input:focus { outline: none; }
     .form-input:focus-visible {
       outline: none;
       border-color: var(--accent);
       box-shadow: 0 0 0 2px var(--accent-tint);
     }
-
-    /* "Forgot password?" — right-aligned, below input */
+    .form-input::placeholder { color: var(--ink-soft); }
     .form-forgot {
       font-size: var(--fs-small);
       color: var(--accent);
@@ -555,15 +479,7 @@
       display: block;
     }
     .form-forgot:hover { color: var(--accent-hover); text-decoration: underline; }
-
-    /* Full-width submit */
-    .modal-submit {
-      width: 100%;
-      padding: var(--space-3) var(--space-4);
-      font-size: var(--fs-body);
-    }
-
-    /* Cross-link row below the form */
+    .modal-submit { width: 100%; padding: var(--space-3) var(--space-4); font-size: var(--fs-body); }
     .modal-footer-links {
       text-align: center;
       margin-top: var(--space-4);
@@ -571,18 +487,9 @@
       font-size: var(--fs-small);
       color: var(--ink-soft);
     }
-    .modal-footer-links a {
-      color: var(--accent);
-      font-weight: var(--fw-medium);
-    }
-    .modal-footer-links a:hover {
-      color: var(--accent-hover);
-      text-decoration: underline;
-    }
-
-    /* ---- Feedback messages ----------------------------------------- */
-    .modal-error,
-    .modal-success {
+    .modal-footer-links a { color: var(--accent); font-weight: var(--fw-medium); }
+    .modal-footer-links a:hover { color: var(--accent-hover); text-decoration: underline; }
+    .modal-error, .modal-success {
       border-radius: var(--radius-sm);
       padding: var(--space-2) var(--space-4);
       font-family: var(--font-sans);
@@ -591,9 +498,7 @@
       margin-bottom: var(--space-4);
       display: none;
     }
-    .modal-error.is-visible,
-    .modal-success.is-visible { display: block; }
-
+    .modal-error.is-visible, .modal-success.is-visible { display: block; }
     .modal-error {
       background: color-mix(in srgb, var(--danger) 10%, var(--surface));
       border: var(--hairline) solid color-mix(in srgb, var(--danger) 30%, var(--line));
@@ -605,8 +510,6 @@
       color: var(--success);
       text-align: center;
     }
-
-    /* ---- Toast (login success) ------------------------------------- */
     .site-toast {
       position: fixed;
       bottom: var(--space-6);
@@ -625,16 +528,11 @@
                   transform var(--dur-base) var(--ease-out-quart);
       pointer-events: none;
     }
-    .site-toast.is-visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .site-toast { transition: none; }
-    }
+    .site-toast.is-visible { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) { .site-toast { transition: none; } }
 
-    
-    /* ---- Main content well ------------------------------------------ */
+
+    /* ---- Main content well (frame pages) -------------------------------- */
     .site-main {
       position: relative;
       flex: 1;
@@ -648,7 +546,7 @@
       background-size: 280px;
       background-blend-mode: multiply;
     }
-    /* Recessive content wash — theme-swapped, faded into paper at the edges */
+
     .content-wash {
       position: absolute;
       inset: 0;
@@ -663,6 +561,7 @@
       pointer-events: none;
     }
 
+    /* Placeholder card */
     .placeholder-card {
       position: relative;
       z-index: 1;
@@ -687,6 +586,7 @@
       font-size: var(--fs-small);
       letter-spacing: var(--tracking-label);
       color: var(--ink-soft);
+      margin: 0;
     }
     .placeholder-card .hint {
       margin-top: var(--space-2);
@@ -695,7 +595,7 @@
       color: var(--ink-soft);
     }
 
-    /* Error variant — danger-tinted card */
+    /* Error card */
     .error-card {
       position: relative;
       z-index: 1;
@@ -707,35 +607,36 @@
       box-shadow: var(--shadow-soft);
       max-width: 480px;
     }
-    .error-card .error-icon {
-      font-size: var(--fs-h1);
-      color: color-mix(in srgb, var(--danger) 60%, var(--ink-faint));
-      margin-bottom: var(--space-4);
+    .error-icon {
+      font-size: 2.5rem;
       line-height: 1;
+      color: color-mix(in srgb, var(--danger) 55%, var(--ink-faint));
+      margin-bottom: var(--space-4);
     }
-    .error-card .error-code {
+    .error-code {
       font-family: var(--font-sans);
       font-size: var(--fs-caption);
+      font-weight: var(--fw-medium);
       letter-spacing: var(--tracking-caption);
       text-transform: uppercase;
       color: var(--danger);
-      margin-bottom: var(--space-2);
+      margin: 0 0 var(--space-2);
     }
-    .error-card .error-title {
+    .error-title {
       font-family: var(--font-serif);
       font-size: var(--fs-h2);
+      font-weight: var(--fw-semibold);
       color: var(--ink);
       margin: 0 0 var(--space-3);
       line-height: var(--lh-h2);
     }
-    .error-card .error-desc {
+    .error-desc {
       font-family: var(--font-sans);
       font-size: var(--fs-small);
       color: var(--ink-soft);
       line-height: var(--lh-small);
-      margin: 0 0 var(--space-6);
+      margin: 0 0 var(--space-8);
     }
-
 
     @media (max-width: 760px) {
       .placeholder-card { padding: var(--space-12) var(--space-8); }
@@ -746,45 +647,35 @@
 
 <body>
   <a class="skip-link" href="#content">К содержимому</a>
-  <!-- ===================================================================
-       HEADER — anonymous frame (site-map.md v2.0 §3)
-       Wordmark · centered public nav (О проекте · β→α home · Новости) ·
-       Войти / Регистрация. Nav targets are visual stubs this session;
-       the indicator is wired to demonstrate its motion on click.
-       =================================================================== -->
-  <header class="site-header">
+
+    <header class="site-header">
     <div class="header-inner container">
-      <a class="wordmark" href="index.html" aria-label="beta→alpha — на главную">
-        <img class="wordmark-img" src="assets/decor/a2b-logo.png" alt="beta→alpha">
-      </a>
+      <div class="header-left">
+        <a class="wordmark" href="index.html" aria-label="beta→alpha — на главную">
+          <img class="wordmark-img" src="assets/decor/a2b-logo.png" alt="beta→alpha">
+        </a>
+        <a class="nav-link header-about" href="about.html">О проекте</a>
+      </div>
 
       <nav class="primary-nav" aria-label="Основная навигация">
-        <a class="nav-link" href="about.html">О проекте</a>
+        <a class="nav-link" href="#library" data-stub>Библиотека</a>
         <a class="nav-link nav-link-home" href="index.html" aria-label="Главная" aria-current="page">β<span class="arrow">→</span>α</a>
         <a class="nav-link" href="#pass-2" data-stub>Новости</a>
 
-        <!-- Shared selected-item indicator: strip (slides) + dot (bounces) -->
         <span class="nav-strip" aria-hidden="true"></span>
         <span class="nav-dot" aria-hidden="true"></span>
       </nav>
 
       <div class="header-actions">
-        <a class="btn btn-ghost nav-about" href="about.html">О проекте</a>
-        <a id="btn-login" class="btn btn-ghost" href="#">Войти</a>
-        <a id="btn-reg" class="btn-soft-fill" href="#">Регистрация</a>
+        <a id="btn-reg" class="btn-landing-primary" href="#">Присоединиться</a>
+        <a id="btn-login" class="btn-landing-ghost" href="#">Зайти</a>
       </div>
     </div>
   </header>
 
-  <!-- ===================================================================
-       CONTENT WELL — empty <main> filling the space between header and
-       footer, with a recessive theme-swapped background wash. Pages
-       replace the placeholder card with real content.
-       =================================================================== -->
-
   <main class="site-main" id="content">
-      <div class="content-wash" aria-hidden="true"></div>
-      <div class="error-card" role="alert">
+    <div class="content-wash" aria-hidden="true"></div>
+    <div class="error-card" role="alert">
         <div class="error-icon" aria-hidden="true">⊗</div>
         <p class="error-code">Ошибка 404</p>
         <h1 class="error-title">Страница не найдена</h1>
@@ -792,14 +683,13 @@
           Запрошенная страница не существует или была перемещена.<br>
           Возможно, ссылка устарела — попробуйте вернуться на главную.
         </p>
-        <a class="btn btn-ghost" href="pub-landing.html">← На главную</a>
+        <a class="btn-landing-ghost" href="pub-landing.html">← На главную</a>
       </div>
-    </main>
+  </main>
+
 
   <!-- ===================================================================
-       FOOTER — menu-free NOIR band (site-map.md v2.0 §3). Demonstrates the
-       sepia→noir cadence at the bottom of every page. Only the β→α line +
-       build tag; no link menu. Proportions locked here.
+       FOOTER — menu-free NOIR band (site-map.md v2.0 §3).
        =================================================================== -->
   <footer class="site-footer" data-band="noir">
     <div class="container">
@@ -808,15 +698,13 @@
           <span class="text-mark" aria-hidden="true">β<span class="arrow">→</span>α</span>
           <span class="footer-tagline">© 2026 beta→alpha. Для профессионального сообщества.</span>
         </div>
-        <span class="build-tag">v0.2.1-primer · pub-error</span>
+        <span class="build-tag">v0.2.3-primer · pub-error</span>
       </div>
     </div>
   </footer>
 
   <!-- ===================================================================
        OVERLAY A — Login (Вход)
-       Opens over Landing; success navigates to frame-user.html.
-       Blueprint: always succeeds, fields pre-filled with test credentials.
        =================================================================== -->
   <div id="modal-login" class="modal-backdrop"
        role="dialog" aria-modal="true" aria-labelledby="login-title" aria-hidden="true">
@@ -828,7 +716,6 @@
         <p class="modal-subtitle">Войдите, чтобы читать и участвовать в сообществе</p>
       </div>
 
-      <!-- Error state — visible only via .is-visible; never triggered in blueprint -->
       <div class="modal-error" id="login-error" aria-live="polite">
         Неверный адрес или пароль. Попробуйте ещё раз.
       </div>
@@ -837,15 +724,17 @@
         <div class="form-field">
           <label class="form-label" for="login-email">Email</label>
           <input class="form-input" id="login-email" type="email" name="email"
-                 value="test@beta2alpha.academy" autocomplete="email" />
+                 value="test@beta2alpha.academy" autocomplete="email"
+                 required aria-required="true" />
         </div>
         <div class="form-field">
           <label class="form-label" for="login-password">Пароль</label>
           <input class="form-input" id="login-password" type="password" name="password"
-                 value="testpass123" autocomplete="current-password" />
+                 value="testpass123" autocomplete="current-password"
+                 required aria-required="true" />
           <a class="form-forgot" id="login-forgot" href="#">Забыли пароль?</a>
         </div>
-        <button class="btn btn-primary modal-submit" type="submit">Войти</button>
+        <button class="btn btn-primary modal-submit" type="submit">Зайти</button>
       </form>
 
       <p class="modal-footer-links">
@@ -856,8 +745,6 @@
 
   <!-- ===================================================================
        OVERLAY B — Registration (Регистрация)
-       Blueprint stub: captures sign-up intent only — no real account created.
-       Validates fields + password match; shows success, auto-closes in 2 s.
        =================================================================== -->
   <div id="modal-reg" class="modal-backdrop"
        role="dialog" aria-modal="true" aria-labelledby="reg-title" aria-hidden="true">
@@ -877,21 +764,23 @@
       <form class="modal-form" id="reg-form" novalidate>
         <div class="form-field">
           <label class="form-label" for="reg-name">Имя</label>
-          <input class="form-input" id="reg-name" type="text" name="name" autocomplete="name" />
+          <input class="form-input" id="reg-name" type="text" name="name" autocomplete="name"
+                 required aria-required="true" />
         </div>
         <div class="form-field">
           <label class="form-label" for="reg-email">Email</label>
-          <input class="form-input" id="reg-email" type="email" name="email" autocomplete="email" />
+          <input class="form-input" id="reg-email" type="email" name="email" autocomplete="email"
+                 required aria-required="true" />
         </div>
         <div class="form-field">
           <label class="form-label" for="reg-password">Пароль</label>
           <input class="form-input" id="reg-password" type="password" name="password"
-                 autocomplete="new-password" />
+                 autocomplete="new-password" required aria-required="true" />
         </div>
         <div class="form-field">
           <label class="form-label" for="reg-pw2">Повторите пароль</label>
           <input class="form-input" id="reg-pw2" type="password" name="password2"
-                 autocomplete="new-password" />
+                 autocomplete="new-password" required aria-required="true" />
         </div>
         <div class="form-field">
           <label class="form-label" for="reg-spec">
@@ -904,15 +793,12 @@
       </form>
 
       <p class="modal-footer-links" id="reg-footer-links">
-        Уже есть аккаунт? <a href="#" id="reg-to-login">Войти</a>
+        Уже есть аккаунт? <a href="#" id="reg-to-login">Зайти</a>
       </p>
     </div>
   </div>
 
-  <!-- Tiny inline script (the only application JS allowed here): positions
-       and animates the shared nav indicator. The strip slides, the dot
-       bounces. Targets are stubs in the frame → preventDefault so the
-       motion is demonstrable without leaving the page. -->
+  <!-- Nav indicator script: strip slides, dot bounces -->
   <script>
     (function () {
       var nav = document.querySelector(".primary-nav");
@@ -922,16 +808,12 @@
       var dot = nav.querySelector(".nav-dot");
       if (!links.length || !strip || !dot) return;
 
-      var DOT_RADIUS = 3.5; // half of the 7px dot
+      var DOT_RADIUS = 3.5;
 
       function isHome(link) {
         return link.classList.contains("nav-link-home");
       }
 
-      // Position the strip and dot under a link. The strip always tracks the
-      // target horizontally. The dot rides the strip under a side item, but on
-      // the centre badge it straddles the badge's lower edge — top half over
-      // the dark background, bottom half below it — horizontally centred.
       function moveTo(link) {
         var left = link.offsetLeft;
         var width = link.offsetWidth;
@@ -943,7 +825,7 @@
             nav.clientHeight - (link.offsetTop + link.offsetHeight);
           dot.style.bottom = navBottomToBadgeBottom - DOT_RADIUS + "px";
         } else {
-          dot.style.bottom = "4px"; // centred on the lifted 1px strip
+          dot.style.bottom = "4px";
         }
       }
 
@@ -951,15 +833,11 @@
         return nav.querySelector('.nav-link[aria-current="page"]') || links[0];
       }
 
-      // The dot marks every selection. The line shows only under the side
-      // items; on the centre badge it fades out (timing handled in CSS).
       function syncIndicatorVisibility() {
         strip.style.opacity = isHome(activeLink()) ? "0" : "1";
         dot.style.opacity = "1";
       }
 
-      // Place the indicator, optionally without animation (initial paint and
-      // layout reflows should snap, not animate).
       function place(link, instant) {
         if (instant) {
           strip.style.transition = "none";
@@ -968,28 +846,25 @@
         moveTo(link);
         syncIndicatorVisibility();
         if (instant) {
-          void dot.offsetWidth; // flush, then restore the stylesheet transition
+          void dot.offsetWidth;
           strip.style.transition = "";
           dot.style.transition = "";
         }
       }
 
-      // Default under the active item. Wait for fonts so the serif badge width
-      // is final before measuring offsetWidth; place it instantly (no fly-in).
       document.fonts.ready.then(function () {
         place(activeLink(), true);
       });
 
       links.forEach(function (link) {
         link.addEventListener("click", function (e) {
-          e.preventDefault(); // stub targets — keep the page so motion is visible
+          e.preventDefault();
           links.forEach(function (l) { l.removeAttribute("aria-current"); });
           link.setAttribute("aria-current", "page");
-          place(link, false); // animated: dot bounces, line slides then fades
+          place(link, false);
         });
       });
 
-      // Prevent stub links outside the nav from appending the hash to the URL.
       var outerStubs = Array.prototype.slice.call(document.querySelectorAll("[data-stub]"));
       outerStubs.forEach(function(el) {
         if (!nav.contains(el)) {
@@ -997,16 +872,13 @@
         }
       });
 
-      // Keep the indicator aligned if the layout reflows.
       window.addEventListener("resize", function () { place(activeLink(), true); });
     })();
   </script>
 
-  <!-- Modal overlay script — Login (A) + Registration (B).
-       Self-contained IIFE; does not touch the nav indicator script above. -->
+  <!-- Modal overlay script — Login (A) + Registration (B) -->
   <script>
     (function () {
-      // --- Refs ---
       var btnLogin   = document.getElementById("btn-login");
       var btnReg     = document.getElementById("btn-reg");
       var modalLogin = document.getElementById("modal-login");
@@ -1025,7 +897,6 @@
       var activeModal = null;
       var triggerEl   = null;
 
-      // --- Helpers ---
       function focusableElements(el) {
         return Array.prototype.slice.call(
           el.querySelectorAll(
@@ -1036,13 +907,11 @@
         );
       }
 
-      // --- Open / close ---
       function openModal(modal) {
         activeModal = modal;
         modal.setAttribute("aria-hidden", "false");
         modal.classList.add("is-open");
         document.body.style.overflow = "hidden";
-        // Defer focus so the transition has started
         setTimeout(function () {
           var first = focusableElements(modal)[0];
           if (first) first.focus();
@@ -1062,7 +931,6 @@
         }
       }
 
-      // Switch without restoring focus (immediately entering next modal)
       function switchModal(from, to, newTrigger) {
         from.classList.remove("is-open");
         from.setAttribute("aria-hidden", "true");
@@ -1071,7 +939,6 @@
         openModal(to);
       }
 
-      // --- Triggers ---
       btnLogin.addEventListener("click", function (e) {
         e.preventDefault();
         triggerEl = btnLogin;
@@ -1083,11 +950,9 @@
         openModal(modalReg);
       });
 
-      // --- Close buttons ---
       loginClose.addEventListener("click", function () { closeModal(modalLogin); });
       regClose.addEventListener("click", function () { closeModal(modalReg); });
 
-      // --- Backdrop click → close ---
       modalLogin.addEventListener("click", function (e) {
         if (e.target === modalLogin) closeModal(modalLogin);
       });
@@ -1095,33 +960,22 @@
         if (e.target === modalReg) closeModal(modalReg);
       });
 
-      // --- Keyboard: ESC + focus trap ---
       document.addEventListener("keydown", function (e) {
         if (!activeModal) return;
-        if (e.key === "Escape") {
-          closeModal(activeModal);
-          return;
-        }
+        if (e.key === "Escape") { closeModal(activeModal); return; }
         if (e.key === "Tab") {
           var focusable = focusableElements(activeModal);
           if (!focusable.length) return;
           var first = focusable[0];
           var last  = focusable[focusable.length - 1];
           if (e.shiftKey) {
-            if (document.activeElement === first) {
-              e.preventDefault();
-              last.focus();
-            }
+            if (document.activeElement === first) { e.preventDefault(); last.focus(); }
           } else {
-            if (document.activeElement === last) {
-              e.preventDefault();
-              first.focus();
-            }
+            if (document.activeElement === last) { e.preventDefault(); first.focus(); }
           }
         }
       });
 
-      // --- Cross-links ---
       loginToReg.addEventListener("click", function (e) {
         e.preventDefault();
         switchModal(modalLogin, modalReg, btnReg);
@@ -1131,10 +985,8 @@
         switchModal(modalReg, modalLogin, btnLogin);
       });
 
-      // --- "Forgot password?" — non-functional in blueprint ---
       loginForgot.addEventListener("click", function (e) { e.preventDefault(); });
 
-      // --- Login submit: always succeeds → toast + navigate ---
       loginForm.addEventListener("submit", function (e) {
         e.preventDefault();
         closeModal(modalLogin);
@@ -1144,7 +996,6 @@
         }, 900);
       });
 
-      // --- Registration submit: validate → success message → auto-close ---
       regForm.addEventListener("submit", function (e) {
         e.preventDefault();
         var name  = document.getElementById("reg-name").value.trim();
@@ -1165,7 +1016,6 @@
           return;
         }
 
-        // Success: hide form, show message, auto-close after 2 s
         regForm.style.display = "none";
         regFooter.style.display = "none";
         regSuccess.classList.add("is-visible");
@@ -1173,7 +1023,6 @@
 
         setTimeout(function () {
           closeModal(modalReg);
-          // Reset form once the close transition finishes
           setTimeout(function () {
             regForm.reset();
             regForm.style.display = "";
@@ -1184,7 +1033,6 @@
         }, 2000);
       });
 
-      // --- Toast helper ---
       function showToast(msg) {
         var toast = document.createElement("div");
         toast.className = "site-toast";
@@ -1192,7 +1040,6 @@
         toast.setAttribute("aria-live", "polite");
         toast.textContent = msg;
         document.body.appendChild(toast);
-        // Force reflow so the transition fires
         void toast.offsetWidth;
         toast.classList.add("is-visible");
         setTimeout(function () {
@@ -1202,6 +1049,483 @@
           }, 300);
         }, 2500);
       }
+    })();
+  </script>
+
+  <!-- Popover script for merit chips -->
+  <script>
+    (function () {
+      var popover = document.createElement("div");
+      popover.className = "mc-popover";
+      popover.setAttribute("role", "tooltip");
+      document.body.appendChild(popover);
+
+      var activeChip = null;
+
+      function showPopover(chip) {
+        var text = chip.getAttribute("data-merit");
+        if (!text) return;
+        popover.textContent = text;
+        popover.classList.remove("is-visible");
+
+        var rect = chip.getBoundingClientRect();
+        var pw = 220;
+        var ph = 80;
+
+        var left = rect.left + rect.width / 2 - pw / 2;
+        var top  = rect.bottom + 8;
+
+        left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+        if (top + ph > window.innerHeight - 8) {
+          top = rect.top - ph - 8;
+        }
+
+        popover.style.left = left + "px";
+        popover.style.top  = top  + "px";
+        popover.style.width = pw + "px";
+
+        requestAnimationFrame(function () {
+          popover.classList.add("is-visible");
+        });
+        activeChip = chip;
+      }
+
+      function hidePopover() {
+        popover.classList.remove("is-visible");
+        activeChip = null;
+      }
+
+      document.querySelectorAll(".merit-chip").forEach(function (chip) {
+        chip.addEventListener("click", function (e) {
+          e.stopPropagation();
+          if (activeChip === chip) {
+            hidePopover();
+          } else {
+            showPopover(chip);
+          }
+        });
+      });
+
+      document.addEventListener("click", function () {
+        if (activeChip) hidePopover();
+      });
+
+      window.addEventListener("scroll", function () {
+        if (activeChip) hidePopover();
+      }, { passive: true });
+    })();
+  </script>
+
+  <!-- B5 review carousel -->
+  <script>
+    (function () {
+      var track  = document.getElementById("review-track");
+      var dotsEl = document.getElementById("carousel-dots");
+      var prev   = document.getElementById("carousel-prev");
+      var next   = document.getElementById("carousel-next");
+      var carousel = document.getElementById("review-carousel");
+      if (!track || !dotsEl || !prev || !next) return;
+
+      var slides = track.querySelectorAll(".review-slide");
+      var total  = slides.length;
+      var current = 0;
+      var timer  = null;
+
+      function goTo(idx) {
+        current = (idx + total) % total;
+        requestAnimationFrame(function () {
+          track.style.transform = "translateX(-" + (current * 100) + "%)";
+        });
+        dotsEl.querySelectorAll(".carousel-dot").forEach(function (d, i) {
+          d.classList.toggle("is-active", i === current);
+          d.setAttribute("aria-selected", i === current ? "true" : "false");
+        });
+      }
+
+      for (var i = 0; i < total; i++) {
+        (function (idx) {
+          var dot = document.createElement("button");
+          dot.className = "carousel-dot" + (idx === 0 ? " is-active" : "");
+          dot.setAttribute("role", "tab");
+          dot.setAttribute("aria-label", "Отзыв " + (idx + 1));
+          dot.setAttribute("aria-selected", idx === 0 ? "true" : "false");
+          dot.addEventListener("click", function () { goTo(idx); resetTimer(); });
+          dotsEl.appendChild(dot);
+        })(i);
+      }
+
+      prev.addEventListener("click", function () { goTo(current - 1); resetTimer(); });
+      next.addEventListener("click", function () { goTo(current + 1); resetTimer(); });
+
+      function startTimer() { timer = setInterval(function () { goTo(current + 1); }, 5000); }
+      function resetTimer() { clearInterval(timer); startTimer(); }
+
+      carousel.addEventListener("mouseenter", function () { clearInterval(timer); });
+      carousel.addEventListener("mouseleave", startTimer);
+
+      startTimer();
+    })();
+  </script>
+
+  <!-- Merit field: scale bubble canvas proportionally to fit the container -->
+  <script>
+    (function () {
+      var scaler = document.querySelector(".merit-field-scaler");
+      var field  = scaler && scaler.querySelector(".merit-field");
+      if (!scaler || !field) return;
+      var DESIGN_W = 700;
+      var DESIGN_H = 1600;
+      function scaleMeritField() {
+        if (window.innerWidth <= 760) { scaler.style.height = ""; return; }
+        var available = scaler.clientWidth;
+        var s = Math.min(1, available / DESIGN_W);
+        field.style.transform = "scale(" + s + ")";
+        scaler.style.height = Math.ceil(DESIGN_H * s) + "px";
+      }
+      scaleMeritField();
+      window.addEventListener("resize", scaleMeritField);
+    })();
+  </script>
+
+  <!-- B4 bubble field: inertia repulsion from cursor -->
+  <script>
+    (function () {
+      var field = document.querySelector('.merit-field');
+      if (!field) return;
+
+      var PROXIMITY_PX = 50;   /* screen px — activation radius */
+      var MAX_DISP_PX  = 100;  /* screen px — max displacement from origin */
+      var SPRING  = 0.06;      /* spring constant toward origin */
+      var DAMPING = 0.88;      /* velocity decay per frame */
+      var PUSH    = 8;         /* canvas px/frame push force at contact */
+
+      /* Read each circle's canvas-space center from its inline styles */
+      var circles = Array.from(field.querySelectorAll('.mc-circle')).map(function (el) {
+        el.style.willChange = 'transform';
+        return {
+          el: el,
+          ox: parseFloat(el.style.left)   + parseFloat(el.style.width)  / 2,
+          oy: parseFloat(el.style.top)    + parseFloat(el.style.height) / 2,
+          dx: 0, dy: 0,
+          vx: 0, vy: 0
+        };
+      });
+
+      var mouseX = -9999, mouseY = -9999;
+      document.addEventListener('mousemove', function (e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      }, { passive: true });
+
+      /* Read current scale factor from the scaler script's transform */
+      function getScale() {
+        var m = (field.style.transform || '').match(/scale\(([^)]+)\)/);
+        return m ? parseFloat(m[1]) : 1;
+      }
+
+      /* Cache field rect; invalidate on scroll / resize */
+      var cachedRect = null;
+      function invalidate() { cachedRect = null; }
+      window.addEventListener('scroll', invalidate, { passive: true });
+      window.addEventListener('resize', invalidate, { passive: true });
+
+      function tick() {
+        requestAnimationFrame(tick);
+        if (window.innerWidth <= 760) return;
+
+        var scale = getScale();
+        if (!cachedRect) cachedRect = field.getBoundingClientRect();
+
+        /* Mouse in canvas (unscaled) coordinates */
+        var mx = (mouseX - cachedRect.left) / scale;
+        var my = (mouseY - cachedRect.top)  / scale;
+
+        /* Thresholds in canvas px */
+        var proximity = PROXIMITY_PX / scale;
+        var maxDisp   = MAX_DISP_PX  / scale;
+
+        circles.forEach(function (c) {
+          /* Current canvas center */
+          var cx = c.ox + c.dx;
+          var cy = c.oy + c.dy;
+
+          /* Distance from mouse to current circle center */
+          var ddx = cx - mx;
+          var ddy = cy - my;
+          var dist = Math.sqrt(ddx * ddx + ddy * ddy);
+
+          /* Repulsion when cursor is close */
+          if (dist < proximity && dist > 0.5) {
+            var strength = ((proximity - dist) / proximity) * PUSH;
+            c.vx += (ddx / dist) * strength;
+            c.vy += (ddy / dist) * strength;
+          }
+
+          /* Spring toward origin */
+          c.vx -= SPRING * c.dx;
+          c.vy -= SPRING * c.dy;
+
+          /* Damping */
+          c.vx *= DAMPING;
+          c.vy *= DAMPING;
+
+          /* Integrate */
+          c.dx += c.vx;
+          c.dy += c.vy;
+
+          /* Clamp displacement */
+          var len = Math.sqrt(c.dx * c.dx + c.dy * c.dy);
+          if (len > maxDisp) {
+            c.dx = (c.dx / len) * maxDisp;
+            c.dy = (c.dy / len) * maxDisp;
+          }
+
+          c.el.style.transform = 'translate(' + c.dx.toFixed(1) + 'px,' + c.dy.toFixed(1) + 'px)';
+        });
+      }
+
+      tick();
+    })();
+  </script>
+
+  <!-- Wire landing CTAs to the existing modal triggers -->
+  <script>
+    (function () {
+      var pairs = [
+        ["hero-cta-reg",     "btn-reg"],
+        ["hero-cta-login",   "btn-login"],
+        ["closing-cta-reg",  "btn-reg"],
+        ["closing-cta-login","btn-login"]
+      ];
+      pairs.forEach(function (pair) {
+        var src = document.getElementById(pair[0]);
+        var tgt = document.getElementById(pair[1]);
+        if (src && tgt) {
+          src.addEventListener("click", function (e) {
+            e.preventDefault();
+            tgt.click();
+          });
+        }
+      });
+    })();
+  </script>
+  <script>
+    (function () {
+      var header = document.querySelector(".site-header");
+      function update() {
+        var scroll = window.scrollY;
+        if (scroll > 200) {
+          header.classList.add("is-scrolled");
+          header.style.background = "";
+        } else if (scroll > 150) {
+          var t = (scroll - 150) / 50;
+          header.classList.remove("is-scrolled");
+          header.style.background = "color-mix(in srgb, var(--paper) " + Math.round(t * 95) + "%, transparent)";
+        } else {
+          header.classList.remove("is-scrolled");
+          header.style.background = "";
+        }
+      }
+      window.addEventListener("scroll", update, { passive: true });
+      update();
+    })();
+
+    (function alignBrowseButton() {
+      var join   = document.getElementById("btn-reg");
+      var news   = document.querySelector(".hero-news");
+      var browse = document.getElementById("hero-cta-browse");
+      if (!join || !news || !browse) return;
+
+      function align() {
+        if (window.innerWidth < 200) return;
+        var jRect    = join.getBoundingClientRect();
+        var nRect    = news.getBoundingClientRect();
+        var extend   = nRect.left - jRect.left;
+        var computed = nRect.right - jRect.left;
+        browse.style.width = computed + "px";
+        /* scrollWidth reports full content width even when overflow:hidden clips it */
+        var minW = browse.scrollWidth;
+        if (minW > computed) browse.style.width = minW + "px";
+        browse.style.marginLeft = "-" + extend + "px";
+      }
+
+      align();
+      window.addEventListener("resize", align);
+    })();
+
+    (function highlightActiveBreakpoint() {
+      var debug = document.getElementById("bp-debug");
+      if (!debug) return;
+      var items = Array.prototype.slice.call(debug.querySelectorAll(".bp-debug__item"));
+      var hideTimer = null;
+
+      function update() {
+        var width = window.innerWidth;
+        var active = items[items.length - 1];
+        for (var i = 0; i < items.length; i++) {
+          var threshold = parseFloat(items[i].dataset.bp);
+          if (width <= threshold) { active = items[i]; break; }
+        }
+        items.forEach(function (item) {
+          item.classList.toggle("is-active", item === active);
+        });
+      }
+
+      function onResize() {
+        update();
+        debug.classList.add("is-visible");
+        if (hideTimer) clearTimeout(hideTimer);
+        hideTimer = setTimeout(function () {
+          debug.classList.remove("is-visible");
+        }, 2000);
+      }
+
+      update();
+      window.addEventListener("resize", onResize);
+    })();
+
+(function alignLogoToHeadline() {
+      var logo = document.querySelector(".wordmark");
+      var headline = document.getElementById("hero-headline");
+      if (!logo || !headline) return;
+
+      function align() {
+        if (window.innerWidth < 200) return;
+        logo.style.marginLeft = '';
+        var logoRect     = logo.getBoundingClientRect();
+        var headlineRect = headline.getBoundingClientRect();
+        var shift = headlineRect.left - logoRect.left;
+        logo.style.marginLeft = shift + "px";
+      }
+
+      align();
+      window.addEventListener("resize", align);
+    })();
+
+    (function initNewsCards() {
+      var container = document.querySelector(".hero-news-cards");
+      if (!container) return;
+
+      var label = document.querySelector(".hero-news-label");
+
+      function syncLabel() {
+        if (!label) return;
+        var anyVisible = Array.prototype.some.call(
+          container.querySelectorAll(".hero-news-card"),
+          function (c) { return c.style.display !== "none"; }
+        );
+        label.classList.toggle("is-hidden", !anyVisible);
+      }
+
+      function showGatePop(rect) {
+        var pop = document.createElement("div");
+        pop.className = "news-gate-pop";
+        pop.innerHTML =
+          '<p class="news-gate-pop__title">Обсуждения — для участников</p>' +
+          '<p class="news-gate-pop__body">Дискуссии сообщества открыты подписчикам платформы. Присоединяйтесь, чтобы читать и участвовать в них.</p>' +
+          '<a href="#" class="news-gate-pop__cta">Присоединиться →</a>';
+        document.body.appendChild(pop);
+
+        var popW = pop.offsetWidth;
+        var popH = pop.offsetHeight;
+        var left = rect.left - popW - 12;
+        var top  = rect.top + rect.height / 2 - popH / 2;
+        if (left < 8) left = rect.left;
+        pop.style.left = Math.max(8, left) + "px";
+        pop.style.top  = Math.max(8, Math.min(top, window.innerHeight - popH - 8)) + "px";
+
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { pop.classList.add("is-visible"); });
+        });
+
+        pop.querySelector(".news-gate-pop__cta").addEventListener("click", function (e) {
+          e.preventDefault();
+          dismiss();
+          var btn = document.getElementById("btn-reg");
+          if (btn) btn.click();
+        });
+
+        var timer = setTimeout(dismiss, 5000);
+
+        function dismiss() {
+          clearTimeout(timer);
+          pop.classList.remove("is-visible");
+          setTimeout(function () { if (pop.parentNode) pop.parentNode.removeChild(pop); }, 220);
+          document.removeEventListener("click", onOutside);
+        }
+
+        function onOutside(e) {
+          if (!e.isTrusted) return;
+          if (!pop.contains(e.target)) dismiss();
+        }
+        setTimeout(function () { document.addEventListener("click", onOutside); }, 300);
+      }
+
+      /* Collapse a card (fade opacity, then collapse max-height to 0) */
+      function fadeOut(card, onDone) {
+        card.style.transition = "opacity 240ms ease";
+        card.style.opacity = "0";
+        setTimeout(function () {
+          var h = card.offsetHeight;
+          card.dataset.naturalHeight = h;
+          card.style.overflow = "hidden";
+          card.style.maxHeight = h + "px";
+          card.style.transition = "max-height 300ms ease";
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              card.style.maxHeight = "0";
+            });
+          });
+          setTimeout(function () {
+            card.style.display = "none";
+            syncLabel();
+            onDone && onDone();
+          }, 310);
+        }, 240);
+      }
+
+      /* Expand a card back (restore max-height, then fade opacity in, then clear inline styles) */
+      function fadeIn(card) {
+        var h = +(card.dataset.naturalHeight) || 100;
+        card.style.display = "";
+        card.style.maxHeight = "0";
+        card.style.overflow = "hidden";
+        card.style.opacity = "0";
+        card.style.transition = "max-height 300ms ease";
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            card.style.maxHeight = h + "px";
+          });
+        });
+        setTimeout(function () {
+          card.style.transition = "opacity 320ms ease";
+          card.style.opacity = "1";
+          setTimeout(function () {
+            card.style.cssText = "";
+            delete card.dataset.removing;
+            syncLabel();
+          }, 320);
+        }, 310);
+      }
+
+      Array.prototype.forEach.call(
+        container.querySelectorAll(".hero-news-card"),
+        function (card) {
+          var isCommunity = !!card.querySelector(".domain-chip--community");
+          card.addEventListener("click", function () {
+            if (card.dataset.removing) return;
+            card.dataset.removing = "1";
+            var rect = card.getBoundingClientRect();
+            fadeOut(card, function () {
+              if (isCommunity) {
+                showGatePop(rect);
+              } else {
+                setTimeout(function () { fadeIn(card); }, 4000);
+              }
+            });
+          });
+        }
+      );
     })();
   </script>
 
