@@ -175,10 +175,20 @@ html[data-theme="sepia-contrast"] {
   --ink-soft:     #6A5A45;
   --ink-faint:    #8A7B65;
   --line:         #D8C8A8;
-  --accent:       #A8482F;
-  --accent-hover: #8F3D27;
+  /* deepened from sepia #A8482F (4.42:1) for ≥4.5:1 text contrast on --paper */
+  --accent:       #8F3D27;
+  --accent-hover: #7A3220;
   --accent-tint:  #E0C8BC;
   --on-accent:    #F3E9D4;
+  /* darkened from root values for ≥4.5:1 text contrast on --paper */
+  --amber:        #795220;  /* 4.80:1; root #C98A3C was 2.24:1 */
+  --sage:         #3D5A4E;  /* 5.22:1; root #4C6B5E was 4.50:1 */
+
+  /* noir-component vars — for dark pill / modal elements that need the noir
+     ground on a sepia page without a full data-band="noir" wrapper */
+  --noir-paper:  #3D2218;
+  --noir-ink:    #ECE3D6;
+  --noir-accent: #D2674A;
 
   --wash-image: url("../assets/backgrounds/hero-bg-01-light.webp");
   --wash-opacity: 0.09;
