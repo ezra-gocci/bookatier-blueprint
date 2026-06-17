@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="sepia-contrast">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Домашняя — beta→alpha</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="styles/tokens.css" />
+
+  <style>
+    /* ===================================================================
+       home-auth.html — Домашняя страница (авторизованный пользователь)
+       Chrome from frame-user.html. Two representations:
+         • Домашняя (Personal) — 100% personal domain
+         • Сводка (Overview)  — mixed: ~50 Personal / ~40 Resource / ~10 Community
+       site-map.md v2.0 §5.4 · ux-structure.md §5.2
+       =================================================================== */
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("assets/backgrounds/monogram-cream.png");
+      background-repeat: repeat;
+      background-size: 320px;
+      opacity: var(--grain-opacity);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: var(--container-max);
+      margin-inline: auto;
+      padding-inline: var(--gutter);
+    }
+
+    .skip-link {
+      position: absolute;
+      left: var(--space-4);
+      top: calc(var(--space-2) * -8);
+      z-index: var(--z-toast);
+      background: var(--surface);
+      color: var(--ink);
+      border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-4);
+      font-size: var(--fs-small);
+      transition: top var(--dur-base) var(--ease-out-quart);
+    }
+    .skip-link:focus { top: var(--space-2); }
+
+    /* ---- Header ---------------------------------------------------- */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+      background: color-mix(in srgb, var(--paper) 88%, transparent);
+      backdrop-filter: saturate(140%) blur(8px);
+      border-bottom: var(--hairline) solid var(--line);
+    }
+    .header-inner {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: var(--space-4);
+      height: var(--header-height);
+    }
+    .wordmark {
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
+      opacity: 1;
+      transition: opacity var(--dur-fast) var(--ease-out-quart);
+    }
+    .wordmark:hover { opacity: 0.82; }
+    .wordmark-img { height: 32px; width: auto; display: block; }
+
+    .text-mark {
+      font-family: var(--font-serif);
+      font-size: var(--fs-h1);
+      font-weight: var(--fw-semibold);
+      color: var(--ink);
+      letter-spacing: var(--tracking-display);
+      line-height: 1;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.04em;
+      flex-shrink: 0;
+      transition: color var(--dur-fast) var(--ease-out-quart);
+    }
+    .text-mark .arrow { color: var(--accent); }
+    .text-mark:hover { color: var(--accent); }
+
+    /* ---- Primary nav + animated indicator -------------------------- */
+    .primary-nav {
+      justify-self: center;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+      padding-bottom: 10px;
+    }
+    .nav-link {
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      font-weight: var(--fw-medium);
+      letter-spacing: var(--tracking-label);
+      color: var(--ink-soft);
+      line-height: 1;
+      padding-block: var(--space-1);
+      transition: color var(--dur-fast) var(--ease-out-quart);
+    }
+    .nav-link:hover,
+    .nav-link[aria-current="page"] { color: var(--accent); }
+
+    .nav-link-home {
+      font-family: var(--font-serif);
+      font-size: var(--fs-body);
+      font-weight: var(--fw-semibold);
+      letter-spacing: var(--tracking-display);
+      background: #1F1B18;
+      color: #ECE3D6;
+      padding: var(--space-1) var(--space-3) calc(var(--space-1) + 3px);
+      border-radius: var(--radius-md);
+      transition: opacity var(--dur-fast) var(--ease-out-quart);
+    }
+    .nav-link-home .arrow { color: #D2674A; }
+    .nav-link-home:hover,
+    .nav-link-home[aria-current="page"] {
+      color: #ECE3D6;
+      opacity: 0.85;
+    }
+    .nav-link-home:hover .arrow,
+    .nav-link-home[aria-current="page"] .arrow { color: #D2674A; }
+
+    .nav-strip,
+    .nav-dot { position: absolute; pointer-events: none; }
+    .nav-strip {
+      background: var(--accent);
+      bottom: 7px;
+      height: var(--hairline);
+      border-radius: var(--radius-pill);
+      -webkit-mask: linear-gradient(90deg,
+        #000 0, #000 calc(50% - 7px),
+        transparent calc(50% - 7px), transparent calc(50% + 7px),
+        #000 calc(50% + 7px), #000 100%);
+      mask: linear-gradient(90deg,
+        #000 0, #000 calc(50% - 7px),
+        transparent calc(50% - 7px), transparent calc(50% + 7px),
+        #000 calc(50% + 7px), #000 100%);
+      transition: left 280ms var(--ease-out-quart),
+                  width 280ms var(--ease-out-quart),
+                  opacity 160ms var(--ease-out-quart);
+    }
+    .nav-dot {
+      background: var(--amber);
+      bottom: 4px;
+      width: 7px;
+      height: 7px;
+      border-radius: var(--radius-pill);
+      transform: translateX(-50%);
+      transition: left 360ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                  bottom 360ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .nav-strip:not([style]),
+    .nav-dot:not([style]) { opacity: 0; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .nav-strip, .nav-dot { transition: none; }
+    }
+
+    /* ---- Header action buttons ------------------------------------- */
+    .header-actions {
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex-shrink: 0;
+    }
+    .icon-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      background: transparent;
+      color: var(--ink-soft);
+      border: var(--hairline) solid transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: color var(--dur-fast) var(--ease-out-quart),
+                  border-color var(--dur-fast) var(--ease-out-quart);
+    }
+    .icon-btn:hover { color: var(--ink); border-color: var(--line); }
+    .icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .notif-count {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      min-width: 16px;
+      height: 16px;
+      padding-inline: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: var(--fw-semibold);
+      line-height: 1;
+      color: var(--on-accent);
+      background: var(--accent);
+      border-radius: var(--radius-pill);
+    }
+
+    .avatar-rep {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 3px 8px 3px 3px;
+      border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-pill);
+      background: var(--surface);
+      text-decoration: none;
+      transition: border-color var(--dur-fast) var(--ease-out-quart),
+                  background var(--dur-fast) var(--ease-out-quart);
+    }
+    .avatar-rep:hover { border-color: var(--accent); background: var(--surface-sunk); }
+    .avatar-rep:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .avatar-rep__face {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-pill);
+      background: var(--accent);
+      color: var(--on-accent);
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-semibold);
+      letter-spacing: 0;
+    }
+    .avatar-rep__score {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      color: var(--amber);
+    }
+    .avatar-rep__num {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-semibold);
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ---- Footer ---------------------------------------------------- */
+    .site-footer {
+      position: relative;
+      z-index: 1;
+      border-top: var(--hairline) solid var(--line);
+    }
+    .footer-inner {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+      padding-block: var(--space-8);
+    }
+    .footer-brand {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+    .footer-brand .text-mark { font-size: var(--fs-h2); }
+    .footer-tagline {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      letter-spacing: var(--tracking-caption);
+      color: var(--ink-soft);
+    }
+    .build-tag {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      letter-spacing: var(--tracking-caption);
+      color: var(--ink-soft);
+    }
+    .footer-links {
+      display: inline-flex;
+      align-items: baseline;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+    .footer-link {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      letter-spacing: var(--tracking-caption);
+      color: var(--ink-soft);
+      text-decoration: none;
+      transition: color var(--dur-fast) var(--ease-out-quart);
+    }
+    .footer-link:hover { color: var(--accent); }
+    .footer-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ================================================================
+       HOME PAGE — page-specific styles
+       ================================================================ */
+
+    .home-main {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ---- Greeting (noir band) -------------------------------------- */
+    .home-greeting {
+      padding-block: var(--space-8) var(--space-10);
+    }
+    .greeting-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: var(--space-8);
+    }
+    .greeting-salutation {
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      font-weight: var(--fw-medium);
+      letter-spacing: var(--tracking-label);
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      margin-bottom: var(--space-2);
+    }
+    .greeting-name {
+      font-family: var(--font-serif);
+      font-size: var(--fs-display);
+      line-height: var(--lh-display);
+      letter-spacing: var(--tracking-display);
+      color: var(--ink);
+      font-weight: var(--fw-semibold);
+      margin: 0;
+    }
+    .greeting-rep {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+      padding: var(--space-1) var(--space-3);
+      border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-pill);
+    }
+    .rep-tier {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-medium);
+      letter-spacing: var(--tracking-label);
+      color: var(--ink-soft);
+    }
+    .rep-sep { color: var(--line); }
+    .rep-stars {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-semibold);
+      color: var(--amber);
+      font-variant-numeric: tabular-nums;
+    }
+    .greeting-right {
+      text-align: right;
+      padding-bottom: var(--space-1);
+    }
+    .greeting-visit {
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      color: var(--ink-faint);
+      line-height: var(--lh-small);
+    }
+    .greeting-stats {
+      margin-top: var(--space-2);
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      letter-spacing: var(--tracking-caption);
+      color: var(--ink-soft);
+    }
+
+    /* ---- View toggle bar (sticky under header) --------------------- */
+    .view-toggle-bar {
+      position: sticky;
+      top: var(--header-height);
+      z-index: 90;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: saturate(130%) blur(6px);
+      border-bottom: var(--hairline) solid var(--line);
+    }
+    .view-tabs {
+      display: flex;
+      height: 44px;
+      align-items: stretch;
+      gap: 0;
+    }
+    .view-tab {
+      display: inline-flex;
+      align-items: center;
+      padding: 0 var(--space-6);
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      font-weight: var(--fw-medium);
+      letter-spacing: var(--tracking-label);
+      color: var(--ink-soft);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: color var(--dur-fast) var(--ease-out-quart),
+                  border-color var(--dur-fast) var(--ease-out-quart);
+    }
+    .view-tab.is-active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-tab:hover:not(.is-active) { color: var(--ink); }
+    .view-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+    /* ---- View panels ---------------------------------------------- */
+    .view-panel { display: block; }
+    .view-panel.is-hidden { display: none; }
+
+    /* ---- Home section scaffolding --------------------------------- */
+    .home-sections {
+      padding-block: var(--space-4) var(--space-12);
+    }
+    .home-section {
+      padding-block: var(--space-10);
+      border-bottom: var(--hairline) solid var(--line);
+    }
+    .home-section:last-child { border-bottom: none; }
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+    .section-eyebrow {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-medium);
+      letter-spacing: var(--tracking-caption);
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: var(--space-1);
+    }
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: var(--fs-h2);
+      font-weight: var(--fw-semibold);
+      color: var(--ink);
+      margin: 0;
+    }
+    .section-link {
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      color: var(--accent);
+      white-space: nowrap;
+      transition: color var(--dur-fast) var(--ease-out-quart);
+    }
+    .section-link:hover { color: var(--accent-hover); }
+
+    /* ---- Continue Reading: horizontal rail --------------------- */
+    .reading-rail {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-4);
+    }
+    .reading-card {
+      display: flex;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      background: var(--surface);
+      border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      color: inherit;
+      transition: border-color var(--dur-fast) var(--ease-out-quart),
+                  box-shadow var(--dur-fast) var(--ease-out-quart);
+    }
+    .reading-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-soft);
+    }
+    .reading-cover {
+      width: 52px;
+      height: 72px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      flex-shrink: 0;
+      border: var(--hairline) solid var(--line);
+    }
+    .reading-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+    .reading-author {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      letter-spacing: var(--tracking-caption);
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .reading-title {
+      font-family: var(--font-serif);
+      font-size: var(--fs-small);
+      font-weight: var(--fw-semibold);
+      color: var(--ink);
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .progress-wrap { margin-top: auto; }
+    .progress-bar {
+      height: 3px;
+      background: var(--surface-sunk);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: var(--radius-pill);
+    }
+    .progress-label {
+      margin-top: var(--space-1);
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      color: var(--ink-faint);
+    }
+    .reading-shelf-tag {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      color: var(--ink-soft);
+    }
+    .reading-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: var(--space-2);
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-medium);
+      color: var(--accent);
+    }
+    .reading-card--shelved { opacity: 0.85; }
+
+    /* ---- Activity list --------------------------------------------- */
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .activity-item {
+      display: flex;
+      gap: var(--space-4);
+      padding: var(--space-4) var(--space-5);
+      background: var(--surface);
+      border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-md);
+      align-items: flex-start;
+    }
+    .activity-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .activity-icon--reply   { background: color-mix(in srgb, var(--accent-tint) 80%, transparent); color: var(--accent); }
+    .activity-icon--vote    { background: color-mix(in srgb, var(--amber) 12%, var(--surface-sunk)); color: var(--amber); }
+    .activity-icon--rep     { background: color-mix(in srgb, var(--sage) 12%, var(--surface-sunk)); color: var(--sage); }
+    .activity-body { flex: 1; min-width: 0; }
+    .activity-label {
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      color: var(--ink);
+      line-height: var(--lh-small);
+    }
+    .activity-label strong { font-weight: var(--fw-semibold); }
+    .activity-quote {
+      margin: var(--space-2) 0 0;
+      padding: var(--space-2) var(--space-3);
+      background: var(--surface-sunk);
+      border-left: 2px solid var(--line);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-family: var(--font-serif);
+      font-size: var(--fs-caption);
+      color: var(--ink-soft);
+      font-style: italic;
+      line-height: 1.5;
+    }
+    .rep-source-rows {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+      margin-top: var(--space-2);
+    }
+    .rep-source-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      color: var(--ink-soft);
+    }
+    .rep-source-val {
+      font-weight: var(--fw-semibold);
+      color: var(--success);
+    }
+    .activity-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: var(--space-3);
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+    .activity-time {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      color: var(--ink-faint);
+    }
+    .activity-link {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-medium);
+      color: var(--accent);
+      transition: color var(--dur-fast) var(--ease-out-quart);
+    }
+    .activity-link:hover { color: var(--accent-hover); }
+
+    /* ---- Shelf summary list --------------------------------------- */
+    .shelf-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .shelf-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-3) var(--space-4);
+      background: var(--surface);
+      border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      color: inherit;
+      transition: border-color var(--dur-fast) var(--ease-out-quart);
+    }
+    .shelf-row:hover { border-color: var(--accent); }
+    .shelf-thumb {
+      width: 32px;
+      height: 44px;
+      border-radius: 3px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: var(--hairline) solid var(--line);
+    }
+    .shelf-info { flex: 1; min-width: 0; }
+    .shelf-author {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      color: var(--ink-faint);
+      letter-spacing: var(--tracking-caption);
+      text-transform: uppercase;
+    }
+    .shelf-title {
+      font-family: var(--font-serif);
+      font-size: var(--fs-small);
+      font-weight: var(--fw-semibold);
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .shelf-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-pill);
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-medium);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .shelf-status--reading { background: var(--accent-tint); color: var(--accent); }
+    .shelf-status--toread  { background: var(--surface-sunk); color: var(--ink-soft); }
+
+    /* ================================================================
+       OVERVIEW VIEW
+       ================================================================ */
+
+    /* Snapshot strip — condensed personal summary */
+    .ov-snapshot {
+      display: flex;
+      align-items: center;
+      gap: var(--space-8);
+      padding: var(--space-4) var(--space-6);
+      background: var(--surface);
+      border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-8);
+      margin-bottom: var(--space-8);
+      flex-wrap: wrap;
+    }
+    .ov-snapshot-stat {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-2);
+    }
+    .ov-snapshot-val {
+      font-family: var(--font-serif);
+      font-size: var(--fs-h2);
+      font-weight: var(--fw-semibold);
+      color: var(--accent);
+      line-height: 1;
+    }
+    .ov-snapshot-label {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      color: var(--ink-soft);
+    }
+    .ov-snapshot-sep {
+      width: var(--hairline);
+      height: 28px;
+      background: var(--line);
+      flex-shrink: 0;
+    }
+    .ov-snapshot-link {
+      margin-left: auto;
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      color: var(--accent);
+    }
+
+    /* Two-column overview grids */
+    .ov-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-6);
+    }
+    .ov-col { }
+
+    /* Compact book card (Overview new arrivals / recommendations) */
+    .ov-book-card {
+      display: flex;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: var(--surface);
+      border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      color: inherit;
+      margin-bottom: var(--space-3);
+      transition: border-color var(--dur-fast) var(--ease-out-quart);
+    }
+    .ov-book-card:last-child { margin-bottom: 0; }
+    .ov-book-card:hover { border-color: var(--accent); }
+    .ov-book-cover {
+      width: 40px;
+      height: 56px;
+      border-radius: 3px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: var(--hairline) solid var(--line);
+    }
+    .ov-book-info { flex: 1; min-width: 0; }
+    .ov-book-author {
+      font-size: var(--fs-caption);
+      color: var(--ink-faint);
+      letter-spacing: var(--tracking-caption);
+      text-transform: uppercase;
+    }
+    .ov-book-title {
+      font-family: var(--font-serif);
+      font-size: var(--fs-small);
+      font-weight: var(--fw-semibold);
+      color: var(--ink);
+      line-height: 1.3;
+      margin-top: var(--space-1);
+    }
+    .ov-book-tag {
+      display: inline-block;
+      margin-top: var(--space-2);
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-pill);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-medium);
+      border: var(--hairline) solid;
+    }
+    .ov-book-tag--new     { color: var(--amber); border-color: var(--amber); }
+    .ov-book-tag--reco    { color: var(--sage); border-color: var(--sage); }
+
+    /* Announcement / news items in Overview */
+    .ov-news-item {
+      display: flex;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: var(--surface);
+      border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-3);
+      text-decoration: none;
+      color: inherit;
+      transition: border-color var(--dur-fast) var(--ease-out-quart);
+    }
+    .ov-news-item:last-child { margin-bottom: 0; }
+    .ov-news-item:hover { border-color: var(--accent); }
+    .ov-news-domain {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+      margin-top: 2px;
+      font-size: 13px;
+    }
+    .ov-news-domain--pub      { background: color-mix(in srgb, var(--amber) 12%, var(--surface-sunk)); }
+    .ov-news-domain--platform { background: var(--accent-tint); }
+    .ov-news-body { flex: 1; min-width: 0; }
+    .ov-news-headline {
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      font-weight: var(--fw-medium);
+      color: var(--ink);
+      line-height: 1.35;
+    }
+    .ov-news-date {
+      margin-top: var(--space-1);
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      color: var(--ink-faint);
+    }
+
+    /* Discussion items in Overview */
+    .ov-discussion-item {
+      padding: var(--space-3) var(--space-4);
+      background: var(--surface);
+      border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-3);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: border-color var(--dur-fast) var(--ease-out-quart);
+    }
+    .ov-discussion-item:last-child { margin-bottom: 0; }
+    .ov-discussion-item:hover { border-color: var(--accent); }
+    .ov-discussion-topic {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      letter-spacing: var(--tracking-caption);
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: var(--space-1);
+    }
+    .ov-discussion-title {
+      font-family: var(--font-serif);
+      font-size: var(--fs-small);
+      font-weight: var(--fw-semibold);
+      color: var(--ink);
+      line-height: 1.35;
+    }
+    .ov-discussion-meta {
+      margin-top: var(--space-2);
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      color: var(--ink-faint);
+    }
+
+    /* CTA banner */
+    .ov-cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-6);
+      padding: var(--space-5) var(--space-6);
+      background: var(--accent-tint);
+      border: var(--hairline) solid var(--accent);
+      border-radius: var(--radius-lg);
+      flex-wrap: wrap;
+    }
+    .ov-cta-text { }
+    .ov-cta-eyebrow {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      letter-spacing: var(--tracking-caption);
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: var(--space-1);
+    }
+    .ov-cta-title {
+      font-family: var(--font-serif);
+      font-size: var(--fs-h3);
+      font-weight: var(--fw-semibold);
+      color: var(--ink);
+    }
+    .ov-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-5);
+      background: var(--accent);
+      color: var(--on-accent);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      font-weight: var(--fw-medium);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background var(--dur-fast) var(--ease-out-quart);
+    }
+    .ov-cta-btn:hover { background: var(--accent-hover); }
+
+    /* Overview section spacing */
+    .ov-section {
+      padding-block: var(--space-8);
+      border-bottom: var(--hairline) solid var(--line);
+    }
+    .ov-section:last-child { border-bottom: none; }
+    .ov-section-title {
+      font-family: var(--font-serif);
+      font-size: var(--fs-h3);
+      font-weight: var(--fw-semibold);
+      color: var(--ink);
+      margin: 0 0 var(--space-4);
+    }
+
+    /* ---- Responsive ------------------------------------------------ */
+    @media (max-width: 900px) {
+      .reading-rail { grid-template-columns: repeat(2, 1fr); }
+      .ov-two-col   { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+      .primary-nav  { display: none; }
+      :root { --gutter: var(--space-6); }
+      .reading-rail { grid-template-columns: 1fr; }
+      .greeting-row { flex-direction: column; align-items: flex-start; gap: var(--space-4); }
+      .greeting-right { text-align: left; }
+    }
+    @media (max-width: 460px) {
+      .header-inner    { gap: var(--space-3); }
+      .header-actions  { gap: var(--space-2); }
+      .avatar-rep__score { display: none; }
+      .greeting-name { font-size: var(--fs-h1); }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#content">К содержимому</a>
+
+  <!-- ===================================================================
+       HEADER — authorized frame (site-map.md v2.0 §3)
+       =================================================================== -->
+  <header class="site-header">
+    <div class="header-inner container">
+      <a class="wordmark" href="pub-about.html" aria-label="beta→alpha — о проекте">
+        <img class="wordmark-img" src="assets/decor/a2b-logo.png" alt="beta→alpha" />
+      </a>
+
+      <nav class="primary-nav" aria-label="Основная навигация">
+        <a class="nav-link" href="community.html">Сообщество</a>
+        <a class="nav-link nav-link-home" href="home.html" aria-label="Домашняя" aria-current="page">β<span class="arrow">→</span>α</a>
+        <a class="nav-link" href="library.html">Библиотека</a>
+
+        <span class="nav-strip" aria-hidden="true"></span>
+        <span class="nav-dot" aria-hidden="true"></span>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-btn" type="button" aria-label="Поиск" data-stub>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.5" y2="16.5"></line>
+          </svg>
+        </button>
+
+        <button class="icon-btn" type="button" aria-label="Пульс" data-stub>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </button>
+
+        <button class="icon-btn" type="button" aria-label="Уведомления (3 непрочитанных)" data-stub>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.7 21a2 2 0 0 1-3.4 0"></path>
+          </svg>
+          <span class="notif-count" aria-hidden="true">3</span>
+        </button>
+
+        <a class="avatar-rep" href="#" data-stub aria-label="Аккаунт — репутация 142">
+          <span class="avatar-rep__face" aria-hidden="true">АИ</span>
+          <span class="avatar-rep__score" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" aria-hidden="true">
+              <path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 18l-5.9 3.2 1.2-6.6L2.5 9l6.6-.9z"></path>
+            </svg>
+            <span class="avatar-rep__num">142</span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================================================================
+       MAIN
+       =================================================================== -->
+  <main class="home-main" id="content">
+
+    <!-- Greeting — noir band (sepia-contrast §1: one of two allowed per page) -->
+    <section class="home-greeting" data-band="noir" aria-label="Приветствие">
+      <div class="container">
+        <div class="greeting-row">
+          <div class="greeting-left">
+            <p class="greeting-salutation">Добрый день,</p>
+            <h1 class="greeting-name">Александра Иванова</h1>
+            <div class="greeting-rep">
+              <span class="rep-tier">Участник</span>
+              <span class="rep-sep" aria-hidden="true">·</span>
+              <span class="rep-stars">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 18l-5.9 3.2 1.2-6.6L2.5 9l6.6-.9z"></path>
+                </svg>
+                <span>142</span>
+              </span>
+            </div>
+          </div>
+          <div class="greeting-right">
+            <p class="greeting-visit">Вы были здесь 3 дня назад</p>
+            <p class="greeting-stats">2 книги в процессе чтения</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- View toggle bar (sticky under header) -->
+    <div class="view-toggle-bar">
+      <div class="container">
+        <div class="view-tabs" role="tablist" aria-label="Вид страницы">
+          <button class="view-tab is-active" role="tab" aria-selected="true" data-view="personal">Домашняя</button>
+          <button class="view-tab" role="tab" aria-selected="false" data-view="overview">Сводка</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===============================================================
+         PERSONAL VIEW — 100% Personal domain (site-map §5.4)
+         =============================================================== -->
+    <div class="view-panel" data-panel="personal" role="tabpanel" aria-label="Домашняя">
+      <div class="container">
+        <div class="home-sections">
+
+          <!-- Section 1: Continue Reading -->
+          <section class="home-section">
+            <div class="section-header">
+              <div>
+                <p class="section-eyebrow">Чтение</p>
+                <h2 class="section-title">Продолжить чтение</h2>
+              </div>
+              <a class="section-link" href="library.html">В библиотеку →</a>
+            </div>
+            <div class="reading-rail">
+
+              <!-- Bion — 42% through -->
+              <a class="reading-card" href="library.html">
+                <img class="reading-cover" src="assets/covers/bion-nauchenie-na-opyte-cover.png" alt="Обложка книги Биона" />
+                <div class="reading-info">
+                  <p class="reading-author">Вилфред Бион</p>
+                  <p class="reading-title">Научение на опыте. Итальянские семинары</p>
+                  <div class="progress-wrap">
+                    <div class="progress-bar"><div class="progress-fill" style="width:42%"></div></div>
+                    <p class="progress-label">стр. 47 из 112</p>
+                  </div>
+                  <span class="reading-action">
+                    Читать
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </span>
+                </div>
+              </a>
+
+              <!-- Ferro — 12% through -->
+              <a class="reading-card" href="library.html">
+                <img class="reading-cover" src="assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png" alt="Обложка книги Ферро" />
+                <div class="reading-info">
+                  <p class="reading-author">Антонино Ферро</p>
+                  <p class="reading-title">Избегание эмоций, проживание эмоций</p>
+                  <div class="progress-wrap">
+                    <div class="progress-bar"><div class="progress-fill" style="width:12%"></div></div>
+                    <p class="progress-label">стр. 23 из 198</p>
+                  </div>
+                  <span class="reading-action">
+                    Читать
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </span>
+                </div>
+              </a>
+
+              <!-- Nicoli — on shelf, not started -->
+              <a class="reading-card reading-card--shelved" href="library.html">
+                <img class="reading-cover" src="assets/covers/nikoli-goret-vmeste-cover.png" alt="Обложка книги Николи" />
+                <div class="reading-info">
+                  <p class="reading-author">под ред. Луки Николи</p>
+                  <p class="reading-title">Гореть вместе</p>
+                  <div class="progress-wrap">
+                    <p class="reading-shelf-tag">📕 К прочтению</p>
+                  </div>
+                  <span class="reading-action">
+                    Начать
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </span>
+                </div>
+              </a>
+
+            </div>
+          </section>
+
+          <!-- Section 2: Activity since last visit -->
+          <section class="home-section">
+            <div class="section-header">
+              <div>
+                <p class="section-eyebrow">За последние 3 дня</p>
+                <h2 class="section-title">Что произошло</h2>
+              </div>
+            </div>
+            <div class="activity-list">
+
+              <!-- Reply to a comment -->
+              <div class="activity-item">
+                <div class="activity-icon activity-icon--reply" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </div>
+                <div class="activity-body">
+                  <p class="activity-label"><strong>Мария С.</strong> ответила на ваш комментарий в обсуждении</p>
+                  <blockquote class="activity-quote">«Согласна, Бион здесь особенно точен — его мысль о контейнировании аффекта...»</blockquote>
+                  <div class="activity-meta">
+                    <span class="activity-time">2 часа назад · Научение на опыте</span>
+                    <a class="activity-link" href="book.html">Перейти →</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Votes on a comment -->
+              <div class="activity-item">
+                <div class="activity-icon activity-icon--vote" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"></path>
+                    <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                  </svg>
+                </div>
+                <div class="activity-body">
+                  <p class="activity-label">Ваш комментарий получил <strong>3&nbsp;голоса</strong></p>
+                  <blockquote class="activity-quote">«Параллель с клинической практикой здесь кажется мне особенно значимой...»</blockquote>
+                  <div class="activity-meta">
+                    <span class="activity-time">1 день назад · Научение на опыте</span>
+                    <a class="activity-link" href="book.html">Перейти →</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Reputation delta -->
+              <div class="activity-item">
+                <div class="activity-icon activity-icon--rep" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                    <path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 18l-5.9 3.2 1.2-6.6L2.5 9l6.6-.9z"></path>
+                  </svg>
+                </div>
+                <div class="activity-body">
+                  <p class="activity-label">Репутация выросла на <strong>+8</strong> с прошлого визита</p>
+                  <div class="rep-source-rows">
+                    <div class="rep-source-row">
+                      <span>2 комментария в обсуждениях</span>
+                      <span class="rep-source-val">+5</span>
+                    </div>
+                    <div class="rep-source-row">
+                      <span>Оценка книги «Избегание эмоций»</span>
+                      <span class="rep-source-val">+3</span>
+                    </div>
+                  </div>
+                  <div class="activity-meta">
+                    <span class="activity-time">Итого: 142 · Участник</span>
+                    <a class="activity-link" href="cabinet.html">История репутации →</a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- Section 3: Shelf summary -->
+          <section class="home-section">
+            <div class="section-header">
+              <div>
+                <p class="section-eyebrow">Ваша полка</p>
+                <h2 class="section-title">Книги</h2>
+              </div>
+              <a class="section-link" href="shelf.html">Полка →</a>
+            </div>
+            <div class="shelf-list">
+
+              <a class="shelf-row" href="library.html">
+                <img class="shelf-thumb" src="assets/covers/bion-nauchenie-na-opyte-cover.png" alt="" />
+                <div class="shelf-info">
+                  <p class="shelf-author">Вилфред Бион</p>
+                  <p class="shelf-title">Научение на опыте. Итальянские семинары</p>
+                </div>
+                <span class="shelf-status shelf-status--reading">📖 Читаю</span>
+              </a>
+
+              <a class="shelf-row" href="library.html">
+                <img class="shelf-thumb" src="assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png" alt="" />
+                <div class="shelf-info">
+                  <p class="shelf-author">Антонино Ферро</p>
+                  <p class="shelf-title">Избегание эмоций, проживание эмоций</p>
+                </div>
+                <span class="shelf-status shelf-status--reading">📖 Читаю</span>
+              </a>
+
+              <a class="shelf-row" href="library.html">
+                <img class="shelf-thumb" src="assets/covers/nikoli-goret-vmeste-cover.png" alt="" />
+                <div class="shelf-info">
+                  <p class="shelf-author">под ред. Луки Николи</p>
+                  <p class="shelf-title">Гореть вместе</p>
+                </div>
+                <span class="shelf-status shelf-status--toread">📕 К прочтению</span>
+              </a>
+
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ===============================================================
+         OVERVIEW VIEW — mixed domain ~50P/40R/10C (site-map §5.4)
+         =============================================================== -->
+    <div class="view-panel is-hidden" data-panel="overview" role="tabpanel" aria-label="Сводка">
+      <div class="container">
+
+        <!-- Personal snapshot strip -->
+        <div class="ov-snapshot">
+          <div class="ov-snapshot-stat">
+            <span class="ov-snapshot-val">2</span>
+            <span class="ov-snapshot-label">книги в процессе</span>
+          </div>
+          <div class="ov-snapshot-sep" aria-hidden="true"></div>
+          <div class="ov-snapshot-stat">
+            <span class="ov-snapshot-val">+8</span>
+            <span class="ov-snapshot-label">репутации за 3 дня</span>
+          </div>
+          <div class="ov-snapshot-sep" aria-hidden="true"></div>
+          <div class="ov-snapshot-stat">
+            <span class="ov-snapshot-val">1</span>
+            <span class="ov-snapshot-label">новый ответ</span>
+          </div>
+          <a class="ov-snapshot-link" href="#" data-panel-switch="personal">Подробнее →</a>
+        </div>
+
+        <!-- Grid: New arrivals + Announcements -->
+        <div class="ov-two-col">
+
+          <!-- Left: New in Library -->
+          <div class="ov-col">
+            <h3 class="ov-section-title">Новые в библиотеке</h3>
+
+            <a class="ov-book-card" href="book.html">
+              <img class="ov-book-cover" src="assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png" alt="" />
+              <div class="ov-book-info">
+                <p class="ov-book-author">Антонино Ферро</p>
+                <p class="ov-book-title">Избегание эмоций, проживание эмоций</p>
+                <span class="ov-book-tag ov-book-tag--new">2023, новинка</span>
+              </div>
+            </a>
+
+            <a class="ov-book-card" href="book.html">
+              <img class="ov-book-cover" src="assets/covers/nikoli-goret-vmeste-cover.png" alt="" />
+              <div class="ov-book-info">
+                <p class="ov-book-author">под ред. Луки Николи</p>
+                <p class="ov-book-title">Гореть вместе</p>
+                <span class="ov-book-tag ov-book-tag--new">2022</span>
+              </div>
+            </a>
+          </div>
+
+          <!-- Right: Announcements -->
+          <div class="ov-col">
+            <h3 class="ov-section-title">Новости</h3>
+
+            <a class="ov-news-item" href="pub-news.html">
+              <span class="ov-news-domain ov-news-domain--pub" aria-hidden="true">📖</span>
+              <div class="ov-news-body">
+                <p class="ov-news-headline">β→α выпускает третье издание книги Биона</p>
+                <p class="ov-news-date">10 июня 2026</p>
+              </div>
+            </a>
+
+            <a class="ov-news-item" href="pub-news.html">
+              <span class="ov-news-domain ov-news-domain--platform" aria-hidden="true">🏛</span>
+              <div class="ov-news-body">
+                <p class="ov-news-headline">Открыт читальный зал: первые 50 участников получили доступ</p>
+                <p class="ov-news-date">4 июня 2026</p>
+              </div>
+            </a>
+
+            <a class="ov-news-item" href="pub-news.html">
+              <span class="ov-news-domain ov-news-domain--pub" aria-hidden="true">📚</span>
+              <div class="ov-news-body">
+                <p class="ov-news-headline">Обсуждение: аффективная регуляция в клиническом контексте</p>
+                <p class="ov-news-date">8 июня 2026</p>
+              </div>
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Grid: Recommendations + Trending -->
+        <div class="ov-two-col" style="margin-top: var(--space-8); padding-top: var(--space-8); border-top: var(--hairline) solid var(--line);">
+
+          <!-- Left: Recommendations -->
+          <div class="ov-col">
+            <h3 class="ov-section-title">Рекомендуем</h3>
+
+            <a class="ov-book-card" href="book.html">
+              <img class="ov-book-cover" src="assets/covers/nikoli-goret-vmeste-cover.png" alt="" />
+              <div class="ov-book-info">
+                <p class="ov-book-author">под ред. Луки Николи</p>
+                <p class="ov-book-title">Гореть вместе</p>
+                <span class="ov-book-tag ov-book-tag--reco">По теме «Психоанализ»</span>
+              </div>
+            </a>
+
+            <a class="ov-book-card" href="book.html">
+              <img class="ov-book-cover" src="assets/covers/bion-nauchenie-na-opyte-cover.png" alt="" />
+              <div class="ov-book-info">
+                <p class="ov-book-author">Вилфред Бион</p>
+                <p class="ov-book-title">Научение на опыте. Итальянские семинары</p>
+                <span class="ov-book-tag ov-book-tag--reco">Продолжаете читать</span>
+              </div>
+            </a>
+          </div>
+
+          <!-- Right: Trending discussions -->
+          <div class="ov-col">
+            <h3 class="ov-section-title">В сообществе</h3>
+
+            <a class="ov-discussion-item" href="community.html">
+              <p class="ov-discussion-topic">Психоанализ</p>
+              <p class="ov-discussion-title">Аффективная регуляция в клиническом контексте: дискуссия</p>
+              <p class="ov-discussion-meta">7 участников · последний ответ 2 ч. назад</p>
+            </a>
+
+            <a class="ov-discussion-item" href="community.html">
+              <p class="ov-discussion-topic">Теория</p>
+              <p class="ov-discussion-title">Концепция контейнирования у Биона: современные интерпретации</p>
+              <p class="ov-discussion-meta">12 участников · вчера</p>
+            </a>
+          </div>
+
+        </div>
+
+        <!-- CTA banner -->
+        <div style="padding-block: var(--space-8); border-top: var(--hairline) solid var(--line); margin-top: var(--space-8);">
+          <div class="ov-cta">
+            <div class="ov-cta-text">
+              <p class="ov-cta-eyebrow">Поделитесь мнением</p>
+              <p class="ov-cta-title">Как вам «Научение на опыте»?</p>
+            </div>
+            <button class="ov-cta-btn" type="button" data-stub>
+              Оценить книгу
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div style="padding-bottom: var(--space-12);"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===================================================================
+       FOOTER — noir band (site-map.md §3)
+       Active links: О проекте + Консоль (H-055)
+       =================================================================== -->
+  <footer class="site-footer" data-band="noir">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="text-mark" aria-hidden="true">β<span class="arrow">→</span>α</span>
+          <span class="footer-tagline">© 2026 beta→alpha. Для профессионального сообщества.</span>
+        </div>
+        <nav class="footer-links" aria-label="Служебные ссылки">
+          <a class="footer-link" href="pub-about.html">О проекте</a>
+          <a class="footer-link" href="#" data-stub>Консоль</a>
+          <span class="build-tag">v0.2.0-primer · home-auth</span>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      /* ---- Nav indicator (authorized frame) ---- */
+      var nav = document.querySelector(".primary-nav");
+      if (nav) {
+        var links = Array.prototype.slice.call(nav.querySelectorAll(".nav-link"));
+        var strip = nav.querySelector(".nav-strip");
+        var dot   = nav.querySelector(".nav-dot");
+        var DOT_RADIUS = 3.5;
+
+        function isHome(link) { return link.classList.contains("nav-link-home"); }
+
+        function moveTo(link) {
+          strip.style.left  = link.offsetLeft + "px";
+          strip.style.width = link.offsetWidth + "px";
+          dot.style.left    = link.offsetLeft + link.offsetWidth / 2 + "px";
+          if (isHome(link)) {
+            dot.style.bottom = (nav.clientHeight - (link.offsetTop + link.offsetHeight)) - DOT_RADIUS + "px";
+          } else {
+            dot.style.bottom = "4px";
+          }
+        }
+
+        function activeLink() {
+          return nav.querySelector('.nav-link[aria-current="page"]') || links[1];
+        }
+
+        function syncVis() {
+          strip.style.opacity = isHome(activeLink()) ? "0" : "1";
+          dot.style.opacity   = "1";
+        }
+
+        function place(link, instant) {
+          if (instant) { strip.style.transition = "none"; dot.style.transition = "none"; }
+          moveTo(link);
+          syncVis();
+          if (instant) { void dot.offsetWidth; strip.style.transition = ""; dot.style.transition = ""; }
+        }
+
+        document.fonts.ready.then(function () { place(activeLink(), true); });
+
+        links.forEach(function (link) {
+          link.addEventListener("click", function (e) {
+            var href   = link.getAttribute("href") || "";
+            var isStub = link.hasAttribute("data-stub");
+            if (isStub || href === "#" || href.charAt(0) === "#") e.preventDefault();
+            links.forEach(function (l) { l.removeAttribute("aria-current"); });
+            link.setAttribute("aria-current", "page");
+            place(link, false);
+          });
+        });
+
+        window.addEventListener("resize", function () { place(activeLink(), true); });
+      }
+
+      /* ---- View toggle (Personal / Overview) ---- */
+      (function () {
+        var tabs   = Array.prototype.slice.call(document.querySelectorAll(".view-tab"));
+        var panels = {};
+        Array.prototype.slice.call(document.querySelectorAll(".view-panel")).forEach(function (p) {
+          panels[p.getAttribute("data-panel")] = p;
+        });
+
+        function setView(view) {
+          tabs.forEach(function (t) {
+            var isThis = t.getAttribute("data-view") === view;
+            t.classList.toggle("is-active", isThis);
+            t.setAttribute("aria-selected", isThis ? "true" : "false");
+          });
+          Object.keys(panels).forEach(function (key) {
+            panels[key].classList.toggle("is-hidden", key !== view);
+          });
+          try { localStorage.setItem("ba-home-view", view); } catch (e) {}
+        }
+
+        /* Restore last-used view */
+        var saved = "";
+        try { saved = localStorage.getItem("ba-home-view") || ""; } catch (e) {}
+        if (saved && panels[saved]) {
+          setView(saved);
+        }
+
+        tabs.forEach(function (tab) {
+          tab.addEventListener("click", function () { setView(tab.getAttribute("data-view")); });
+        });
+
+        /* "Подробнее" link in overview snapshot switches to personal */
+        var switchLinks = Array.prototype.slice.call(document.querySelectorAll("[data-panel-switch]"));
+        switchLinks.forEach(function (el) {
+          el.addEventListener("click", function (e) {
+            e.preventDefault();
+            setView(el.getAttribute("data-panel-switch"));
+          });
+        });
+      })();
+
+      /* ---- Stubs — suppress navigation on placeholder elements ---- */
+      var stubs = Array.prototype.slice.call(document.querySelectorAll("[data-stub]"));
+      stubs.forEach(function (el) {
+        if (nav && nav.contains(el)) return; // nav links handled above
+        el.addEventListener("click", function (e) { e.preventDefault(); });
+      });
+    })();
+  </script>
+  <script src="assets/overlays.js"></script>
+</body>
+</html>

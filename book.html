@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="sepia-contrast">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Научение на опыте — beta→alpha</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/tokens.css" />
+  <style>
+    /* ================================================================
+       book.html — Издание (Book/Edition page)
+       Tabs: Обзор · Оценить · Комментарии · Рецензии · Реквизиты
+       site-map.md §5.9 · ux-structure.md §5.4 · feature-list.md §5b
+       FR-SHELF-11..20 · FR-COMM-01..05 · FR-READ-18..21
+       ================================================================ */
+
+    body { min-height:100vh; display:flex; flex-direction:column; }
+    body::before { content:""; position:fixed; inset:0; background-image:url("assets/backgrounds/monogram-cream.png"); background-repeat:repeat; background-size:320px; opacity:var(--grain-opacity); pointer-events:none; z-index:0; }
+
+    .container { width:100%; max-width:var(--container-max); margin-inline:auto; padding-inline:var(--gutter); }
+    .skip-link { position:absolute; left:var(--space-4); top:calc(var(--space-2)*-8); z-index:var(--z-toast); background:var(--surface); color:var(--ink); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); padding:var(--space-2) var(--space-4); font-size:var(--fs-small); transition:top var(--dur-base) var(--ease-out-quart); }
+    .skip-link:focus { top:var(--space-2); }
+
+    /* ---- Header ---- */
+    .site-header { position:sticky; top:0; z-index:var(--z-sticky); background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:saturate(140%) blur(8px); border-bottom:var(--hairline) solid var(--line); }
+    .header-inner { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:var(--space-4); height:var(--header-height); }
+    .wordmark { justify-self:start; display:inline-flex; align-items:center; flex-shrink:0; opacity:1; transition:opacity var(--dur-fast) var(--ease-out-quart); }
+    .wordmark:hover { opacity:.82; }
+    .wordmark-img { height:32px; width:auto; display:block; }
+    .text-mark { font-family:var(--font-serif); font-size:var(--fs-h1); font-weight:var(--fw-semibold); color:var(--ink); letter-spacing:var(--tracking-display); line-height:1; display:inline-flex; align-items:baseline; gap:.04em; flex-shrink:0; transition:color var(--dur-fast) var(--ease-out-quart); }
+    .text-mark .arrow { color:var(--accent); }
+    .text-mark:hover { color:var(--accent); }
+    .primary-nav { justify-self:center; position:relative; display:flex; align-items:center; gap:var(--space-6); padding-bottom:10px; }
+    .nav-link { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); letter-spacing:var(--tracking-label); color:var(--ink-soft); line-height:1; padding-block:var(--space-1); transition:color var(--dur-fast) var(--ease-out-quart); }
+    .nav-link:hover,.nav-link[aria-current="page"] { color:var(--accent); }
+    .nav-link-home { font-family:var(--font-serif); font-size:var(--fs-body); font-weight:var(--fw-semibold); letter-spacing:var(--tracking-display); background:#1F1B18; color:#ECE3D6; padding:var(--space-1) var(--space-3) calc(var(--space-1)+3px); border-radius:var(--radius-md); transition:opacity var(--dur-fast) var(--ease-out-quart); }
+    .nav-link-home .arrow { color:#D2674A; }
+    .nav-link-home:hover,.nav-link-home[aria-current="page"] { color:#ECE3D6; opacity:.85; }
+    .nav-link-home:hover .arrow,.nav-link-home[aria-current="page"] .arrow { color:#D2674A; }
+    .nav-strip,.nav-dot { position:absolute; pointer-events:none; }
+    .nav-strip { background:var(--accent); bottom:7px; height:var(--hairline); border-radius:var(--radius-pill); -webkit-mask:linear-gradient(90deg,#000 0,#000 calc(50% - 7px),transparent calc(50% - 7px),transparent calc(50% + 7px),#000 calc(50% + 7px),#000 100%); mask:linear-gradient(90deg,#000 0,#000 calc(50% - 7px),transparent calc(50% - 7px),transparent calc(50% + 7px),#000 calc(50% + 7px),#000 100%); transition:left 280ms var(--ease-out-quart),width 280ms var(--ease-out-quart),opacity 160ms var(--ease-out-quart); }
+    .nav-dot { background:var(--amber); bottom:4px; width:7px; height:7px; border-radius:var(--radius-pill); transform:translateX(-50%); transition:left 360ms cubic-bezier(.34,1.56,.64,1),bottom 360ms cubic-bezier(.34,1.56,.64,1); }
+    .nav-strip:not([style]),.nav-dot:not([style]) { opacity:0; }
+    @media (prefers-reduced-motion:reduce) { .nav-strip,.nav-dot { transition:none; } }
+    .header-actions { justify-self:end; display:flex; align-items:center; gap:var(--space-3); flex-shrink:0; }
+    .icon-btn { position:relative; display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; background:transparent; color:var(--ink-soft); border:var(--hairline) solid transparent; border-radius:var(--radius-md); cursor:pointer; transition:color var(--dur-fast) var(--ease-out-quart),border-color var(--dur-fast) var(--ease-out-quart); }
+    .icon-btn:hover { color:var(--ink); border-color:var(--line); }
+    .icon-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+    .notif-count { position:absolute; top:4px; right:4px; min-width:16px; height:16px; padding-inline:4px; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:var(--fw-semibold); line-height:1; color:var(--on-accent); background:var(--accent); border-radius:var(--radius-pill); }
+    .avatar-rep { display:inline-flex; align-items:center; gap:var(--space-2); padding:3px 8px 3px 3px; border:var(--hairline) solid var(--line); border-radius:var(--radius-pill); background:var(--surface); text-decoration:none; transition:border-color var(--dur-fast) var(--ease-out-quart),background var(--dur-fast) var(--ease-out-quart); }
+    .avatar-rep:hover { border-color:var(--accent); background:var(--surface-sunk); }
+    .avatar-rep__face { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:var(--radius-pill); background:var(--accent); color:var(--on-accent); font-size:var(--fs-caption); font-weight:var(--fw-semibold); letter-spacing:0; }
+    .avatar-rep__score { display:inline-flex; align-items:center; gap:3px; color:var(--amber); }
+    .avatar-rep__num { font-size:var(--fs-caption); font-weight:var(--fw-semibold); color:var(--ink); font-variant-numeric:tabular-nums; }
+
+    /* ---- Footer ---- */
+    .site-footer { position:relative; z-index:1; border-top:var(--hairline) solid var(--line); margin-top:auto; }
+    .footer-inner { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:var(--space-4); padding-block:var(--space-8); }
+    .footer-brand { display:flex; align-items:baseline; gap:var(--space-4); flex-wrap:wrap; }
+    .footer-brand .text-mark { font-size:var(--fs-h2); }
+    .footer-tagline { font-family:var(--font-sans); font-size:var(--fs-caption); letter-spacing:var(--tracking-caption); color:var(--ink-soft); }
+    .build-tag { font-family:var(--font-sans); font-size:var(--fs-caption); letter-spacing:var(--tracking-caption); color:var(--ink-soft); }
+    .footer-links { display:inline-flex; align-items:baseline; gap:var(--space-4); flex-wrap:wrap; }
+    .footer-link { font-family:var(--font-sans); font-size:var(--fs-caption); letter-spacing:var(--tracking-caption); color:var(--ink-soft); text-decoration:none; transition:color var(--dur-fast) var(--ease-out-quart); }
+    .footer-link:hover { color:var(--accent); }
+
+    /* ================================================================
+       BOOK PAGE
+       ================================================================ */
+
+    .book-main { flex:1; position:relative; z-index:1; }
+
+    /* Breadcrumb */
+    .breadcrumb { padding-block:var(--space-4) 0; }
+    .breadcrumb-inner { display:flex; align-items:center; gap:var(--space-2); font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+    .breadcrumb-link { color:var(--ink-faint); transition:color var(--dur-fast); }
+    .breadcrumb-link:hover { color:var(--accent); }
+    .breadcrumb-sep { color:var(--line); }
+
+    /* ---- Book hero: two-column ---- */
+    .book-hero { padding-block:var(--space-8); border-bottom:var(--hairline) solid var(--line); }
+    .book-hero-layout { display:grid; grid-template-columns:200px 1fr; gap:var(--space-10); align-items:start; }
+    .book-cover-col { display:flex; flex-direction:column; gap:var(--space-4); align-items:center; }
+    .book-cover { width:200px; height:280px; object-fit:cover; border-radius:var(--radius-md); border:var(--hairline) solid var(--line); box-shadow:0 4px 24px rgba(40,30,20,.12); }
+    .cover-actions { display:flex; flex-direction:column; gap:var(--space-2); width:100%; }
+    .btn-read { display:flex; align-items:center; justify-content:center; gap:var(--space-2); padding:var(--space-3) var(--space-4); background:var(--accent); color:var(--on-accent); border:none; border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-semibold); cursor:pointer; transition:background var(--dur-fast); text-decoration:none; }
+    .btn-read:hover { background:var(--accent-hover); }
+    .btn-shelf { display:flex; align-items:center; justify-content:center; gap:var(--space-2); padding:var(--space-2) var(--space-4); background:transparent; color:var(--ink-soft); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); cursor:pointer; transition:all var(--dur-fast); }
+    .btn-shelf:hover { border-color:var(--accent); color:var(--accent); }
+    .btn-shelf.is-shelved { background:var(--accent-tint); border-color:var(--accent); color:var(--accent); }
+    .progress-row { display:flex; align-items:center; gap:var(--space-2); padding:var(--space-2) var(--space-3); background:var(--surface-sunk); border-radius:var(--radius-md); }
+    .progress-bar-wrap { flex:1; height:4px; background:var(--line); border-radius:var(--radius-pill); overflow:hidden; }
+    .progress-bar-fill { height:100%; background:var(--accent); border-radius:var(--radius-pill); width:34%; }
+    .progress-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); white-space:nowrap; }
+
+    /* Book meta col */
+    .book-meta-col { min-width:0; }
+    .book-topic-chips { display:flex; flex-wrap:wrap; gap:var(--space-2); margin-bottom:var(--space-4); }
+    .topic-chip { display:inline-flex; align-items:center; padding:3px 12px; border-radius:var(--radius-pill); font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); border:var(--hairline) solid; }
+    .topic-chip--psycho { color:var(--slate); border-color:var(--slate); }
+    .topic-chip--theory { color:var(--amber); border-color:var(--amber); }
+    .topic-chip--clinical { color:var(--sage); border-color:var(--sage); }
+    .book-title { font-family:var(--font-serif); font-size:clamp(22px,3vw,32px); font-weight:var(--fw-semibold); color:var(--ink); line-height:1.2; margin:0 0 var(--space-2); }
+    .book-subtitle { font-family:var(--font-serif); font-size:var(--fs-h3); font-weight:400; color:var(--ink-soft); font-style:italic; margin:0 0 var(--space-4); }
+    .book-authors { font-family:var(--font-sans); font-size:var(--fs-body); color:var(--ink-soft); margin:0 0 var(--space-4); }
+    .book-meta-row { display:flex; align-items:center; gap:var(--space-5); flex-wrap:wrap; margin-bottom:var(--space-4); }
+    .meta-item { display:flex; flex-direction:column; gap:2px; }
+    .meta-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); letter-spacing:var(--tracking-caption); text-transform:uppercase; }
+    .meta-value { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); color:var(--ink); }
+    .meta-sep { width:var(--hairline); height:32px; background:var(--line); align-self:center; }
+
+    /* Rating stars inline */
+    .book-rating-row { display:flex; align-items:center; gap:var(--space-3); margin-bottom:var(--space-5); }
+    .stars { display:flex; gap:2px; }
+    .star { font-size:16px; line-height:1; }
+    .star.f { color:var(--amber); }
+    .star.e { color:var(--line); }
+    .rating-num { font-family:var(--font-sans); font-size:var(--fs-body); font-weight:var(--fw-semibold); color:var(--ink); font-variant-numeric:tabular-nums; }
+    .rating-count { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-faint); }
+    .rep-badge { display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:var(--radius-pill); font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); border:var(--hairline) solid; }
+    .rep-badge--maitre { color:var(--accent); border-color:var(--accent); }
+    .rep-badge--expert { color:var(--slate); border-color:var(--slate); }
+    .rep-badge--practik { color:var(--amber); border-color:var(--amber); }
+    .rep-badge--novice { color:var(--ink-faint); border-color:var(--line); }
+
+    .book-annotation { font-family:var(--font-serif); font-size:var(--fs-body); color:var(--ink-soft); line-height:var(--lh-body); margin-bottom:var(--space-5); max-width:640px; }
+
+    /* Version picker */
+    .version-row { display:flex; align-items:center; gap:var(--space-3); flex-wrap:wrap; }
+    .version-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+    .version-select { padding:4px var(--space-3); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink); outline:none; cursor:pointer; transition:border-color var(--dur-fast); }
+    .version-select:focus { border-color:var(--accent); }
+    .version-history-link { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--accent); cursor:pointer; }
+    .version-history-link:hover { color:var(--accent-hover); }
+
+    /* ---- Tab nav ---- */
+    .book-tabs { position:sticky; top:var(--header-height); z-index:calc(var(--z-sticky) - 1); background:color-mix(in srgb,var(--paper) 95%,transparent); backdrop-filter:blur(4px); border-bottom:var(--hairline) solid var(--line); }
+    .tabs-inner { display:flex; align-items:stretch; gap:0; overflow-x:auto; }
+    .tab-btn { flex-shrink:0; padding:var(--space-4) var(--space-5); font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); color:var(--ink-soft); background:transparent; border:none; border-bottom:2px solid transparent; cursor:pointer; transition:color var(--dur-fast),border-color var(--dur-fast); white-space:nowrap; margin-bottom:-1px; }
+    .tab-btn:hover { color:var(--ink); }
+    .tab-btn.is-active { color:var(--accent); border-bottom-color:var(--accent); }
+
+    /* ---- Tab panels ---- */
+    .book-body { padding-block:var(--space-8) var(--space-16); }
+    .tab-panel { display:none; }
+    .tab-panel.is-active { display:block; }
+    .tab-layout { display:grid; grid-template-columns:1fr 280px; gap:var(--space-10); align-items:start; }
+    .tab-main { min-width:0; }
+    .tab-aside { display:flex; flex-direction:column; gap:var(--space-6); position:sticky; top:calc(var(--header-height) + 60px); }
+
+    /* Section scaffold */
+    .sec-eyebrow { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); letter-spacing:var(--tracking-caption); text-transform:uppercase; color:var(--ink-faint); margin-bottom:var(--space-1); }
+    .sec-title { font-family:var(--font-serif); font-size:var(--fs-h2); font-weight:var(--fw-semibold); color:var(--ink); margin:0 0 var(--space-5); }
+    .sec-title-sm { font-family:var(--font-serif); font-size:var(--fs-h3); font-weight:var(--fw-semibold); color:var(--ink); margin:0 0 var(--space-4); }
+
+    /* ---- TOC ---- */
+    .toc-list { display:flex; flex-direction:column; gap:0; border:var(--hairline) solid var(--line); border-radius:var(--radius-md); overflow:hidden; }
+    .toc-item { display:flex; align-items:baseline; gap:var(--space-3); padding:var(--space-3) var(--space-4); background:var(--surface); border-bottom:var(--hairline) solid var(--line); transition:background var(--dur-fast); }
+    .toc-item:last-child { border-bottom:none; }
+    .toc-item:hover { background:var(--accent-tint); }
+    .toc-num { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); font-variant-numeric:tabular-nums; min-width:20px; }
+    .toc-text { font-family:var(--font-serif); font-size:var(--fs-small); color:var(--ink); flex:1; line-height:1.35; }
+    .toc-page { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); font-variant-numeric:tabular-nums; }
+    .toc-more { display:block; padding:var(--space-3) var(--space-4); text-align:center; font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--accent); background:var(--surface-sunk); }
+    .toc-more:hover { color:var(--accent-hover); }
+    .toc-item--h2 .toc-text { padding-left:var(--space-4); font-size:var(--fs-caption); color:var(--ink-soft); }
+
+    /* ---- Version history ---- */
+    .version-history { display:flex; flex-direction:column; gap:var(--space-3); }
+    .version-card { padding:var(--space-4); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); cursor:pointer; transition:border-color var(--dur-fast); }
+    .version-card:hover { border-color:var(--accent); }
+    .version-card.is-current { border-left:3px solid var(--accent); }
+    .vc-head { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-3); margin-bottom:var(--space-1); }
+    .vc-label { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-semibold); color:var(--ink); }
+    .vc-date { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); white-space:nowrap; }
+    .vc-badges { display:flex; gap:var(--space-2); flex-wrap:wrap; margin-bottom:var(--space-2); }
+    .vc-badge { display:inline-flex; padding:1px 8px; border-radius:var(--radius-pill); font-family:var(--font-sans); font-size:10px; font-weight:var(--fw-semibold); border:var(--hairline) solid; }
+    .vc-badge--full { color:var(--sage); border-color:var(--sage); }
+    .vc-badge--early { color:var(--amber); border-color:var(--amber); }
+    .vc-badge--free { color:var(--slate); border-color:var(--slate); }
+    .vc-badge--current { color:var(--accent); border-color:var(--accent); }
+    .vc-note { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); line-height:1.4; }
+
+    /* ---- Comments ---- */
+    .comments-list { display:flex; flex-direction:column; gap:var(--space-5); }
+    .comment-thread { }
+    .comment-card { padding:var(--space-4); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); }
+    .comment-header { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-3); margin-bottom:var(--space-3); }
+    .comment-author { display:flex; align-items:center; gap:var(--space-3); }
+    .u-av { display:inline-flex; align-items:center; justify-content:center; border-radius:var(--radius-pill); font-family:var(--font-sans); font-weight:var(--fw-semibold); letter-spacing:0; color:#ECE3D6; flex-shrink:0; }
+    .u-av--sm { width:32px; height:32px; font-size:var(--fs-caption); }
+    .comment-author-info { display:flex; flex-direction:column; gap:2px; }
+    .comment-author-name { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-semibold); color:var(--ink); }
+    .comment-date { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+    .comment-text { font-family:var(--font-serif); font-size:var(--fs-body); color:var(--ink-soft); line-height:var(--lh-body); margin-bottom:var(--space-3); }
+    .comment-footer { display:flex; align-items:center; gap:var(--space-4); }
+    .vote-ctrl { display:inline-flex; align-items:center; gap:var(--space-2); }
+    .vote-btn { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:var(--radius-md); border:var(--hairline) solid var(--line); background:transparent; color:var(--ink-soft); cursor:pointer; font-size:13px; transition:all var(--dur-fast) var(--ease-out-quart); }
+    .vote-btn:hover { border-color:var(--accent); color:var(--accent); }
+    .vote-btn.is-up.is-active { background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
+    .vote-btn.is-down.is-active { background:var(--surface-sunk); border-color:var(--ink-faint); color:var(--ink-faint); }
+    .vote-total { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:var(--radius-pill); font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-semibold); background:var(--surface-sunk); color:var(--ink-soft); border:var(--hairline) solid var(--line); font-variant-numeric:tabular-nums; }
+    .btn-reply { background:none; border:none; font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); cursor:pointer; padding:0; transition:color var(--dur-fast); }
+    .btn-reply:hover { color:var(--accent); }
+    .replies-list { margin-top:var(--space-3); padding-left:var(--space-8); border-left:2px solid var(--line); display:flex; flex-direction:column; gap:var(--space-3); }
+    .reply-card { padding:var(--space-3); background:var(--surface-sunk); border-radius:var(--radius-md); }
+    .reply-to { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); margin-bottom:var(--space-1); }
+    .reply-text { font-family:var(--font-serif); font-size:var(--fs-small); color:var(--ink-soft); line-height:1.5; }
+
+    /* Add comment box */
+    .add-comment { margin-top:var(--space-6); padding:var(--space-5); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); }
+    .add-comment-label { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); color:var(--ink); margin-bottom:var(--space-3); display:block; }
+    .comment-textarea { width:100%; min-height:88px; padding:var(--space-3); background:var(--surface-sunk); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); font-family:var(--font-serif); font-size:var(--fs-small); color:var(--ink); resize:vertical; outline:none; box-sizing:border-box; transition:border-color var(--dur-fast); }
+    .comment-textarea:focus { border-color:var(--accent); }
+    .comment-textarea::placeholder { color:var(--ink-faint); }
+    .add-comment-footer { display:flex; justify-content:flex-end; margin-top:var(--space-3); }
+    .btn-submit-comment { padding:var(--space-2) var(--space-5); background:var(--accent); color:var(--on-accent); border:none; border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); cursor:pointer; transition:background var(--dur-fast); }
+    .btn-submit-comment:hover { background:var(--accent-hover); }
+
+    /* ---- Reviews ---- */
+    .reviews-list { display:flex; flex-direction:column; gap:var(--space-5); }
+    .review-card { padding:var(--space-5); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); }
+    .review-header { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-4); margin-bottom:var(--space-4); }
+    .review-author { display:flex; align-items:center; gap:var(--space-3); }
+    .review-author-info { display:flex; flex-direction:column; gap:var(--space-1); }
+    .review-author-name { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-semibold); color:var(--ink); }
+    .review-author-badges { display:flex; align-items:center; gap:var(--space-2); flex-wrap:wrap; }
+    .review-date { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); white-space:nowrap; }
+    .review-stars { display:flex; align-items:center; gap:2px; margin-bottom:var(--space-3); }
+    .review-text { font-family:var(--font-serif); font-size:var(--fs-body); color:var(--ink-soft); line-height:var(--lh-body); font-style:italic; margin-bottom:var(--space-4); }
+    .review-footer { display:flex; align-items:center; justify-content:space-between; gap:var(--space-3); flex-wrap:wrap; }
+    .review-weight-note { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+    .review-weight-note span { color:var(--amber); font-weight:var(--fw-semibold); }
+    .pro-mark { display:inline-flex; align-items:center; gap:3px; padding:2px 7px; border-radius:var(--radius-pill); font-family:var(--font-sans); font-size:10px; font-weight:var(--fw-semibold); background:color-mix(in srgb,var(--sage) 12%,var(--surface-sunk)); color:var(--sage); }
+
+    /* Professional-only gate */
+    .pro-gate { padding:var(--space-5); background:color-mix(in srgb,var(--accent) 6%,var(--surface)); border:var(--hairline) solid color-mix(in srgb,var(--accent) 20%,var(--line)); border-radius:var(--radius-md); text-align:center; }
+    .pro-gate-icon { font-size:28px; margin-bottom:var(--space-2); }
+    .pro-gate-title { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-semibold); color:var(--ink); margin-bottom:var(--space-1); }
+    .pro-gate-desc { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-faint); }
+
+    /* Review editor (Professional) */
+    .review-editor { padding:var(--space-5); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); margin-bottom:var(--space-5); }
+    .review-editor-label { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); color:var(--ink); margin-bottom:var(--space-3); display:block; }
+    .star-picker { display:flex; gap:var(--space-1); margin-bottom:var(--space-3); }
+    .star-pick { font-size:22px; cursor:pointer; color:var(--line); transition:color var(--dur-fast); line-height:1; }
+    .star-pick.is-on { color:var(--amber); }
+    .star-pick:hover { color:var(--amber); }
+    .review-textarea { width:100%; min-height:100px; padding:var(--space-3); background:var(--surface-sunk); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); font-family:var(--font-serif); font-size:var(--fs-small); color:var(--ink); resize:vertical; outline:none; box-sizing:border-box; transition:border-color var(--dur-fast); }
+    .review-textarea:focus { border-color:var(--accent); }
+    .review-textarea::placeholder { color:var(--ink-faint); }
+    .review-editor-footer { display:flex; justify-content:flex-end; margin-top:var(--space-3); }
+    .btn-submit-review { padding:var(--space-2) var(--space-5); background:var(--accent); color:var(--on-accent); border:none; border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); cursor:pointer; transition:background var(--dur-fast); }
+    .btn-submit-review:hover { background:var(--accent-hover); }
+
+    /* ---- Requisites ---- */
+    .requisites-card { padding:var(--space-6); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); margin-bottom:var(--space-6); }
+    .req-seal { display:inline-flex; gap:.04em; align-items:baseline; font-family:var(--font-serif); font-size:var(--fs-small); font-weight:var(--fw-semibold); letter-spacing:var(--tracking-display); background:#1F1B18; color:#ECE3D6; padding:3px var(--space-3) 5px; border-radius:var(--radius-md); margin-bottom:var(--space-4); line-height:1; }
+    .req-seal .arrow { color:#D2674A; }
+    .req-table { width:100%; border-collapse:collapse; }
+    .req-table tr { border-bottom:var(--hairline) solid var(--line); }
+    .req-table tr:last-child { border-bottom:none; }
+    .req-table th { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); color:var(--ink-faint); text-transform:uppercase; letter-spacing:var(--tracking-caption); text-align:left; padding:var(--space-3) var(--space-4) var(--space-3) 0; width:140px; vertical-align:top; }
+    .req-table td { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink); padding:var(--space-3) 0; }
+
+    /* Citation block */
+    .citation-block { padding:var(--space-5); background:var(--surface-sunk); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); margin-bottom:var(--space-6); }
+    .citation-label { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); letter-spacing:var(--tracking-caption); text-transform:uppercase; color:var(--ink-faint); margin-bottom:var(--space-3); }
+    .citation-string { font-family:var(--font-serif); font-size:var(--fs-small); color:var(--ink); line-height:1.6; margin-bottom:var(--space-3); }
+    .citation-deeplink { display:flex; align-items:center; gap:var(--space-2); padding:var(--space-2) var(--space-3); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); margin-bottom:var(--space-3); }
+    .citation-url { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .btn-copy { padding:var(--space-1) var(--space-3); background:var(--accent); color:var(--on-accent); border:none; border-radius:var(--radius-sm); font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); cursor:pointer; transition:background var(--dur-fast); white-space:nowrap; }
+    .btn-copy:hover { background:var(--accent-hover); }
+
+    /* ---- Aside: sidebar cards ---- */
+    .aside-card { padding:var(--space-4); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); }
+    .aside-title { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-semibold); color:var(--ink); margin-bottom:var(--space-3); }
+    .toc-aside-list { display:flex; flex-direction:column; gap:0; }
+    .toc-aside-item { display:flex; align-items:baseline; gap:var(--space-3); padding:var(--space-2) 0; border-bottom:var(--hairline) solid var(--line); cursor:pointer; }
+    .toc-aside-item:last-child { border-bottom:none; }
+    .toc-aside-item:hover .toc-aside-text { color:var(--accent); }
+    .toc-aside-num { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); min-width:18px; }
+    .toc-aside-text { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-soft); flex:1; }
+    .toc-aside-pg { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+    .toc-aside-more { display:block; padding-top:var(--space-2); font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--accent); }
+    .toc-aside-more:hover { color:var(--accent-hover); }
+
+    .community-aside-item { display:flex; align-items:center; gap:var(--space-3); padding:var(--space-2) 0; border-bottom:var(--hairline) solid var(--line); }
+    .community-aside-item:last-child { border-bottom:none; }
+    .community-av { width:28px; height:28px; border-radius:var(--radius-pill); display:inline-flex; align-items:center; justify-content:center; font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-semibold); color:#ECE3D6; flex-shrink:0; }
+    .community-aside-info { flex:1; min-width:0; }
+    .community-aside-name { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); color:var(--ink); }
+    .community-aside-action { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+
+    /* ---- Responsive ---- */
+    @media (max-width:900px) { .book-hero-layout { grid-template-columns:140px 1fr; gap:var(--space-6); } .book-cover { width:140px; height:196px; } .tab-layout { grid-template-columns:1fr; } .tab-aside { position:static; } }
+    @media (max-width:760px) { .primary-nav { display:none; } :root { --gutter:var(--space-6); } .book-hero-layout { grid-template-columns:1fr; } .cover-actions { flex-direction:row; flex-wrap:wrap; } .book-cover { width:120px; height:168px; } }
+    @media (max-width:460px) { .header-inner { gap:var(--space-3); } .avatar-rep__score { display:none; } }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#content">К содержимому</a>
+
+  <!-- HEADER — authorized, no nav item active (book page is a lateral jump) -->
+  <header class="site-header">
+    <div class="header-inner container">
+      <a class="wordmark" href="pub-about.html" aria-label="beta→alpha — о проекте">
+        <img class="wordmark-img" src="assets/decor/a2b-logo.png" alt="beta→alpha" />
+      </a>
+      <nav class="primary-nav" aria-label="Основная навигация">
+        <a class="nav-link" href="community.html">Сообщество</a>
+        <a class="nav-link nav-link-home" href="home.html" aria-label="Домашняя">β<span class="arrow">→</span>α</a>
+        <a class="nav-link" href="library.html">Библиотека</a>
+        <span class="nav-strip" aria-hidden="true"></span>
+        <span class="nav-dot" aria-hidden="true"></span>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn" id="btn-search" type="button" aria-label="Поиск">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-pulse" type="button" aria-label="Пульс">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-notif" type="button" aria-label="Уведомления (3 непрочитанных)" aria-haspopup="true" aria-expanded="false">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span class="notif-count" aria-hidden="true">3</span>
+        </button>
+        <button class="avatar-rep" id="btn-avatar" type="button" aria-label="Аккаунт — репутация 142" aria-haspopup="true" aria-expanded="false" style="text-decoration:none;border:none;cursor:pointer;">
+          <span class="avatar-rep__face" aria-hidden="true">АИ</span>
+          <span class="avatar-rep__score" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 18l-5.9 3.2 1.2-6.6L2.5 9l6.6-.9z"/></svg>
+            <span class="avatar-rep__num">142</span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="book-main" id="content">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <div class="container">
+        <div class="breadcrumb-inner">
+          <a class="breadcrumb-link" href="library.html">Библиотека</a>
+          <span class="breadcrumb-sep" aria-hidden="true">›</span>
+          <span>Научение на опыте</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Book hero -->
+    <div class="book-hero">
+      <div class="container">
+        <div class="book-hero-layout">
+
+          <!-- Cover + primary actions -->
+          <div class="book-cover-col">
+            <img class="book-cover" src="assets/covers/bion-nauchenie-na-opyte-cover.png" alt="Обложка книги «Научение на опыте»" />
+            <div class="cover-actions">
+              <a class="btn-read" href="reader.html">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                Читать
+              </a>
+              <button class="btn-shelf is-shelved" id="btn-shelf-toggle" type="button">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                <span id="shelf-label">На полке: Читаю 📖</span>
+              </button>
+            </div>
+            <div class="progress-row">
+              <div class="progress-bar-wrap" role="progressbar" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar-fill"></div>
+              </div>
+              <span class="progress-label">с. 38/112</span>
+            </div>
+          </div>
+
+          <!-- Book metadata -->
+          <div class="book-meta-col">
+            <div class="book-topic-chips">
+              <span class="topic-chip topic-chip--psycho">Психоанализ</span>
+              <span class="topic-chip topic-chip--theory">Бионианский анализ</span>
+              <span class="topic-chip topic-chip--clinical">Семинары</span>
+            </div>
+            <h1 class="book-title">Научение на опыте</h1>
+            <p class="book-subtitle">Итальянские семинары</p>
+            <p class="book-authors">Уилфред Р. Бион</p>
+
+            <div class="book-meta-row">
+              <div class="meta-item">
+                <span class="meta-label">Год издания</span>
+                <span class="meta-value">2023</span>
+              </div>
+              <div class="meta-sep" aria-hidden="true"></div>
+              <div class="meta-item">
+                <span class="meta-label">Страниц</span>
+                <span class="meta-value">112</span>
+              </div>
+              <div class="meta-sep" aria-hidden="true"></div>
+              <div class="meta-item">
+                <span class="meta-label">Версия</span>
+                <span class="meta-value">Издание 1.0</span>
+              </div>
+              <div class="meta-sep" aria-hidden="true"></div>
+              <div class="meta-item">
+                <span class="meta-label">Обсуждений</span>
+                <span class="meta-value">14</span>
+              </div>
+            </div>
+
+            <div class="book-rating-row">
+              <div class="stars" aria-label="Рейтинг 4.8 из 5">
+                <span class="star f">★</span><span class="star f">★</span><span class="star f">★</span><span class="star f">★</span><span class="star f">★</span>
+              </div>
+              <span class="rating-num">4.8</span>
+              <span class="rating-count">из 5 · 7 рецензий профессионалов</span>
+            </div>
+
+            <p class="book-annotation">Итальянские семинары — запись четырёх встреч Биона с итальянскими аналитиками в 1977 году, незадолго до его смерти. В этих беседах он говорит о том, что обычно остаётся в тени теоретических построений — о живом опыте аналитической встречи, о непознаваемости психической реальности, о том, что значит не знать и при этом присутствовать. Третье издание от beta→alpha содержит исправленный перевод ключевых понятий и новое предисловие переводчика.</p>
+
+            <div class="version-row">
+              <span class="version-label">Версия:</span>
+              <select class="version-select" aria-label="Выбрать версию">
+                <option>Издание 1.0 · 2023 (текущее)</option>
+                <option>Ранний доступ 0.9 · 2022</option>
+                <option>Фрагмент — бесплатно</option>
+              </select>
+              <a class="version-history-link" id="version-history-link" href="#tab-requisites">История версий →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab navigation -->
+    <div class="book-tabs" id="book-tabs">
+      <div class="tabs-inner container">
+        <button class="tab-btn is-active" data-tab="overview">Обзор</button>
+        <button class="tab-btn" data-tab="rate">Оценить</button>
+        <button class="tab-btn" data-tab="comments">Комментарии <span style="font-weight:400;color:var(--ink-faint);margin-left:2px;">(14)</span></button>
+        <button class="tab-btn" data-tab="reviews">Рецензии <span style="font-weight:400;color:var(--ink-faint);margin-left:2px;">(7)</span></button>
+        <button class="tab-btn" data-tab="requisites" id="tab-btn-req">Реквизиты</button>
+      </div>
+    </div>
+
+    <!-- Tab panels -->
+    <div class="book-body">
+      <div class="container">
+
+        <!-- ===== OVERVIEW ===== -->
+        <div class="tab-panel is-active" id="panel-overview">
+          <div class="tab-layout">
+            <div class="tab-main">
+              <p class="sec-eyebrow">Содержание</p>
+              <h2 class="sec-title">Оглавление</h2>
+              <div class="toc-list" role="list">
+                <a class="toc-item" href="reader.html" role="listitem">
+                  <span class="toc-num">I</span>
+                  <span class="toc-text">Первый семинар: о природе аналитического опыта</span>
+                  <span class="toc-page">7</span>
+                </a>
+                <a class="toc-item toc-item--h2" href="reader.html" role="listitem">
+                  <span class="toc-num"></span>
+                  <span class="toc-text">Что значит «знать»</span>
+                  <span class="toc-page">12</span>
+                </a>
+                <a class="toc-item" href="reader.html" role="listitem">
+                  <span class="toc-num">II</span>
+                  <span class="toc-text">Второй семинар: контейнирование как клинический факт</span>
+                  <span class="toc-page">27</span>
+                </a>
+                <a class="toc-item toc-item--h2" href="reader.html" role="listitem">
+                  <span class="toc-num"></span>
+                  <span class="toc-text">Вопросы из зала</span>
+                  <span class="toc-page">44</span>
+                </a>
+                <a class="toc-item" href="reader.html" role="listitem">
+                  <span class="toc-num">III</span>
+                  <span class="toc-text">Третий семинар: бета-элементы и альфа-функция</span>
+                  <span class="toc-page">55</span>
+                </a>
+                <a class="toc-item" href="reader.html" role="listitem">
+                  <span class="toc-num">IV</span>
+                  <span class="toc-text">Четвёртый семинар: психика, которую мы не знаем</span>
+                  <span class="toc-page">79</span>
+                </a>
+                <a class="toc-item toc-item--h2" href="reader.html" role="listitem">
+                  <span class="toc-num"></span>
+                  <span class="toc-text">Примечания переводчика</span>
+                  <span class="toc-page">105</span>
+                </a>
+                <a class="toc-more" href="reader.html">Открыть полное оглавление в читалке →</a>
+              </div>
+            </div>
+            <aside class="tab-aside">
+              <!-- Compact TOC -->
+              <div class="aside-card">
+                <p class="aside-title">Быстрый переход</p>
+                <div class="toc-aside-list">
+                  <a class="toc-aside-item" href="reader.html">
+                    <span class="toc-aside-num">I</span>
+                    <span class="toc-aside-text">Первый семинар</span>
+                    <span class="toc-aside-pg">7</span>
+                  </a>
+                  <a class="toc-aside-item" href="reader.html">
+                    <span class="toc-aside-num">II</span>
+                    <span class="toc-aside-text">Второй семинар</span>
+                    <span class="toc-aside-pg">27</span>
+                  </a>
+                  <a class="toc-aside-item" href="reader.html">
+                    <span class="toc-aside-num">III</span>
+                    <span class="toc-aside-text">Третий семинар</span>
+                    <span class="toc-aside-pg">55</span>
+                  </a>
+                  <a class="toc-aside-item" href="reader.html">
+                    <span class="toc-aside-num">IV</span>
+                    <span class="toc-aside-text">Четвёртый семинар</span>
+                    <span class="toc-aside-pg">79</span>
+                  </a>
+                </div>
+                <a class="toc-aside-more" href="reader.html">В читалку →</a>
+              </div>
+              <!-- Community pulse -->
+              <div class="aside-card">
+                <p class="aside-title">Сейчас читают</p>
+                <div>
+                  <div class="community-aside-item">
+                    <span class="community-av" style="background:var(--slate);">МС</span>
+                    <div class="community-aside-info">
+                      <p class="community-aside-name">Мария Соколова</p>
+                      <p class="community-aside-action">на с. 55 · 2 ч. назад</p>
+                    </div>
+                  </div>
+                  <div class="community-aside-item">
+                    <span class="community-av" style="background:#7A4A3A;">ДО</span>
+                    <div class="community-aside-info">
+                      <p class="community-aside-name">Дмитрий Орлов</p>
+                      <p class="community-aside-action">завершил · вчера</p>
+                    </div>
+                  </div>
+                  <div class="community-aside-item">
+                    <span class="community-av" style="background:var(--sage);">НК</span>
+                    <div class="community-aside-info">
+                      <p class="community-aside-name">Наталья Кузнецова</p>
+                      <p class="community-aside-action">на с. 27 · 3 дня назад</p>
+                    </div>
+                  </div>
+                </div>
+                <a href="community.html" style="display:block;margin-top:var(--space-3);font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--accent);">Все обсуждения →</a>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- ===== RATE ===== -->
+        <div class="tab-panel" id="panel-rate">
+          <div class="tab-layout">
+            <div class="tab-main">
+              <p class="sec-eyebrow">Только для профессионалов</p>
+              <h2 class="sec-title">Оценить книгу</h2>
+              <!-- Professional review editor -->
+              <div class="review-editor">
+                <span class="review-editor-label">Ваша рецензия</span>
+                <div class="star-picker" role="group" aria-label="Выбрать оценку">
+                  <span class="star-pick" data-val="1" title="1 из 5">★</span>
+                  <span class="star-pick" data-val="2" title="2 из 5">★</span>
+                  <span class="star-pick" data-val="3" title="3 из 5">★</span>
+                  <span class="star-pick" data-val="4" title="4 из 5">★</span>
+                  <span class="star-pick" data-val="5" title="5 из 5">★</span>
+                </div>
+                <textarea class="review-textarea" placeholder="Ваш взгляд на книгу — клинический, теоретический или личный…" rows="5"></textarea>
+                <div class="review-editor-footer">
+                  <button class="btn-submit-review" type="button">Опубликовать рецензию</button>
+                </div>
+              </div>
+              <div class="pro-gate" style="display:none;" id="pro-gate-rate">
+                <div class="pro-gate-icon">🔒</div>
+                <p class="pro-gate-title">Доступно профессионалам</p>
+                <p class="pro-gate-desc">Рецензии и оценки пишут верифицированные профессионалы. Участники могут комментировать и голосовать.</p>
+              </div>
+            </div>
+            <aside class="tab-aside">
+              <div class="aside-card">
+                <p class="aside-title">Рейтинг книги</p>
+                <div style="text-align:center;padding:var(--space-4) 0;">
+                  <div style="font-family:var(--font-serif);font-size:48px;font-weight:var(--fw-semibold);color:var(--accent);line-height:1;">4.8</div>
+                  <div class="stars" style="justify-content:center;margin:var(--space-2) 0;">
+                    <span class="star f">★</span><span class="star f">★</span><span class="star f">★</span><span class="star f">★</span><span class="star f">★</span>
+                  </div>
+                  <div style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);">7 рецензий · вес: взвешенный</div>
+                </div>
+                <div style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);padding-top:var(--space-3);border-top:var(--hairline) solid var(--line);">Рейтинг = α·профрецензии + (1−α)·голоса участников. Голос Мэтра весит ×5.</div>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- ===== COMMENTS ===== -->
+        <div class="tab-panel" id="panel-comments">
+          <div class="tab-layout">
+            <div class="tab-main">
+              <p class="sec-eyebrow">Обсуждение</p>
+              <h2 class="sec-title">Комментарии</h2>
+              <div class="comments-list">
+
+                <!-- Comment 1 with replies -->
+                <div class="comment-thread">
+                  <div class="comment-card">
+                    <div class="comment-header">
+                      <div class="comment-author">
+                        <span class="u-av u-av--sm" style="background:var(--slate);">МС</span>
+                        <div class="comment-author-info">
+                          <span class="comment-author-name">Мария Соколова</span>
+                          <span class="comment-date">10 июня 2026 · <span class="rep-badge rep-badge--expert" style="font-size:10px;padding:0 6px;">Эксперт 287</span></span>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="comment-text">Контейнирование как метафора и как техника — Бион сам нигде не проводит эту черту чётко. В семинарах это особенно заметно: он говорит так, как будто разницы нет. Мне кажется, именно это и является источником продуктивной неоднозначности в работе с полем.</p>
+                    <div class="comment-footer">
+                      <div class="vote-ctrl" data-vid="c1">
+                        <button class="vote-btn is-up" aria-label="Поддержать">▲</button>
+                        <span class="vote-total">★ 12</span>
+                        <button class="vote-btn is-down" aria-label="Не согласен">▼</button>
+                      </div>
+                      <button class="btn-reply" data-reply="c1">Ответить</button>
+                    </div>
+                  </div>
+                  <div class="replies-list">
+                    <div class="reply-card">
+                      <p class="reply-to">↳ в ответ Марии Соколовой</p>
+                      <p class="reply-text" style="font-family:var(--font-serif);font-size:var(--fs-small);color:var(--ink-soft);">Согласна с этим. Именно неопределённость понятия даёт ему клиническую жизнь. Если его «зафиксировать» — оно превращается в инструмент, а не в опыт.</p>
+                      <div style="margin-top:var(--space-2);display:flex;align-items:center;gap:var(--space-3);">
+                        <span style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);">Наталья Кузнецова · <span class="rep-badge rep-badge--expert" style="font-size:10px;padding:0 5px;">Эксперт 234</span></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Comment 2 -->
+                <div class="comment-thread">
+                  <div class="comment-card">
+                    <div class="comment-header">
+                      <div class="comment-author">
+                        <span class="u-av u-av--sm" style="background:#5A6E7A;">АП</span>
+                        <div class="comment-author-info">
+                          <span class="comment-author-name">Алексей Петров</span>
+                          <span class="comment-date">8 июня 2026 · <span class="rep-badge rep-badge--practik" style="font-size:10px;padding:0 6px;">Практик 118</span></span>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="comment-text">Перевод «бета-элементов» — очень точное решение сохранить греческий суффикс вместо описательного перевода. Это сохраняет теоретическую тяжесть термина, не навязывая ложной ясности.</p>
+                    <div class="comment-footer">
+                      <div class="vote-ctrl" data-vid="c2">
+                        <button class="vote-btn is-up is-active" aria-label="Поддержать">▲</button>
+                        <span class="vote-total">★ 7</span>
+                        <button class="vote-btn is-down" aria-label="Не согласен">▼</button>
+                      </div>
+                      <button class="btn-reply" data-reply="c2">Ответить</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Comment 3 -->
+                <div class="comment-thread">
+                  <div class="comment-card">
+                    <div class="comment-header">
+                      <div class="comment-author">
+                        <span class="u-av u-av--sm" style="background:var(--accent);">АИ</span>
+                        <div class="comment-author-info">
+                          <span class="comment-author-name">Александра Иванова <span style="font-family:var(--font-sans);font-size:10px;font-weight:var(--fw-semibold);color:var(--accent);padding:0 5px;border:var(--hairline) solid var(--accent);border-radius:var(--radius-pill);margin-left:4px;">Вы</span></span>
+                          <span class="comment-date">6 июня 2026 · <span class="rep-badge rep-badge--practik" style="font-size:10px;padding:0 6px;">Практик 142</span></span>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="comment-text">Четвёртый семинар — самый живой. Бион отвечает на вопросы так, как будто сам не знает ответа и это его совершенно не смущает. Именно это и делает текст рабочим, а не музейным.</p>
+                    <div class="comment-footer">
+                      <div class="vote-ctrl" data-vid="c3">
+                        <button class="vote-btn is-up" aria-label="Поддержать">▲</button>
+                        <span class="vote-total">★ 5</span>
+                        <button class="vote-btn is-down" aria-label="Не согласен">▼</button>
+                      </div>
+                      <button class="btn-reply" data-reply="c3">Ответить</button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Add comment -->
+              <div class="add-comment">
+                <span class="add-comment-label">Оставить комментарий</span>
+                <textarea class="comment-textarea" placeholder="Ваша мысль о книге или конкретном месте в тексте…" rows="3"></textarea>
+                <div class="add-comment-footer">
+                  <button class="btn-submit-comment" type="button">Опубликовать</button>
+                </div>
+              </div>
+            </div>
+            <aside class="tab-aside">
+              <div class="aside-card">
+                <p class="aside-title">О голосовании</p>
+                <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);line-height:1.5;">Голоса взвешены по репутации. Мэтр (×5) влияет на репутацию автора сильнее, чем Новичок (×1). Профессиональный множитель добавляет ×2.</p>
+              </div>
+              <div class="aside-card">
+                <p class="aside-title">Активные участники</p>
+                <div>
+                  <div class="community-aside-item">
+                    <span class="community-av" style="background:var(--slate);">МС</span>
+                    <div class="community-aside-info"><p class="community-aside-name">Мария Соколова</p><p class="community-aside-action">3 комментария</p></div>
+                  </div>
+                  <div class="community-aside-item">
+                    <span class="community-av" style="background:#7A4A3A;">ДО</span>
+                    <div class="community-aside-info"><p class="community-aside-name">Дмитрий Орлов</p><p class="community-aside-action">2 комментария</p></div>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- ===== REVIEWS ===== -->
+        <div class="tab-panel" id="panel-reviews">
+          <div class="tab-layout">
+            <div class="tab-main">
+              <p class="sec-eyebrow">Только от профессионалов</p>
+              <h2 class="sec-title">Рецензии</h2>
+              <div class="reviews-list">
+
+                <div class="review-card">
+                  <div class="review-header">
+                    <div class="review-author">
+                      <span class="u-av u-av--sm" style="background:var(--slate);">МС</span>
+                      <div class="review-author-info">
+                        <span class="review-author-name">Мария Соколова</span>
+                        <div class="review-author-badges">
+                          <span class="rep-badge rep-badge--expert">Эксперт <span style="font-variant-numeric:tabular-nums;font-weight:var(--fw-semibold);">287</span></span>
+                          <span class="pro-mark">✓ Профессионал</span>
+                        </div>
+                      </div>
+                    </div>
+                    <span class="review-date">9 июня 2026</span>
+                  </div>
+                  <div class="review-stars" aria-label="Оценка 5 из 5">
+                    <span class="star f">★</span><span class="star f">★</span><span class="star f">★</span><span class="star f">★</span><span class="star f">★</span>
+                  </div>
+                  <p class="review-text">«Эти семинары удивительно живые. Бион говорит о вещах, которые обычно остаются в тени теоретических построений — о том, как именно происходит психоаналитическая встреча, что значит не знать и при этом присутствовать. Третье издание сделано с большой тщательностью: новые предисловия, уточнённый перевод ключевых понятий. Для практикующего аналитика — обязательное чтение, которое хочется перечитывать.»</p>
+                  <div class="review-footer">
+                    <div class="vote-ctrl" data-vid="r1">
+                      <button class="vote-btn is-up" aria-label="Полезная рецензия">▲</button>
+                      <span class="vote-total">★ 24</span>
+                      <button class="vote-btn is-down" aria-label="Не согласен">▼</button>
+                    </div>
+                    <span class="review-weight-note">Голос весом <span>×3</span> (Эксперт + Профессионал)</span>
+                  </div>
+                </div>
+
+                <div class="review-card">
+                  <div class="review-header">
+                    <div class="review-author">
+                      <span class="u-av u-av--sm" style="background:#7A4A3A;">ДО</span>
+                      <div class="review-author-info">
+                        <span class="review-author-name">Дмитрий Орлов</span>
+                        <div class="review-author-badges">
+                          <span class="rep-badge rep-badge--maitre">Мэтр <span style="font-variant-numeric:tabular-nums;font-weight:var(--fw-semibold);">412</span></span>
+                          <span class="pro-mark">✓ Профессионал</span>
+                        </div>
+                      </div>
+                    </div>
+                    <span class="review-date">4 июня 2026</span>
+                  </div>
+                  <div class="review-stars" aria-label="Оценка 5 из 5">
+                    <span class="star f">★</span><span class="star f">★</span><span class="star f">★</span><span class="star f">★</span><span class="star f">★</span>
+                  </div>
+                  <p class="review-text">«Читал все предыдущие переводы Биона на русский — этот, пожалуй, лучший. Издание бета→альфа задаёт новую планку для работы с аналитической классикой. Семинары особенно ценны именно в этой форме: живые, неотредактированные, они дают понять Биона иначе, чем его монографии.»</p>
+                  <div class="review-footer">
+                    <div class="vote-ctrl" data-vid="r2">
+                      <button class="vote-btn is-up" aria-label="Полезная рецензия">▲</button>
+                      <span class="vote-total">★ 31</span>
+                      <button class="vote-btn is-down" aria-label="Не согласен">▼</button>
+                    </div>
+                    <span class="review-weight-note">Голос весом <span>×5</span> (Мэтр + Профессионал)</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <aside class="tab-aside">
+              <div class="aside-card" style="text-align:center;padding:var(--space-5);">
+                <div style="font-family:var(--font-serif);font-size:48px;font-weight:var(--fw-semibold);color:var(--accent);line-height:1;">4.8</div>
+                <div class="stars" style="justify-content:center;margin:var(--space-2) 0;">
+                  <span class="star f">★</span><span class="star f">★</span><span class="star f">★</span><span class="star f">★</span><span class="star f">★</span>
+                </div>
+                <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);">7 рецензий профессионалов</p>
+              </div>
+              <div class="aside-card">
+                <div class="pro-gate">
+                  <div class="pro-gate-icon">✍️</div>
+                  <p class="pro-gate-title">Написать рецензию</p>
+                  <p class="pro-gate-desc">Только для верифицированных профессионалов. <a href="#tab-rate" style="color:var(--accent);">Перейти к оценке</a></p>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- ===== REQUISITES ===== -->
+        <div class="tab-panel" id="panel-requisites">
+          <div class="tab-layout">
+            <div class="tab-main">
+
+              <!-- Bibliographic card -->
+              <div class="requisites-card">
+                <div class="req-seal">β<span class="arrow">→</span>α</div>
+                <table class="req-table">
+                  <tr><th>Название</th><td>Научение на опыте. Итальянские семинары</td></tr>
+                  <tr><th>Автор</th><td>Уилфред Р. Бион</td></tr>
+                  <tr><th>Год издания</th><td>2023</td></tr>
+                  <tr><th>Издатель</th><td>beta→alpha</td></tr>
+                  <tr><th>Версия</th><td>Издание 1.0, 2023</td></tr>
+                  <tr><th>Страниц</th><td>112</td></tr>
+                  <tr><th>Оригинал</th><td>Bion W.R. The Italian Seminars. Karnac Books, 2005</td></tr>
+                  <tr><th>Перевод</th><td>beta→alpha, 2023</td></tr>
+                  <tr><th>Темы</th><td>Психоанализ · Бионианский анализ · Теория объектных отношений · Семинары</td></tr>
+                </table>
+              </div>
+
+              <!-- Citation block -->
+              <div class="citation-block">
+                <p class="citation-label">Академическое цитирование</p>
+                <p class="citation-string">Бион У.Р. Научение на опыте. Итальянские семинары. Издание 1.0. beta→alpha, 2023.</p>
+                <div class="citation-deeplink">
+                  <span class="citation-url">beta2alpha.academy/book/bion-naucheniye/read?v=1.0&amp;p=1</span>
+                  <button class="btn-copy" id="btn-copy-cite" type="button">Скопировать</button>
+                </div>
+                <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);">Для ссылки на конкретную страницу — откройте читалку и используйте кнопку «Цитировать» на нужной странице.</p>
+              </div>
+
+              <!-- Version history -->
+              <p class="sec-eyebrow">История версий</p>
+              <h2 class="sec-title" id="tab-requisites">Версии издания</h2>
+              <div class="version-history">
+                <div class="version-card is-current">
+                  <div class="vc-head">
+                    <span class="vc-label">Издание 1.0</span>
+                    <span class="vc-date">март 2023</span>
+                  </div>
+                  <div class="vc-badges">
+                    <span class="vc-badge vc-badge--full">Полное издание</span>
+                    <span class="vc-badge vc-badge--current">Текущая</span>
+                  </div>
+                  <p class="vc-note">Первое полное издание. Новое предисловие переводчика, уточнённый перевод терминов «контейнирование» и «ревери», исправлено 14 мест оригинального текста.</p>
+                </div>
+                <div class="version-card">
+                  <div class="vc-head">
+                    <span class="vc-label">Ранний доступ 0.9</span>
+                    <span class="vc-date">сентябрь 2022</span>
+                  </div>
+                  <div class="vc-badges">
+                    <span class="vc-badge vc-badge--early">Ранний доступ</span>
+                  </div>
+                  <p class="vc-note">Предварительная версия для профессиональных читателей. Семинары I–III, без примечаний переводчика.</p>
+                </div>
+                <div class="version-card">
+                  <div class="vc-head">
+                    <span class="vc-label">Бесплатный фрагмент</span>
+                    <span class="vc-date">январь 2023</span>
+                  </div>
+                  <div class="vc-badges">
+                    <span class="vc-badge vc-badge--free">Бесплатно</span>
+                  </div>
+                  <p class="vc-note">Первый семинар (с. 7–26) — бесплатно для всех зарегистрированных читателей.</p>
+                </div>
+              </div>
+
+            </div>
+            <aside class="tab-aside">
+              <div class="aside-card">
+                <p class="aside-title">Доступ по версиям</p>
+                <div style="display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-1);">
+                  <div style="display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) 0;">
+                    <span class="vc-badge vc-badge--full" style="flex-shrink:0;">Полное</span>
+                    <span style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);">По подписке · Участники+</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) 0;border-top:var(--hairline) solid var(--line);">
+                    <span class="vc-badge vc-badge--early" style="flex-shrink:0;">Ранний доступ</span>
+                    <span style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);">Профессионалы+</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) 0;border-top:var(--hairline) solid var(--line);">
+                    <span class="vc-badge vc-badge--free" style="flex-shrink:0;">Бесплатно</span>
+                    <span style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);">Все зарегистрированные</span>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" data-band="noir">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="text-mark" aria-hidden="true">β<span class="arrow">→</span>α</span>
+          <span class="footer-tagline">© 2026 beta→alpha. Для профессионального сообщества.</span>
+        </div>
+        <nav class="footer-links" aria-label="Служебные ссылки">
+          <a class="footer-link" href="pub-about.html">О проекте</a>
+          <a class="footer-link" href="#" id="footer-console-link">Консоль</a>
+          <span class="build-tag">v0.2.0-primer · book</span>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    /* ---- Nav indicator ---- */
+    (function () {
+      var nav = document.querySelector(".primary-nav");
+      if (!nav) return;
+      var links = Array.prototype.slice.call(nav.querySelectorAll(".nav-link"));
+      var strip = nav.querySelector(".nav-strip");
+      var dot   = nav.querySelector(".nav-dot");
+      var DOT_R = 3.5;
+      function isHome(l) { return l.classList.contains("nav-link-home"); }
+      function moveTo(l) { strip.style.left=l.offsetLeft+"px"; strip.style.width=l.offsetWidth+"px"; dot.style.left=(l.offsetLeft+l.offsetWidth/2)+"px"; dot.style.bottom=isHome(l)?(nav.clientHeight-(l.offsetTop+l.offsetHeight)-DOT_R)+"px":"4px"; }
+      function cur() { return nav.querySelector('.nav-link[aria-current="page"]')||links[0]; }
+      function syncVis() { strip.style.opacity=isHome(cur())?"0":"1"; dot.style.opacity="1"; }
+      function place(l,i) { if(i){strip.style.transition="none";dot.style.transition="none";} moveTo(l); syncVis(); if(i){void dot.offsetWidth;strip.style.transition="";dot.style.transition="";} }
+      document.fonts.ready.then(function(){place(cur(),true);});
+      links.forEach(function(l){l.addEventListener("click",function(e){if(l.hasAttribute("data-stub")||(l.getAttribute("href")||"").charAt(0)==="#")e.preventDefault();links.forEach(function(x){x.removeAttribute("aria-current");});l.setAttribute("aria-current","page");place(l,false);});});
+      window.addEventListener("resize",function(){place(cur(),true);});
+    })();
+
+    /* ---- Tab switching ---- */
+    var tabBtns = Array.prototype.slice.call(document.querySelectorAll(".tab-btn"));
+    var panels = { overview: document.getElementById("panel-overview"), rate: document.getElementById("panel-rate"), comments: document.getElementById("panel-comments"), reviews: document.getElementById("panel-reviews"), requisites: document.getElementById("panel-requisites") };
+    tabBtns.forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        tabBtns.forEach(function(b){ b.classList.remove("is-active"); });
+        Object.values(panels).forEach(function(p){ if(p) p.classList.remove("is-active"); });
+        btn.classList.add("is-active");
+        var panel = panels[btn.dataset.tab];
+        if(panel) panel.classList.add("is-active");
+      });
+    });
+
+    /* Tab from version-history link */
+    document.getElementById("version-history-link").addEventListener("click", function(e) {
+      e.preventDefault();
+      tabBtns.forEach(function(b){ b.classList.remove("is-active"); });
+      Object.values(panels).forEach(function(p){ if(p) p.classList.remove("is-active"); });
+      document.getElementById("tab-btn-req").classList.add("is-active");
+      panels.requisites.classList.add("is-active");
+    });
+
+    /* ---- Vote controls ---- */
+    document.querySelectorAll(".vote-ctrl").forEach(function(ctrl) {
+      var up=ctrl.querySelector(".is-up"), dn=ctrl.querySelector(".is-down"), tot=ctrl.querySelector(".vote-total");
+      var base=parseInt((tot.textContent.match(/\d+/)||[0])[0],10);
+      function upd(){var u=up.classList.contains("is-active"),d=dn.classList.contains("is-active");tot.innerHTML="★ "+(base+(u?2:d?-1:0));}
+      up.addEventListener("click",function(e){e.stopPropagation();var w=up.classList.contains("is-active");up.classList.toggle("is-active",!w);if(!w)dn.classList.remove("is-active");upd();});
+      dn.addEventListener("click",function(e){e.stopPropagation();var w=dn.classList.contains("is-active");dn.classList.toggle("is-active",!w);if(!w)up.classList.remove("is-active");upd();});
+    });
+
+    /* ---- Shelf toggle ---- */
+    var shelfBtn=document.getElementById("btn-shelf-toggle");
+    var shelfLabel=document.getElementById("shelf-label");
+    var statuses=["На полке: Читаю 📖","К прочтению 📕","Любимые 📚🤩","Прочитанное ✅","Добавить на полку"];
+    var si=0;
+    shelfBtn.addEventListener("click",function(){ si=(si+1)%statuses.length; shelfLabel.textContent=statuses[si]; shelfBtn.classList.toggle("is-shelved",si<4); });
+
+    /* ---- Star picker ---- */
+    var stars=Array.prototype.slice.call(document.querySelectorAll(".star-pick"));
+    var rating=0;
+    function updateStars(v){stars.forEach(function(s){s.classList.toggle("is-on",parseInt(s.dataset.val,10)<=v);});}
+    stars.forEach(function(s){s.addEventListener("mouseover",function(){updateStars(parseInt(s.dataset.val,10));});s.addEventListener("mouseout",function(){updateStars(rating);});s.addEventListener("click",function(){rating=parseInt(s.dataset.val,10);updateStars(rating);});});
+
+    /* ---- Copy citation ---- */
+    document.getElementById("btn-copy-cite").addEventListener("click",function(){
+      var text=document.querySelector(".citation-string").textContent;
+      if(navigator.clipboard){navigator.clipboard.writeText(text);}
+      this.textContent="Скопировано ✓";
+      var b=this;setTimeout(function(){b.textContent="Скопировать";},2000);
+    });
+
+  })();
+  </script>
+  <script src="assets/overlays.js"></script>
+</body>
+</html>

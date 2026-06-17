@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="sepia-contrast">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Сообщество — beta→alpha</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles/tokens.css" />
+
+  <style>
+    /* ================================================================
+       community.html — Сообщество (авторизованный)
+       Platform-wide activity — not filtered to the user's personal
+       circle. Sections: Hot discussions · Fresh reviews · Reputation
+       leaderboard · Reading clubs · Members directory.
+       site-map.md §5.11 · ux-structure.md §5.11
+       reputation-roles-authz.md §2–3 (tiers, vote weights, pro mark)
+       ================================================================ */
+
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+
+    body::before {
+      content: ""; position: fixed; inset: 0;
+      background-image: url("assets/backgrounds/monogram-cream.png");
+      background-repeat: repeat; background-size: 320px;
+      opacity: var(--grain-opacity); pointer-events: none; z-index: 0;
+    }
+
+    .container { width: 100%; max-width: var(--container-max); margin-inline: auto; padding-inline: var(--gutter); }
+
+    .skip-link { position: absolute; left: var(--space-4); top: calc(var(--space-2) * -8); z-index: var(--z-toast); background: var(--surface); color: var(--ink); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); padding: var(--space-2) var(--space-4); font-size: var(--fs-small); transition: top var(--dur-base) var(--ease-out-quart); }
+    .skip-link:focus { top: var(--space-2); }
+
+    /* ---- Header ----------------------------------------------- */
+    .site-header { position: sticky; top: 0; z-index: var(--z-sticky); background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: saturate(140%) blur(8px); border-bottom: var(--hairline) solid var(--line); }
+    .header-inner { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--space-4); height: var(--header-height); }
+    .wordmark { justify-self: start; display: inline-flex; align-items: center; flex-shrink: 0; opacity: 1; transition: opacity var(--dur-fast) var(--ease-out-quart); }
+    .wordmark:hover { opacity: 0.82; }
+    .wordmark-img { height: 32px; width: auto; display: block; }
+
+    .text-mark { font-family: var(--font-serif); font-size: var(--fs-h1); font-weight: var(--fw-semibold); color: var(--ink); letter-spacing: var(--tracking-display); line-height: 1; display: inline-flex; align-items: baseline; gap: 0.04em; flex-shrink: 0; transition: color var(--dur-fast) var(--ease-out-quart); }
+    .text-mark .arrow { color: var(--accent); }
+    .text-mark:hover { color: var(--accent); }
+
+    .primary-nav { justify-self: center; position: relative; display: flex; align-items: center; gap: var(--space-6); padding-bottom: 10px; }
+    .nav-link { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-medium); letter-spacing: var(--tracking-label); color: var(--ink-soft); line-height: 1; padding-block: var(--space-1); transition: color var(--dur-fast) var(--ease-out-quart); }
+    .nav-link:hover, .nav-link[aria-current="page"] { color: var(--accent); }
+
+    .nav-link-home { font-family: var(--font-serif); font-size: var(--fs-body); font-weight: var(--fw-semibold); letter-spacing: var(--tracking-display); background: #1F1B18; color: #ECE3D6; padding: var(--space-1) var(--space-3) calc(var(--space-1) + 3px); border-radius: var(--radius-md); transition: opacity var(--dur-fast) var(--ease-out-quart); }
+    .nav-link-home .arrow { color: #D2674A; }
+    .nav-link-home:hover, .nav-link-home[aria-current="page"] { color: #ECE3D6; opacity: 0.85; }
+    .nav-link-home:hover .arrow, .nav-link-home[aria-current="page"] .arrow { color: #D2674A; }
+
+    .nav-strip, .nav-dot { position: absolute; pointer-events: none; }
+    .nav-strip { background: var(--accent); bottom: 7px; height: var(--hairline); border-radius: var(--radius-pill); -webkit-mask: linear-gradient(90deg, #000 0, #000 calc(50% - 7px), transparent calc(50% - 7px), transparent calc(50% + 7px), #000 calc(50% + 7px), #000 100%); mask: linear-gradient(90deg, #000 0, #000 calc(50% - 7px), transparent calc(50% - 7px), transparent calc(50% + 7px), #000 calc(50% + 7px), #000 100%); transition: left 280ms var(--ease-out-quart), width 280ms var(--ease-out-quart), opacity 160ms var(--ease-out-quart); }
+    .nav-dot { background: var(--amber); bottom: 4px; width: 7px; height: 7px; border-radius: var(--radius-pill); transform: translateX(-50%); transition: left 360ms cubic-bezier(0.34,1.56,0.64,1), bottom 360ms cubic-bezier(0.34,1.56,0.64,1); }
+    .nav-strip:not([style]), .nav-dot:not([style]) { opacity: 0; }
+    @media (prefers-reduced-motion: reduce) { .nav-strip, .nav-dot { transition: none; } }
+
+    .header-actions { justify-self: end; display: flex; align-items: center; gap: var(--space-3); flex-shrink: 0; }
+    .icon-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; background: transparent; color: var(--ink-soft); border: var(--hairline) solid transparent; border-radius: var(--radius-md); cursor: pointer; transition: color var(--dur-fast) var(--ease-out-quart), border-color var(--dur-fast) var(--ease-out-quart); }
+    .icon-btn:hover { color: var(--ink); border-color: var(--line); }
+    .icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .notif-count { position: absolute; top: 4px; right: 4px; min-width: 16px; height: 16px; padding-inline: 4px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: var(--fw-semibold); line-height: 1; color: var(--on-accent); background: var(--accent); border-radius: var(--radius-pill); }
+    .avatar-rep { display: inline-flex; align-items: center; gap: var(--space-2); padding: 3px 8px 3px 3px; border: var(--hairline) solid var(--line); border-radius: var(--radius-pill); background: var(--surface); text-decoration: none; transition: border-color var(--dur-fast) var(--ease-out-quart), background var(--dur-fast) var(--ease-out-quart); }
+    .avatar-rep:hover { border-color: var(--accent); background: var(--surface-sunk); }
+    .avatar-rep__face { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: var(--radius-pill); background: var(--accent); color: var(--on-accent); font-size: var(--fs-caption); font-weight: var(--fw-semibold); letter-spacing: 0; }
+    .avatar-rep__score { display: inline-flex; align-items: center; gap: 3px; color: var(--amber); }
+    .avatar-rep__num { font-size: var(--fs-caption); font-weight: var(--fw-semibold); color: var(--ink); font-variant-numeric: tabular-nums; }
+
+    /* ---- Footer ----------------------------------------------- */
+    .site-footer { position: relative; z-index: 1; border-top: var(--hairline) solid var(--line); }
+    .footer-inner { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: var(--space-4); padding-block: var(--space-8); }
+    .footer-brand { display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; }
+    .footer-brand .text-mark { font-size: var(--fs-h2); }
+    .footer-tagline { font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-caption); color: var(--ink-soft); }
+    .build-tag { font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-caption); color: var(--ink-soft); }
+    .footer-links { display: inline-flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; }
+    .footer-link { font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-caption); color: var(--ink-soft); text-decoration: none; transition: color var(--dur-fast) var(--ease-out-quart); }
+    .footer-link:hover { color: var(--accent); }
+
+    /* ================================================================
+       COMMUNITY PAGE — page-specific
+       ================================================================ */
+
+    .comm-main { flex: 1; position: relative; z-index: 1; }
+
+    /* ---- Hero ------------------------------------------------- */
+    .comm-hero { padding-block: var(--space-8) var(--space-6); border-bottom: var(--hairline) solid var(--line); }
+    .comm-hero-inner { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-8); flex-wrap: wrap; }
+    .comm-hero-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); letter-spacing: var(--tracking-caption); text-transform: uppercase; color: var(--ink-faint); margin-bottom: var(--space-2); }
+    .comm-hero h1 { font-family: var(--font-serif); font-size: var(--fs-h1); font-weight: var(--fw-semibold); color: var(--ink); margin: 0; }
+    .comm-stats { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+    .comm-stat { text-align: right; }
+    .comm-stat-val { font-family: var(--font-serif); font-size: var(--fs-h2); font-weight: var(--fw-semibold); color: var(--accent); line-height: 1; }
+    .comm-stat-label { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); margin-top: 2px; }
+    .comm-stat-sep { width: var(--hairline); height: 32px; background: var(--line); align-self: center; }
+
+    /* ---- Shared section scaffolding --------------------------- */
+    .section-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); letter-spacing: var(--tracking-caption); text-transform: uppercase; color: var(--ink-faint); margin-bottom: var(--space-1); }
+    .section-title { font-family: var(--font-serif); font-size: var(--fs-h2); font-weight: var(--fw-semibold); color: var(--ink); margin: 0 0 var(--space-5); }
+    .section-title-sm { font-family: var(--font-serif); font-size: var(--fs-h3); font-weight: var(--fw-semibold); color: var(--ink); margin: 0 0 var(--space-4); }
+    .section-link { font-family: var(--font-sans); font-size: var(--fs-small); color: var(--accent); transition: color var(--dur-fast); }
+    .section-link:hover { color: var(--accent-hover); }
+    .section-header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-5); }
+
+    /* ---- Shared: reputation badge + pro mark ------------------ */
+    .rep-badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: var(--radius-pill); font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); border: var(--hairline) solid; }
+    .rep-badge--novice  { color: var(--ink-faint); border-color: var(--line); }
+    .rep-badge--practik { color: var(--amber); border-color: var(--amber); }
+    .rep-badge--expert  { color: var(--slate); border-color: var(--slate); }
+    .rep-badge--maitre  { color: var(--accent); border-color: var(--accent); }
+    .rep-score { font-variant-numeric: tabular-nums; font-weight: var(--fw-semibold); }
+
+    .pro-mark { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: var(--radius-pill); font-family: var(--font-sans); font-size: 10px; font-weight: var(--fw-semibold); letter-spacing: 0.02em; background: color-mix(in srgb, var(--sage) 12%, var(--surface-sunk)); color: var(--sage); }
+
+    /* ---- Shared: vote control (up/down + weighted total) ------ */
+    .vote-ctrl { display: inline-flex; align-items: center; gap: var(--space-2); }
+    .vote-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: var(--radius-md); border: var(--hairline) solid var(--line); background: transparent; color: var(--ink-soft); cursor: pointer; font-size: 13px; transition: all var(--dur-fast) var(--ease-out-quart); }
+    .vote-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .vote-btn.is-up.is-active   { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+    .vote-btn.is-down.is-active { background: var(--surface-sunk); border-color: var(--ink-faint); color: var(--ink-faint); }
+    .vote-total { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: var(--radius-pill); font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-semibold); background: var(--surface-sunk); color: var(--ink-soft); border: var(--hairline) solid var(--line); font-variant-numeric: tabular-nums; }
+    .vote-total-tooltip { font-size: 10px; color: var(--ink-faint); }
+
+    /* ---- User avatar (initials) -------------------------------- */
+    .u-avatar { display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-pill); font-family: var(--font-sans); font-weight: var(--fw-semibold); letter-spacing: 0; color: #ECE3D6; flex-shrink: 0; }
+    .u-avatar--sm  { width: 32px; height: 32px; font-size: var(--fs-caption); }
+    .u-avatar--md  { width: 40px; height: 40px; font-size: var(--fs-small); }
+    .u-avatar--lg  { width: 52px; height: 52px; font-size: var(--fs-body); }
+
+    /* ---- Two-column community layout -------------------------- */
+    .comm-body { padding-block: var(--space-8) var(--space-12); }
+    .comm-layout { display: grid; grid-template-columns: 1fr 320px; gap: var(--space-8); align-items: start; }
+    .comm-col-main { display: flex; flex-direction: column; gap: var(--space-10); }
+    .comm-col-aside { display: flex; flex-direction: column; gap: var(--space-8); position: sticky; top: calc(var(--header-height) + var(--space-4)); }
+
+    /* ---- Discussion cards ------------------------------------- */
+    .disc-list { display: flex; flex-direction: column; gap: var(--space-3); }
+    .disc-card { padding: var(--space-4) var(--space-5); background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); cursor: pointer; transition: border-color var(--dur-fast) var(--ease-out-quart), box-shadow var(--dur-fast) var(--ease-out-quart); }
+    .disc-card:hover { border-color: var(--accent); box-shadow: var(--shadow-soft); }
+    .disc-card.is-hot { border-left: 3px solid var(--amber); }
+    .disc-book-ref { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); }
+    .disc-cover { width: 32px; height: 44px; border-radius: 3px; object-fit: cover; border: var(--hairline) solid var(--line); flex-shrink: 0; }
+    .disc-book-meta { min-width: 0; }
+    .disc-book-title { font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .disc-title { font-family: var(--font-serif); font-size: var(--fs-body); font-weight: var(--fw-semibold); color: var(--ink); line-height: 1.35; margin-bottom: var(--space-2); text-decoration: none; display: block; }
+    .disc-excerpt { font-family: var(--font-sans); font-size: var(--fs-small); color: var(--ink-soft); line-height: var(--lh-small); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: var(--space-3); }
+    .disc-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-3); }
+    .disc-meta { display: flex; align-items: center; gap: var(--space-4); }
+    .disc-meta-item { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); }
+    .disc-participants { display: flex; align-items: center; }
+    .dp-av { width: 20px; height: 20px; border-radius: 50%; font-size: 8px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; border: 1.5px solid var(--surface); color: #ECE3D6; margin-left: -5px; }
+    .dp-av:first-child { margin-left: 0; }
+    .dp-av-1 { background: var(--slate); }
+    .dp-av-2 { background: var(--sage); }
+    .dp-av-3 { background: #7A4A3A; }
+    .dp-av-4 { background: var(--amber); }
+    .dp-count { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); margin-left: var(--space-2); }
+
+    /* ---- Review cards ----------------------------------------- */
+    .review-list { display: flex; flex-direction: column; gap: var(--space-4); }
+    .review-card { padding: var(--space-5); background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); }
+    .review-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-4); }
+    .review-author { display: flex; align-items: center; gap: var(--space-3); }
+    .review-author-info { display: flex; flex-direction: column; gap: var(--space-1); }
+    .review-author-name { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--ink); }
+    .review-author-badges { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+    .review-date { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); white-space: nowrap; }
+    .review-book { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); background: var(--surface-sunk); border-radius: var(--radius-md); margin-bottom: var(--space-4); cursor: pointer; transition: background var(--dur-fast); text-decoration: none; color: inherit; }
+    .review-book:hover { background: var(--accent-tint); }
+    .review-book-cover { width: 28px; height: 38px; border-radius: 2px; object-fit: cover; border: var(--hairline) solid var(--line); flex-shrink: 0; }
+    .review-book-title { font-family: var(--font-serif); font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--ink); }
+    .review-stars { display: flex; align-items: center; gap: 2px; margin-bottom: var(--space-3); }
+    .star-g { font-size: 14px; line-height: 1; }
+    .star-g.f { color: var(--amber); }
+    .star-g.e { color: var(--line); }
+    .review-text { font-family: var(--font-serif); font-size: var(--fs-body); color: var(--ink-soft); line-height: var(--lh-body); font-style: italic; margin-bottom: var(--space-4); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+    .review-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+    .review-weight-note { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); }
+    .review-weight-note span { color: var(--amber); font-weight: var(--fw-semibold); }
+
+    /* ---- Leaderboard ------------------------------------------ */
+    .leaderboard-list { display: flex; flex-direction: column; gap: var(--space-2); }
+    .lb-item { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); transition: border-color var(--dur-fast); cursor: pointer; text-decoration: none; color: inherit; }
+    .lb-item:hover { border-color: var(--accent); }
+    .lb-item.is-me { background: var(--accent-tint); border-color: var(--accent); }
+    .lb-rank { font-family: var(--font-serif); font-size: var(--fs-h2); font-weight: var(--fw-semibold); color: var(--line); line-height: 1; min-width: 24px; text-align: center; }
+    .lb-rank.top3 { color: var(--amber); }
+    .lb-info { flex: 1; min-width: 0; }
+    .lb-name { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-medium); color: var(--ink); }
+    .lb-spec { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lb-score { font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-semibold); color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .me-label { font-family: var(--font-sans); font-size: 10px; font-weight: var(--fw-semibold); letter-spacing: 0.04em; color: var(--accent); background: var(--on-accent); padding: 1px 5px; border-radius: var(--radius-pill); border: var(--hairline) solid var(--accent); }
+
+    /* ---- Reading clubs ---------------------------------------- */
+    .clubs-list { display: flex; flex-direction: column; gap: var(--space-3); }
+    .club-card { padding: var(--space-4); background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); }
+    .club-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
+    .club-name { font-family: var(--font-serif); font-size: var(--fs-h3); font-weight: var(--fw-semibold); color: var(--ink); line-height: 1.25; }
+    .club-members { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); white-space: nowrap; }
+    .club-reading { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3); }
+    .club-cover { width: 24px; height: 32px; border-radius: 2px; object-fit: cover; border: var(--hairline) solid var(--line); flex-shrink: 0; }
+    .club-book-title { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-soft); line-height: 1.3; }
+    .btn-join { display: inline-flex; align-items: center; gap: 4px; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); cursor: pointer; transition: all var(--dur-fast) var(--ease-out-quart); border: var(--hairline) solid var(--accent); background: transparent; color: var(--accent); }
+    .btn-join:hover { background: var(--accent); color: var(--on-accent); }
+    .btn-join.is-joined { background: var(--surface-sunk); border-color: var(--line); color: var(--ink-soft); }
+    .btn-join.is-joined:hover { border-color: var(--accent); color: var(--accent); background: transparent; }
+
+    /* ---- Members directory ------------------------------------ */
+    .members-section { border-top: var(--hairline) solid var(--line); padding-block: var(--space-10); }
+    .members-toolbar { display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-6); flex-wrap: wrap; }
+    .members-filter { display: flex; gap: var(--space-2); }
+    .mf-chip { display: inline-flex; align-items: center; padding: 4px 14px; border-radius: var(--radius-pill); font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); cursor: pointer; border: var(--hairline) solid var(--line); background: transparent; color: var(--ink-soft); transition: all var(--dur-fast) var(--ease-out-quart); }
+    .mf-chip.is-active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .mf-chip:hover:not(.is-active) { border-color: var(--ink-soft); color: var(--ink); }
+    .members-count { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); margin-left: auto; }
+    .members-search { padding: 5px var(--space-3); background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); font-family: var(--font-sans); font-size: var(--fs-small); color: var(--ink); min-width: 200px; outline: none; transition: border-color var(--dur-fast); }
+    .members-search:focus { border-color: var(--accent); }
+    .members-search::placeholder { color: var(--ink-faint); }
+
+    .members-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+    .member-card { display: flex; flex-direction: column; align-items: center; text-align: center; padding: var(--space-5) var(--space-4); background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); gap: var(--space-2); cursor: pointer; transition: border-color var(--dur-fast), box-shadow var(--dur-fast); }
+    .member-card:hover { border-color: var(--accent); box-shadow: var(--shadow-soft); }
+    .member-card.is-me { border-color: var(--accent); background: var(--accent-tint); cursor: default; }
+    .member-name { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--ink); }
+    .member-spec { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); line-height: 1.3; }
+    .member-badges { display: flex; flex-direction: column; align-items: center; gap: var(--space-1); margin-block: var(--space-1); }
+    .btn-follow { display: inline-flex; align-items: center; gap: 4px; margin-top: var(--space-2); padding: var(--space-1) var(--space-4); border-radius: var(--radius-pill); font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); cursor: pointer; transition: all var(--dur-fast) var(--ease-out-quart); border: var(--hairline) solid var(--accent); background: transparent; color: var(--accent); }
+    .btn-follow:hover { background: var(--accent); color: var(--on-accent); }
+    .btn-follow.is-following { background: var(--surface-sunk); border-color: var(--line); color: var(--ink-soft); }
+    .btn-follow.is-following:hover { border-color: var(--danger); color: var(--danger); background: transparent; }
+    .me-card-label { font-family: var(--font-sans); font-size: 10px; font-weight: var(--fw-semibold); letter-spacing: 0.04em; color: var(--accent); padding: 2px 8px; border-radius: var(--radius-pill); border: var(--hairline) solid var(--accent); margin-top: var(--space-2); }
+
+    /* Highlight new gamification prompt */
+    .gamification-prompt { margin-top: var(--space-6); padding: var(--space-4) var(--space-5); background: color-mix(in srgb, var(--amber) 8%, var(--surface)); border: var(--hairline) solid var(--amber); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; }
+    .gamification-text { }
+    .gamification-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-caption); text-transform: uppercase; color: var(--amber); margin-bottom: var(--space-1); }
+    .gamification-desc { font-family: var(--font-sans); font-size: var(--fs-small); color: var(--ink); }
+    .gamification-desc strong { color: var(--amber); }
+    .btn-gamif { display: inline-flex; align-items: center; gap: 4px; padding: var(--space-2) var(--space-4); border: var(--hairline) solid var(--amber); border-radius: var(--radius-md); font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-medium); color: var(--amber); background: transparent; cursor: pointer; white-space: nowrap; transition: all var(--dur-fast); }
+    .btn-gamif:hover { background: var(--amber); color: var(--paper); }
+
+    /* ---- Responsive ------------------------------------------- */
+    @media (max-width: 1100px) { .members-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 900px)  { .comm-layout { grid-template-columns: 1fr; } .comm-col-aside { position: static; } .members-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 760px)  { .primary-nav { display: none; } :root { --gutter: var(--space-6); } }
+    @media (max-width: 560px)  { .members-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 460px)  { .header-inner { gap: var(--space-3); } .avatar-rep__score { display: none; } .members-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#content">К содержимому</a>
+
+  <!-- HEADER — authorized, Сообщество active (rightmost) -->
+  <header class="site-header">
+    <div class="header-inner container">
+      <a class="wordmark" href="pub-about.html" aria-label="beta→alpha — о проекте">
+        <img class="wordmark-img" src="assets/decor/a2b-logo.png" alt="beta→alpha" />
+      </a>
+      <nav class="primary-nav" aria-label="Основная навигация">
+        <a class="nav-link" href="community.html" aria-current="page">Сообщество</a>
+        <a class="nav-link nav-link-home" href="home.html" aria-label="Домашняя">β<span class="arrow">→</span>α</a>
+        <a class="nav-link" href="library.html">Библиотека</a>
+        <span class="nav-strip" aria-hidden="true"></span>
+        <span class="nav-dot"   aria-hidden="true"></span>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn" type="button" aria-label="Поиск" data-stub>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+        </button>
+        <button class="icon-btn" type="button" aria-label="Пульс" data-stub>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </button>
+        <button class="icon-btn" type="button" aria-label="Уведомления" data-stub>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span class="notif-count" aria-hidden="true">3</span>
+        </button>
+        <a class="avatar-rep" href="#" data-stub aria-label="Аккаунт — репутация 142">
+          <span class="avatar-rep__face" aria-hidden="true">АИ</span>
+          <span class="avatar-rep__score" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 18l-5.9 3.2 1.2-6.6L2.5 9l6.6-.9z"/></svg>
+            <span class="avatar-rep__num">142</span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="comm-main" id="content">
+
+    <!-- Hero -->
+    <div class="comm-hero">
+      <div class="container">
+        <div class="comm-hero-inner">
+          <div>
+            <p class="comm-hero-eyebrow">Платформа</p>
+            <h1>Сообщество</h1>
+          </div>
+          <div class="comm-stats">
+            <div class="comm-stat">
+              <p class="comm-stat-val">47</p>
+              <p class="comm-stat-label">участников</p>
+            </div>
+            <div class="comm-stat-sep" aria-hidden="true"></div>
+            <div class="comm-stat">
+              <p class="comm-stat-val">128</p>
+              <p class="comm-stat-label">обсуждений</p>
+            </div>
+            <div class="comm-stat-sep" aria-hidden="true"></div>
+            <div class="comm-stat">
+              <p class="comm-stat-val">34</p>
+              <p class="comm-stat-label">рецензии</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comm-body">
+      <div class="container">
+        <div class="comm-layout">
+
+          <!-- ===================================================
+               LEFT COLUMN: Discussions + Reviews
+               =================================================== -->
+          <div class="comm-col-main">
+
+            <!-- Hot Discussions -->
+            <section aria-labelledby="disc-heading">
+              <div class="section-header">
+                <div>
+                  <p class="section-eyebrow">Активные</p>
+                  <h2 class="section-title" id="disc-heading">Обсуждения</h2>
+                </div>
+                <a class="section-link" href="#" data-stub>Все обсуждения →</a>
+              </div>
+              <div class="disc-list">
+
+                <!-- Discussion 1 — hot -->
+                <div class="disc-card is-hot" role="article">
+                  <div class="disc-book-ref">
+                    <img class="disc-cover" src="assets/covers/bion-nauchenie-na-opyte-cover.png" alt="" />
+                    <div class="disc-book-meta">
+                      <p class="disc-book-title">Научение на опыте · Психоанализ</p>
+                    </div>
+                  </div>
+                  <a class="disc-title" href="book.html">Контейнирование как метафора и как техника: где заканчивается теория?</a>
+                  <p class="disc-excerpt">Бион описывает контейнирование и как структурный принцип психики, и как конкретную аналитическую операцию. Вопрос в том, не теряем ли мы клиническую точность, когда используем этот термин слишком широко...</p>
+                  <div class="disc-footer">
+                    <div class="disc-meta">
+                      <div class="disc-participants">
+                        <span class="dp-av dp-av-1">МС</span>
+                        <span class="dp-av dp-av-2">АП</span>
+                        <span class="dp-av dp-av-3">ВН</span>
+                        <span class="dp-av dp-av-4">НК</span>
+                        <span class="dp-count">+3</span>
+                      </div>
+                      <span class="disc-meta-item">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        7 участников · 2 ч. назад
+                      </span>
+                    </div>
+                    <div class="vote-ctrl" data-vote-id="d1">
+                      <button class="vote-btn is-up" aria-label="Поддержать" title="Проголосовать «за»">▲</button>
+                      <span class="vote-total" title="Взвешенный счёт"><span class="vote-total-tooltip">★</span> 18</span>
+                      <button class="vote-btn is-down" aria-label="Не согласен" title="Проголосовать «против»">▼</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Discussion 2 -->
+                <div class="disc-card" role="article">
+                  <div class="disc-book-ref">
+                    <img class="disc-cover" src="assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png" alt="" />
+                    <div class="disc-book-meta">
+                      <p class="disc-book-title">Избегание эмоций · Психотерапия</p>
+                    </div>
+                  </div>
+                  <a class="disc-title" href="book.html">Аффективная регуляция в клиническом контексте: опыт участников</a>
+                  <p class="disc-excerpt">Ферро предлагает работать с полем сессии в целом, а не с отдельными аффектами. Насколько это применимо в краткосрочной терапии? Делюсь случаем, где этот подход показал неожиданные результаты...</p>
+                  <div class="disc-footer">
+                    <div class="disc-meta">
+                      <div class="disc-participants">
+                        <span class="dp-av dp-av-2">АП</span>
+                        <span class="dp-av dp-av-3">НК</span>
+                        <span class="dp-av dp-av-1">МС</span>
+                        <span class="dp-count">+2</span>
+                      </div>
+                      <span class="disc-meta-item">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        5 участников · 8 ч. назад
+                      </span>
+                    </div>
+                    <div class="vote-ctrl" data-vote-id="d2">
+                      <button class="vote-btn is-up" aria-label="Поддержать">▲</button>
+                      <span class="vote-total"><span class="vote-total-tooltip">★</span> 11</span>
+                      <button class="vote-btn is-down" aria-label="Не согласен">▼</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Discussion 3 -->
+                <div class="disc-card" role="article">
+                  <div class="disc-book-ref">
+                    <img class="disc-cover" src="assets/covers/nikoli-goret-vmeste-cover.png" alt="" />
+                    <div class="disc-book-meta">
+                      <p class="disc-book-title">Гореть вместе · Психоанализ</p>
+                    </div>
+                  </div>
+                  <a class="disc-title" href="book.html">Выгорание и супервизия: где проходит граница личного и профессионального?</a>
+                  <p class="disc-excerpt">Николи описывает выгорание как феномен, который всегда разворачивается в отношениях. Это ставит вопрос о структуре супервизии: должен ли супервизор знать о состоянии терапевта вне клиники?</p>
+                  <div class="disc-footer">
+                    <div class="disc-meta">
+                      <div class="disc-participants">
+                        <span class="dp-av dp-av-3">ВН</span>
+                        <span class="dp-av dp-av-4">ИЗ</span>
+                        <span class="dp-av dp-av-1">АБ</span>
+                        <span class="dp-count">+1</span>
+                      </div>
+                      <span class="disc-meta-item">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        4 участника · вчера
+                      </span>
+                    </div>
+                    <div class="vote-ctrl" data-vote-id="d3">
+                      <button class="vote-btn is-up" aria-label="Поддержать">▲</button>
+                      <span class="vote-total"><span class="vote-total-tooltip">★</span> 7</span>
+                      <button class="vote-btn is-down" aria-label="Не согласен">▼</button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
+            <!-- Fresh reviews (Professional-only writing) -->
+            <section aria-labelledby="reviews-heading">
+              <div class="section-header">
+                <div>
+                  <p class="section-eyebrow">Только от профессионалов</p>
+                  <h2 class="section-title" id="reviews-heading">Свежие рецензии</h2>
+                </div>
+                <a class="section-link" href="#" data-stub>Все рецензии →</a>
+              </div>
+              <div class="review-list">
+
+                <!-- Review 1 -->
+                <div class="review-card">
+                  <div class="review-header">
+                    <div class="review-author">
+                      <span class="u-avatar u-avatar--md" style="background:var(--slate);">МС</span>
+                      <div class="review-author-info">
+                        <span class="review-author-name">Мария Соколова</span>
+                        <div class="review-author-badges">
+                          <span class="rep-badge rep-badge--expert">Эксперт <span class="rep-score">287</span></span>
+                          <span class="pro-mark">✓ Профессионал</span>
+                        </div>
+                      </div>
+                    </div>
+                    <span class="review-date">9 июня 2026</span>
+                  </div>
+                  <a class="review-book" href="book.html">
+                    <img class="review-book-cover" src="assets/covers/bion-nauchenie-na-opyte-cover.png" alt="" />
+                    <span class="review-book-title">Научение на опыте. Итальянские семинары — Вилфред Бион</span>
+                  </a>
+                  <div class="review-stars" aria-label="Оценка 5 из 5">
+                    <span class="star-g f">★</span><span class="star-g f">★</span><span class="star-g f">★</span><span class="star-g f">★</span><span class="star-g f">★</span>
+                  </div>
+                  <p class="review-text">«Эти семинары удивительно живые. Бион говорит о вещах, которые обычно остаются в тени теоретических построений — о том, как именно происходит психоаналитическая встреча, что значит не знать и при этом присутствовать. Третье издание сделано с большой тщательностью: новые предисловия, уточнённый перевод ключевых понятий. Для практикующего аналитика — обязательное чтение, которое хочется перечитывать.»</p>
+                  <div class="review-footer">
+                    <div class="vote-ctrl" data-vote-id="r1">
+                      <button class="vote-btn is-up" aria-label="Полезная рецензия">▲</button>
+                      <span class="vote-total"><span class="vote-total-tooltip">★</span> 24</span>
+                      <button class="vote-btn is-down" aria-label="Не согласен">▼</button>
+                    </div>
+                    <span class="review-weight-note">Голос весом <span>×3</span> (Эксперт + Профессионал)</span>
+                  </div>
+                </div>
+
+                <!-- Review 2 -->
+                <div class="review-card">
+                  <div class="review-header">
+                    <div class="review-author">
+                      <span class="u-avatar u-avatar--md" style="background:#7A4A3A;">ДО</span>
+                      <div class="review-author-info">
+                        <span class="review-author-name">Дмитрий Орлов</span>
+                        <div class="review-author-badges">
+                          <span class="rep-badge rep-badge--maitre">Мэтр <span class="rep-score">412</span></span>
+                          <span class="pro-mark">✓ Профессионал</span>
+                        </div>
+                      </div>
+                    </div>
+                    <span class="review-date">7 июня 2026</span>
+                  </div>
+                  <a class="review-book" href="book.html">
+                    <img class="review-book-cover" src="assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png" alt="" />
+                    <span class="review-book-title">Избегание эмоций, проживание эмоций — Антонино Ферро</span>
+                  </a>
+                  <div class="review-stars" aria-label="Оценка 4 из 5">
+                    <span class="star-g f">★</span><span class="star-g f">★</span><span class="star-g f">★</span><span class="star-g f">★</span><span class="star-g e">★</span>
+                  </div>
+                  <p class="review-text">«Ферро продолжает линию Биона, но делает её более клинически осязаемой. Книга сильна именно конкретными клиническими виньетками — они показывают, как работа с эмоциональным полем выглядит в реальной сессии, а не в теоретическом пространстве. Первое издание, перевод хороший, хотя несколько ключевых терминов можно было бы передать точнее. Рекомендую особенно тем, кто работает в биновской традиции.»</p>
+                  <div class="review-footer">
+                    <div class="vote-ctrl" data-vote-id="r2">
+                      <button class="vote-btn is-up" aria-label="Полезная рецензия">▲</button>
+                      <span class="vote-total"><span class="vote-total-tooltip">★</span> 31</span>
+                      <button class="vote-btn is-down" aria-label="Не согласен">▼</button>
+                    </div>
+                    <span class="review-weight-note">Голос весом <span>×5</span> (Мэтр + Профессионал)</span>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Gamification prompt for non-professional users -->
+              <div class="gamification-prompt">
+                <div class="gamification-text">
+                  <p class="gamification-eyebrow">Для участников</p>
+                  <p class="gamification-desc">Рецензии пишут профессионалы — вы можете <strong>комментировать и голосовать</strong>. Ваш голос влияет на репутацию авторов.</p>
+                </div>
+                <button class="btn-gamif" data-stub>Оставить комментарий</button>
+              </div>
+            </section>
+
+          </div>
+
+          <!-- ===================================================
+               RIGHT COLUMN: Leaderboard + Clubs
+               =================================================== -->
+          <div class="comm-col-aside">
+
+            <!-- Reputation leaderboard -->
+            <section aria-labelledby="lb-heading">
+              <p class="section-eyebrow">Рейтинг</p>
+              <h2 class="section-title-sm" id="lb-heading">Участники</h2>
+              <div class="leaderboard-list">
+
+                <a class="lb-item" href="profile.html">
+                  <span class="lb-rank top3">1</span>
+                  <span class="u-avatar u-avatar--sm" style="background:#7A4A3A;">ДО</span>
+                  <div class="lb-info">
+                    <p class="lb-name">Дмитрий Орлов</p>
+                    <p class="lb-spec">Супервизор</p>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+                    <span class="rep-badge rep-badge--maitre" style="font-size:10px;padding:1px 6px;">Мэтр</span>
+                    <span class="lb-score">412</span>
+                  </div>
+                </a>
+
+                <a class="lb-item" href="profile.html">
+                  <span class="lb-rank top3">2</span>
+                  <span class="u-avatar u-avatar--sm" style="background:var(--slate);">МС</span>
+                  <div class="lb-info">
+                    <p class="lb-name">Мария Соколова</p>
+                    <p class="lb-spec">Клинический психолог</p>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+                    <span class="rep-badge rep-badge--expert" style="font-size:10px;padding:1px 6px;">Эксперт</span>
+                    <span class="lb-score">287</span>
+                  </div>
+                </a>
+
+                <a class="lb-item" href="profile.html">
+                  <span class="lb-rank top3">3</span>
+                  <span class="u-avatar u-avatar--sm" style="background:var(--sage);">НК</span>
+                  <div class="lb-info">
+                    <p class="lb-name">Наталья Кузнецова</p>
+                    <p class="lb-spec">Психотерапевт</p>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+                    <span class="rep-badge rep-badge--expert" style="font-size:10px;padding:1px 6px;">Эксперт</span>
+                    <span class="lb-score">234</span>
+                  </div>
+                </a>
+
+                <!-- Current user — highlighted -->
+                <div class="lb-item is-me">
+                  <span class="lb-rank">4</span>
+                  <span class="u-avatar u-avatar--sm" style="background:var(--accent);">АИ</span>
+                  <div class="lb-info">
+                    <p class="lb-name">Александра Иванова <span class="me-label">Вы</span></p>
+                    <p class="lb-spec">Участник</p>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+                    <span class="rep-badge rep-badge--practik" style="font-size:10px;padding:1px 6px;">Практик</span>
+                    <span class="lb-score">142</span>
+                  </div>
+                </div>
+
+                <a class="lb-item" href="profile.html">
+                  <span class="lb-rank">5</span>
+                  <span class="u-avatar u-avatar--sm" style="background:#5A6E7A;">АП</span>
+                  <div class="lb-info">
+                    <p class="lb-name">Алексей Петров</p>
+                    <p class="lb-spec">Клинический психолог</p>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+                    <span class="rep-badge rep-badge--practik" style="font-size:10px;padding:1px 6px;">Практик</span>
+                    <span class="lb-score">118</span>
+                  </div>
+                </a>
+
+              </div>
+              <a class="section-link" href="#members-section" style="display:inline-block;margin-top:var(--space-3);">Все участники →</a>
+            </section>
+
+            <!-- Reading clubs -->
+            <section aria-labelledby="clubs-heading">
+              <p class="section-eyebrow">Клубы</p>
+              <h2 class="section-title-sm" id="clubs-heading">Читальные клубы</h2>
+              <div class="clubs-list">
+
+                <div class="club-card">
+                  <div class="club-header">
+                    <p class="club-name">Итальянская школа психоанализа</p>
+                    <span class="club-members">8 участников</span>
+                  </div>
+                  <div class="club-reading">
+                    <img class="club-cover" src="assets/covers/bion-nauchenie-na-opyte-cover.png" alt="" />
+                    <p class="club-book-title">Сейчас читают: Бион, «Научение на опыте» (гл. IV–V)</p>
+                  </div>
+                  <button class="btn-join" data-club="1">Вступить в клуб</button>
+                </div>
+
+                <div class="club-card">
+                  <div class="club-header">
+                    <p class="club-name">Клиническая практика</p>
+                    <span class="club-members">5 участников</span>
+                  </div>
+                  <div class="club-reading">
+                    <img class="club-cover" src="assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png" alt="" />
+                    <p class="club-book-title">Сейчас читают: Ферро, «Избегание эмоций» (ч. II)</p>
+                  </div>
+                  <button class="btn-join is-joined" data-club="2">Вы участвуете ✓</button>
+                </div>
+
+              </div>
+            </section>
+
+          </div>
+        </div>
+
+        <!-- =====================================================
+             Members directory — full width
+             ===================================================== -->
+        <div class="members-section" id="members-section">
+          <div class="section-header">
+            <div>
+              <p class="section-eyebrow">Справочник</p>
+              <h2 class="section-title" id="members-heading">Участники</h2>
+            </div>
+          </div>
+          <div class="members-toolbar">
+            <div class="members-filter" role="group" aria-label="Фильтр участников">
+              <button class="mf-chip is-active" data-mf="">Все</button>
+              <button class="mf-chip" data-mf="professional">Профессионалы</button>
+              <button class="mf-chip" data-mf="member">Участники</button>
+            </div>
+            <input class="members-search" type="search" placeholder="Поиск по имени…" id="member-search" aria-label="Поиск участника" />
+            <span class="members-count" id="members-count">9 участников</span>
+          </div>
+
+          <div class="members-grid" id="members-grid">
+
+            <!-- Member cards — current user first -->
+            <div class="member-card is-me" data-role="member" data-name="Александра Иванова">
+              <span class="u-avatar u-avatar--lg" style="background:var(--accent);">АИ</span>
+              <p class="member-name">Александра Иванова</p>
+              <p class="member-spec">Участник платформы</p>
+              <div class="member-badges">
+                <span class="rep-badge rep-badge--practik">Практик <span class="rep-score">142</span></span>
+              </div>
+              <span class="me-card-label">Это вы</span>
+            </div>
+
+            <div class="member-card" data-role="professional" data-name="Дмитрий Орлов">
+              <span class="u-avatar u-avatar--lg" style="background:#7A4A3A;">ДО</span>
+              <p class="member-name">Дмитрий Орлов</p>
+              <p class="member-spec">Супервизор, групповая аналитическая терапия</p>
+              <div class="member-badges">
+                <span class="rep-badge rep-badge--maitre">Мэтр <span class="rep-score">412</span></span>
+                <span class="pro-mark">✓ Профессионал</span>
+              </div>
+              <button class="btn-follow is-following" data-follow>Следите ✓</button>
+            </div>
+
+            <div class="member-card" data-role="professional" data-name="Мария Соколова">
+              <span class="u-avatar u-avatar--lg" style="background:var(--slate);">МС</span>
+              <p class="member-name">Мария Соколова</p>
+              <p class="member-spec">Клинический психолог, психоаналитик</p>
+              <div class="member-badges">
+                <span class="rep-badge rep-badge--expert">Эксперт <span class="rep-score">287</span></span>
+                <span class="pro-mark">✓ Профессионал</span>
+              </div>
+              <button class="btn-follow is-following" data-follow>Следите ✓</button>
+            </div>
+
+            <div class="member-card" data-role="professional" data-name="Наталья Кузнецова">
+              <span class="u-avatar u-avatar--lg" style="background:var(--sage);">НК</span>
+              <p class="member-name">Наталья Кузнецова</p>
+              <p class="member-spec">Психотерапевт, аналитик</p>
+              <div class="member-badges">
+                <span class="rep-badge rep-badge--expert">Эксперт <span class="rep-score">234</span></span>
+                <span class="pro-mark">✓ Профессионал</span>
+              </div>
+              <button class="btn-follow" data-follow>Следить</button>
+            </div>
+
+            <div class="member-card" data-role="professional" data-name="Алексей Петров">
+              <span class="u-avatar u-avatar--lg" style="background:#5A6E7A;">АП</span>
+              <p class="member-name">Алексей Петров</p>
+              <p class="member-spec">Клинический психолог</p>
+              <div class="member-badges">
+                <span class="rep-badge rep-badge--practik">Практик <span class="rep-score">118</span></span>
+                <span class="pro-mark">✓ Профессионал</span>
+              </div>
+              <button class="btn-follow" data-follow>Следить</button>
+            </div>
+
+            <div class="member-card" data-role="member" data-name="Виктория Николаева">
+              <span class="u-avatar u-avatar--lg" style="background:#6B5A8A;">ВН</span>
+              <p class="member-name">Виктория Николаева</p>
+              <p class="member-spec">Аналитик, частная практика</p>
+              <div class="member-badges">
+                <span class="rep-badge rep-badge--practik">Практик <span class="rep-score">94</span></span>
+              </div>
+              <button class="btn-follow" data-follow>Следить</button>
+            </div>
+
+            <div class="member-card" data-role="member" data-name="Анна Белова">
+              <span class="u-avatar u-avatar--lg" style="background:#7A6A4A;">АБ</span>
+              <p class="member-name">Анна Белова</p>
+              <p class="member-spec">Психолог-консультант</p>
+              <div class="member-badges">
+                <span class="rep-badge rep-badge--practik">Практик <span class="rep-score">76</span></span>
+              </div>
+              <button class="btn-follow" data-follow>Следить</button>
+            </div>
+
+            <div class="member-card" data-role="member" data-name="Сергей Воронов">
+              <span class="u-avatar u-avatar--lg" style="background:#5A7A6A;">СВ</span>
+              <p class="member-name">Сергей Воронов</p>
+              <p class="member-spec">Студент-психолог</p>
+              <div class="member-badges">
+                <span class="rep-badge rep-badge--novice">Новичок <span class="rep-score">31</span></span>
+              </div>
+              <button class="btn-follow" data-follow>Следить</button>
+            </div>
+
+            <div class="member-card" data-role="member" data-name="Игорь Захаров">
+              <span class="u-avatar u-avatar--lg" style="background:#7A5A4A;">ИЗ</span>
+              <p class="member-name">Игорь Захаров</p>
+              <p class="member-spec">Читатель</p>
+              <div class="member-badges">
+                <span class="rep-badge rep-badge--novice">Новичок <span class="rep-score">14</span></span>
+              </div>
+              <button class="btn-follow" data-follow>Следить</button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" data-band="noir">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="text-mark" aria-hidden="true">β<span class="arrow">→</span>α</span>
+          <span class="footer-tagline">© 2026 beta→alpha. Для профессионального сообщества.</span>
+        </div>
+        <nav class="footer-links" aria-label="Служебные ссылки">
+          <a class="footer-link" href="pub-about.html">О проекте</a>
+          <a class="footer-link" href="#" data-stub>Консоль</a>
+          <span class="build-tag">v0.2.0-primer · community</span>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    /* ---- Nav indicator ---- */
+    (function () {
+      var nav = document.querySelector(".primary-nav");
+      if (!nav) return;
+      var links = Array.prototype.slice.call(nav.querySelectorAll(".nav-link"));
+      var strip = nav.querySelector(".nav-strip");
+      var dot   = nav.querySelector(".nav-dot");
+      var DOT_RADIUS = 3.5;
+      function isHome(l) { return l.classList.contains("nav-link-home"); }
+      function moveTo(l) {
+        strip.style.left  = l.offsetLeft + "px";
+        strip.style.width = l.offsetWidth + "px";
+        dot.style.left    = l.offsetLeft + l.offsetWidth / 2 + "px";
+        dot.style.bottom  = isHome(l) ? (nav.clientHeight - (l.offsetTop + l.offsetHeight) - DOT_RADIUS) + "px" : "4px";
+      }
+      function activeLink() { return nav.querySelector('.nav-link[aria-current="page"]') || links[0]; }
+      function syncVis() { strip.style.opacity = isHome(activeLink()) ? "0" : "1"; dot.style.opacity = "1"; }
+      function place(l, instant) {
+        if (instant) { strip.style.transition = "none"; dot.style.transition = "none"; }
+        moveTo(l); syncVis();
+        if (instant) { void dot.offsetWidth; strip.style.transition = ""; dot.style.transition = ""; }
+      }
+      document.fonts.ready.then(function () { place(activeLink(), true); });
+      links.forEach(function (l) {
+        l.addEventListener("click", function (e) {
+          if (l.hasAttribute("data-stub") || (l.getAttribute("href") || "").charAt(0) === "#") e.preventDefault();
+          links.forEach(function (x) { x.removeAttribute("aria-current"); });
+          l.setAttribute("aria-current", "page"); place(l, false);
+        });
+      });
+      window.addEventListener("resize", function () { place(activeLink(), true); });
+    })();
+
+    /* ---- Vote controls ---- */
+    document.querySelectorAll(".vote-ctrl").forEach(function (ctrl) {
+      var upBtn   = ctrl.querySelector(".is-up");
+      var downBtn = ctrl.querySelector(".is-down");
+      var total   = ctrl.querySelector(".vote-total");
+      var base    = parseInt(total.textContent.replace(/[^\d]/g, ""), 10);
+
+      function update() {
+        var up   = upBtn.classList.contains("is-active");
+        var down = downBtn.classList.contains("is-active");
+        var delta = up ? 2 : down ? -1 : 0; // simplified weighted delta
+        total.innerHTML = '<span class="vote-total-tooltip">★</span> ' + (base + delta);
+      }
+
+      upBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var wasActive = upBtn.classList.contains("is-active");
+        upBtn.classList.toggle("is-active", !wasActive);
+        if (!wasActive) downBtn.classList.remove("is-active");
+        update();
+      });
+      downBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var wasActive = downBtn.classList.contains("is-active");
+        downBtn.classList.toggle("is-active", !wasActive);
+        if (!wasActive) upBtn.classList.remove("is-active");
+        update();
+      });
+    });
+
+    /* ---- Follow buttons ---- */
+    document.querySelectorAll("[data-follow]").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var following = btn.classList.contains("is-following");
+        btn.classList.toggle("is-following", !following);
+        btn.textContent = following ? "Следить" : "Следите ✓";
+      });
+    });
+
+    /* ---- Club join buttons ---- */
+    document.querySelectorAll(".btn-join").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var joined = btn.classList.contains("is-joined");
+        btn.classList.toggle("is-joined", !joined);
+        btn.textContent = joined ? "Вступить в клуб" : "Вы участвуете ✓";
+      });
+    });
+
+    /* ---- Members filter + search ---- */
+    var cards  = Array.prototype.slice.call(document.querySelectorAll(".member-card"));
+    var chips  = Array.prototype.slice.call(document.querySelectorAll(".mf-chip"));
+    var search = document.getElementById("member-search");
+    var countEl = document.getElementById("members-count");
+    var activeFilter = "";
+
+    function filterMembers() {
+      var q = (search.value || "").trim().toLowerCase();
+      var shown = 0;
+      cards.forEach(function (card) {
+        var roleOk = !activeFilter || card.dataset.role === activeFilter;
+        var nameOk = !q || card.dataset.name.toLowerCase().indexOf(q) !== -1;
+        var visible = roleOk && nameOk;
+        card.style.display = visible ? "" : "none";
+        if (visible) shown++;
+      });
+      var n = shown;
+      countEl.textContent = n + " " + (n === 1 ? "участник" : n < 5 ? "участника" : "участников");
+    }
+
+    chips.forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        chips.forEach(function (c) { c.classList.remove("is-active"); });
+        chip.classList.add("is-active");
+        activeFilter = chip.dataset.mf;
+        filterMembers();
+      });
+    });
+    search.addEventListener("input", filterMembers);
+
+    /* ---- Member card navigation ---- */
+    cards.forEach(function(card) {
+      if (card.classList.contains("is-me")) return;
+      card.addEventListener("click", function(e) {
+        if (e.target.closest(".btn-follow")) return;
+        window.location.href = "profile.html";
+      });
+    });
+
+    /* ---- Discussion card clicks ---- */
+    document.querySelectorAll(".disc-card").forEach(function (card) {
+      card.addEventListener("click", function (e) {
+        if (e.target.closest(".vote-ctrl")) return;
+      });
+      card.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") e.preventDefault();
+      });
+    });
+
+    /* ---- Stubs ---- */
+    document.querySelectorAll("[data-stub]").forEach(function (el) {
+      if (document.querySelector(".primary-nav") && document.querySelector(".primary-nav").contains(el)) return;
+      el.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); });
+    });
+  })();
+  </script>
+  <script src="assets/overlays.js"></script>
+</body>
+</html>

@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="sepia-contrast">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Новости — beta→alpha</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..700&family=Raleway:wght@300;400;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles/tokens.css" />
+
+  <style>
+    /* ===================================================================
+       CHROME — shared layout skeleton (mirrors pub-about.html)
+       =================================================================== */
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      animation: page-fade-in 380ms ease-out both;
+    }
+    @keyframes page-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("assets/backgrounds/page-bg.png");
+      background-size: cover;
+      background-position: center;
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 0;
+      will-change: transform;
+    }
+
+    .container { width: 100%; max-width: var(--container-max); margin-inline: auto; padding-inline: var(--gutter); }
+
+    .skip-link {
+      position: absolute; left: var(--space-4); top: calc(var(--space-2) * -8);
+      z-index: var(--z-toast); background: var(--surface); color: var(--ink);
+      border: var(--hairline) solid var(--line); border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-4); font-size: var(--fs-small);
+      transition: top var(--dur-base) var(--ease-out-quart);
+    }
+    .skip-link:focus { top: var(--space-2); }
+
+    /* ---- Header -------------------------------------------------------- */
+    .site-header {
+      position: sticky; top: 0; z-index: var(--z-sticky);
+      background: transparent; transition: box-shadow 200ms ease;
+    }
+    .site-header.is-scrolled {
+      background: color-mix(in srgb, var(--paper) 95%, transparent);
+      box-shadow: 0 4px 24px color-mix(in srgb, var(--noir-paper) 18%, transparent);
+    }
+    .header-inner {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      align-items: center; gap: var(--space-4); height: var(--header-height); position: relative;
+    }
+    .header-left { justify-self: start; display: flex; align-items: center; gap: var(--space-8); padding-bottom: 10px; }
+    .wordmark { display: inline-flex; align-items: center; flex-shrink: 0; opacity: 1; transition: opacity var(--dur-fast) var(--ease-out-quart); }
+    .wordmark:hover { opacity: 0.82; }
+    .wordmark-img { height: 32px; width: auto; display: block; }
+    .text-mark { font-family: var(--font-serif); font-size: var(--fs-h1); font-weight: var(--fw-semibold); color: var(--ink); letter-spacing: var(--tracking-display); line-height: 1; display: inline-flex; align-items: baseline; gap: 0.04em; flex-shrink: 0; transition: color var(--dur-fast) var(--ease-out-quart); }
+    .text-mark .arrow { color: var(--accent); }
+    .text-mark:hover { color: var(--accent); }
+
+    .primary-nav { justify-self: center; position: relative; display: flex; align-items: center; gap: var(--space-6); padding-bottom: 10px; }
+    .nav-link { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-medium); letter-spacing: var(--tracking-label); color: var(--ink-soft); line-height: 1; padding-block: var(--space-1); transition: color var(--dur-fast) var(--ease-out-quart); }
+    .nav-link:hover, .nav-link[aria-current="page"] { color: var(--accent); }
+    .nav-link-home { font-family: var(--font-serif); font-size: var(--fs-body); font-weight: var(--fw-semibold); letter-spacing: var(--tracking-display); background: var(--noir-paper); color: var(--noir-ink); padding: var(--space-1) var(--space-3) calc(var(--space-1) + 3px); border-radius: var(--radius-md); transition: opacity var(--dur-fast) var(--ease-out-quart); }
+    .nav-link-home .arrow { color: var(--noir-accent); }
+    .nav-link-home:hover { color: var(--noir-ink); opacity: 0.85; }
+
+    .nav-strip, .nav-dot { position: absolute; pointer-events: none; }
+    .nav-strip { background: var(--accent); bottom: 20px; height: var(--hairline); border-radius: var(--radius-pill);
+      -webkit-mask: linear-gradient(90deg, #000 0, #000 calc(50% - 7px), transparent calc(50% - 7px), transparent calc(50% + 7px), #000 calc(50% + 7px), #000 100%);
+      mask: linear-gradient(90deg, #000 0, #000 calc(50% - 7px), transparent calc(50% - 7px), transparent calc(50% + 7px), #000 calc(50% + 7px), #000 100%);
+      transition: left 280ms var(--ease-out-quart), width 280ms var(--ease-out-quart), opacity 160ms var(--ease-out-quart); }
+    .nav-dot { background: #E04B00; bottom: 4px; width: 7px; height: 7px; border-radius: var(--radius-pill); transform: translateX(-50%); transition: left 360ms var(--ease-out-quart), bottom 360ms var(--ease-out-quart); }
+    .nav-strip:not([style]), .nav-dot:not([style]) { opacity: 0; }
+    @media (prefers-reduced-motion: reduce) { .nav-strip, .nav-dot { transition: none; } }
+
+    .header-actions { justify-self: end; display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0; }
+
+    /* ---- Buttons ------------------------------------------------------- */
+    .btn { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-medium); letter-spacing: var(--tracking-label); border-radius: var(--radius-md); cursor: pointer; transition: background var(--dur-base) var(--ease-out-quart), color var(--dur-base) var(--ease-out-quart), border-color var(--dur-base) var(--ease-out-quart), transform var(--dur-base) var(--ease-out-quart); }
+    .btn-primary { background: var(--accent); color: var(--on-accent); border: var(--hairline) solid var(--accent); padding: var(--space-2) var(--space-6); }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--on-accent); transform: translateY(-1px); }
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-md); }
+    .btn-primary:focus-visible { box-shadow: 0 0 0 2px var(--surface); }
+
+    .btn-landing-primary, .btn-landing-ghost { display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-sans); font-size: var(--fs-body); font-weight: var(--fw-medium); letter-spacing: var(--tracking-label); text-decoration: none; cursor: pointer; border-radius: var(--radius-pill); padding: calc(var(--space-2) + 2px) var(--space-8); transition: background var(--dur-base) var(--ease-out-quart), border-color var(--dur-base) var(--ease-out-quart), color var(--dur-base) var(--ease-out-quart), transform var(--dur-fast) var(--ease-out-quart); }
+    .btn-landing-primary { background: var(--accent); color: var(--on-accent); border: var(--hairline) solid var(--accent); }
+    .btn-landing-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--on-accent); transform: translateY(-1px); }
+    .btn-landing-primary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-pill); box-shadow: 0 0 0 2px var(--surface); }
+    .btn-landing-ghost { background: transparent; color: var(--ink-soft); border: var(--hairline) solid var(--line); }
+    .btn-landing-ghost:hover { color: var(--ink); border-color: var(--ink-soft); transform: translateY(-1px); }
+    .btn-landing-ghost:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-pill); }
+    .header-actions .btn-landing-primary, .header-actions .btn-landing-ghost { font-size: 0.6875rem; padding: 5px 1.25rem; letter-spacing: var(--tracking-label); }
+
+    /* ---- Footer -------------------------------------------------------- */
+    .site-main { position: relative; flex: 1; isolation: isolate; }
+    .site-footer { position: relative; z-index: 1; background: var(--paper); border-top: var(--hairline) solid var(--line); }
+    .footer-inner { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: var(--space-4); padding-block: var(--space-8); }
+    .footer-brand { display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; }
+    .footer-brand .text-mark { font-size: var(--fs-h2); }
+    .footer-tagline { font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-caption); color: var(--ink-soft); }
+    .build-tag { font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-caption); color: var(--ink-soft); }
+
+    /* ---- Modals -------------------------------------------------------- */
+    .modal-backdrop { position: fixed; inset: 0; background: color-mix(in srgb, var(--ink) 52%, transparent); backdrop-filter: blur(2px); z-index: var(--z-modal); display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; pointer-events: none; transition: opacity var(--dur-base) var(--ease-out-quart), visibility var(--dur-base) var(--ease-out-quart); }
+    .modal-backdrop.is-open { visibility: visible; opacity: 1; pointer-events: auto; }
+    .modal-card { background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-raise); padding: var(--space-12) var(--space-8); width: min(440px, calc(100vw - 2 * var(--space-6))); max-height: 90vh; overflow-y: auto; opacity: 0; transform: translateY(8px); transition: opacity var(--dur-base) var(--ease-out-quart), transform var(--dur-base) var(--ease-out-quart); }
+    .modal-backdrop.is-open .modal-card { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) { .modal-backdrop, .modal-card { transition: none; } }
+    .modal-header { position: relative; text-align: center; margin-bottom: var(--space-6); }
+    .modal-close { position: absolute; top: 0; right: 0; width: 44px; height: 44px; margin: -6px -6px 0 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--ink-faint); font-size: var(--fs-h2); line-height: 1; cursor: pointer; transition: color var(--dur-fast) var(--ease-out-quart); padding: 0; }
+    .modal-close:hover { color: var(--ink); }
+    .modal-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .modal-seal { display: inline-flex; gap: 0.04em; align-items: baseline; font-family: var(--font-serif); font-size: var(--fs-body); font-weight: var(--fw-semibold); letter-spacing: var(--tracking-display); background: var(--noir-paper); color: var(--noir-ink); padding: 3px var(--space-3) 5px; border-radius: var(--radius-md); margin-bottom: var(--space-4); line-height: 1; }
+    .modal-seal .arrow { color: var(--noir-accent); }
+    .modal-title { font-family: var(--font-serif); font-size: var(--fs-h2); font-weight: var(--fw-semibold); color: var(--ink); margin: 0 0 var(--space-2); line-height: var(--lh-h2); }
+    .modal-subtitle { font-family: var(--font-sans); font-size: var(--fs-small); line-height: var(--lh-small); color: var(--ink-soft); margin: 0; }
+    .modal-form { display: flex; flex-direction: column; gap: var(--space-4); }
+    .form-field { display: flex; flex-direction: column; gap: var(--space-1); }
+    .form-label { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-medium); color: var(--ink-soft); }
+    .form-label-opt { font-weight: 400; color: var(--ink-soft); }
+    .form-input { background: var(--surface-sunk); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font-family: var(--font-sans); font-size: var(--fs-body); color: var(--ink); width: 100%; transition: border-color var(--dur-fast) var(--ease-out-quart), box-shadow var(--dur-fast) var(--ease-out-quart); }
+    .form-input:focus { outline: none; }
+    .form-input:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-tint); }
+    .form-input::placeholder { color: var(--ink-soft); }
+    .form-forgot { font-size: var(--fs-small); color: var(--accent); text-align: right; display: block; }
+    .form-forgot:hover { color: var(--accent-hover); text-decoration: underline; }
+    .modal-submit { width: 100%; padding: var(--space-3) var(--space-4); font-size: var(--fs-body); }
+    .modal-footer-links { text-align: center; margin-top: var(--space-4); font-family: var(--font-sans); font-size: var(--fs-small); color: var(--ink-soft); }
+    .modal-footer-links a { color: var(--accent); font-weight: var(--fw-medium); }
+    .modal-footer-links a:hover { color: var(--accent-hover); text-decoration: underline; }
+    .modal-error, .modal-success { border-radius: var(--radius-sm); padding: var(--space-2) var(--space-4); font-family: var(--font-sans); font-size: var(--fs-small); line-height: var(--lh-small); margin-bottom: var(--space-4); display: none; }
+    .modal-error.is-visible, .modal-success.is-visible { display: block; }
+    .modal-error { background: color-mix(in srgb, var(--danger) 10%, var(--surface)); border: var(--hairline) solid color-mix(in srgb, var(--danger) 30%, var(--line)); color: var(--danger); }
+    .modal-success { background: color-mix(in srgb, var(--success) 10%, var(--surface)); border: var(--hairline) solid color-mix(in srgb, var(--success) 30%, var(--line)); color: var(--success); text-align: center; }
+    .site-toast { position: fixed; bottom: var(--space-6); right: var(--space-6); z-index: var(--z-toast); background: var(--ink); color: var(--surface); font-family: var(--font-sans); font-size: var(--fs-small); padding: var(--space-3) var(--space-6); border-radius: var(--radius-md); box-shadow: var(--shadow-raise); opacity: 0; transform: translateY(6px); transition: opacity var(--dur-base) var(--ease-out-quart), transform var(--dur-base) var(--ease-out-quart); pointer-events: none; }
+    .site-toast.is-visible { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) { .site-toast { transition: none; } }
+
+    /* ---- Responsive chrome -------------------------------------------- */
+    @media (max-width: 760px) { .primary-nav { display: none; } .header-about { display: none; } :root { --gutter: var(--space-6); } }
+    @media (max-width: 460px) { .header-inner { gap: var(--space-3); } .header-actions { gap: var(--space-2); } }
+
+    /* ===================================================================
+       SHARED COMPONENTS
+       =================================================================== */
+    .section-eyebrow { display: block; font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); letter-spacing: var(--tracking-caption); text-transform: uppercase; color: var(--accent); margin-bottom: var(--space-2); }
+
+    .domain-chip { display: inline-flex; align-items: center; font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); letter-spacing: var(--tracking-label); padding: 2px var(--space-2); border-radius: var(--radius-pill); border: var(--hairline) solid currentColor; white-space: nowrap; flex-shrink: 0; }
+    .domain-chip--publisher { color: var(--amber); }
+    .domain-chip--community { color: var(--slate); }
+    .domain-chip--platform  { color: var(--accent); }
+    .domain-chip--culture   { color: var(--sage); }
+
+    /* ===================================================================
+       NEWS PAGE
+       =================================================================== */
+
+    /* ---- Hero ---------------------------------------------------------- */
+    .news-hero {
+      position: relative;
+      padding: var(--space-16) 0 var(--space-12);
+      border-bottom: var(--hairline) solid var(--line);
+    }
+    .news-hero-inner { max-width: 560px; }
+    .news-heading {
+      font-family: "Raleway", system-ui, sans-serif;
+      font-size: clamp(2.25rem, 4.5vw, 3.25rem);
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      margin: 0 0 var(--space-4);
+    }
+    .news-sub {
+      font-family: var(--font-serif);
+      font-size: var(--fs-body);
+      color: var(--ink-soft);
+      line-height: var(--lh-body);
+      margin: 0;
+    }
+
+    /* ---- News section -------------------------------------------------- */
+    .news-section { padding-block: var(--space-12) var(--space-24); }
+
+    /* ---- Featured article --------------------------------------------- */
+    .news-featured {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--surface);
+      margin-bottom: var(--space-12);
+      cursor: pointer;
+      transition: box-shadow var(--dur-base) var(--ease-out-quart);
+    }
+    .news-featured:hover { box-shadow: 0 8px 32px color-mix(in srgb, var(--ink) 12%, transparent); }
+    .news-featured-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      min-height: 320px;
+      transition: transform 500ms var(--ease-out-quart);
+    }
+    .news-featured:hover .news-featured-img { transform: scale(1.02); }
+    .news-featured-img-col { overflow: hidden; }
+    .news-featured-content {
+      padding: var(--space-12);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      justify-content: center;
+    }
+    .news-featured-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .news-date {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      letter-spacing: var(--tracking-caption);
+      color: var(--ink-faint);
+    }
+    .news-featured-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.25rem, 2vw, 1.625rem);
+      font-weight: var(--fw-semibold);
+      color: var(--ink);
+      margin: 0;
+      line-height: 1.35;
+    }
+    .news-featured-excerpt {
+      font-family: var(--font-serif);
+      font-size: var(--fs-body);
+      color: var(--ink-soft);
+      line-height: var(--lh-body);
+      margin: 0;
+    }
+    .news-read-more {
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      font-weight: var(--fw-medium);
+      letter-spacing: var(--tracking-label);
+      color: var(--accent);
+      text-decoration: none;
+      align-self: flex-start;
+      transition: color var(--dur-fast);
+    }
+    .news-read-more:hover { color: var(--accent-hover); text-decoration: underline; }
+
+    /* ---- News grid ---------------------------------------------------- */
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+    }
+
+    /* ---- Individual news card ----------------------------------------- */
+    .news-card {
+      background: var(--surface);
+      border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: transform var(--dur-base) var(--ease-out-quart),
+                  box-shadow var(--dur-base) var(--ease-out-quart),
+                  border-color var(--dur-base) var(--ease-out-quart);
+    }
+    .news-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 22px color-mix(in srgb, var(--ink) 10%, transparent);
+      border-color: color-mix(in srgb, var(--ink) 14%, transparent);
+    }
+    .news-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* Illustrated card — image on top */
+    .news-card-img-wrap {
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--surface-sunk);
+      flex-shrink: 0;
+    }
+    .news-card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 500ms var(--ease-out-quart);
+    }
+    .news-card:hover .news-card-img { transform: scale(1.04); }
+
+    .news-card-body {
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      flex: 1;
+    }
+    .news-card-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .news-card-title {
+      font-family: var(--font-serif);
+      font-size: var(--fs-body);
+      font-weight: var(--fw-semibold);
+      color: var(--ink);
+      margin: 0;
+      line-height: var(--lh-body);
+    }
+    .news-card-excerpt {
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      color: var(--ink-soft);
+      line-height: var(--lh-small);
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .news-card-link {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-medium);
+      letter-spacing: var(--tracking-label);
+      color: var(--accent);
+      text-decoration: none;
+      align-self: flex-start;
+      margin-top: auto;
+    }
+    .news-card:hover .news-card-link { text-decoration: underline; }
+
+    /* Text-only card — no image, accent left border */
+    .news-card--text {
+      border-left: 3px solid var(--line);
+      transition: transform var(--dur-base) var(--ease-out-quart),
+                  box-shadow var(--dur-base) var(--ease-out-quart),
+                  border-left-color var(--dur-base) var(--ease-out-quart);
+    }
+    .news-card--text:hover { border-left-color: var(--accent); }
+
+    /* ---- Section divider label --------------------------------------- */
+    .news-section-label {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-medium);
+      letter-spacing: var(--tracking-caption);
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      padding-bottom: var(--space-4);
+      border-bottom: var(--hairline) solid var(--line);
+      margin-bottom: var(--space-6);
+      margin-top: var(--space-10);
+    }
+    .news-section-label:first-of-type { margin-top: 0; }
+
+    /* ---- Page-exit veil ----------------------------------------------- */
+    .page-exit-veil { position: fixed; inset: 0; background: var(--paper); opacity: 0; pointer-events: none; z-index: 10000; transition: opacity 360ms ease-out; }
+    .page-exit-veil.is-active { opacity: 1; pointer-events: all; }
+
+    /* ---- Responsive --------------------------------------------------- */
+    @media (max-width: 900px) {
+      .news-featured { grid-template-columns: 1fr; }
+      .news-featured-img { min-height: 240px; }
+      .news-featured-content { padding: var(--space-8); }
+      .news-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .news-grid { grid-template-columns: 1fr; }
+      .news-featured-content { padding: var(--space-6); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      body { animation: none; }
+      .news-card, .news-featured { transition: none; }
+      .news-card-img, .news-featured-img { transition: none; }
+      .btn-landing-primary, .btn-landing-ghost { transition: none; transform: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-exit-veil" id="page-exit-veil" aria-hidden="true"></div>
+  <a class="skip-link" href="#content">К содержимому</a>
+
+  <!-- ===================================================================
+       HEADER
+       =================================================================== -->
+  <header class="site-header">
+    <div class="header-inner container">
+      <div class="header-left">
+        <a class="wordmark" href="pub-landing.html" aria-label="beta→alpha — на главную">
+          <img class="wordmark-img" src="assets/decor/a2b-logo.png" alt="beta→alpha" />
+        </a>
+        <a class="nav-link header-about" href="pub-about.html">О проекте</a>
+      </div>
+
+      <nav class="primary-nav" aria-label="Основная навигация">
+        <a class="nav-link" href="pub-library.html">Библиотека</a>
+        <a class="nav-link nav-link-home" href="pub-landing.html" aria-label="Главная">β<span class="arrow">→</span>α</a>
+        <a class="nav-link" href="pub-news.html" aria-current="page">Новости</a>
+      </nav>
+
+      <div class="header-actions">
+        <a id="btn-reg" class="btn-landing-primary" href="#">Присоединиться</a>
+        <a id="btn-login" class="btn-landing-ghost" href="#">Зайти</a>
+      </div>
+
+      <span class="nav-strip" aria-hidden="true"></span>
+      <span class="nav-dot" aria-hidden="true"></span>
+    </div>
+  </header>
+
+  <!-- ===================================================================
+       MAIN
+       =================================================================== -->
+  <main class="site-main" id="content">
+
+    <!-- Hero -->
+    <section class="news-hero" aria-labelledby="news-h1">
+      <div class="container">
+        <div class="news-hero-inner">
+          <span class="section-eyebrow">Хроника</span>
+          <h1 class="news-heading" id="news-h1">Новости</h1>
+          <p class="news-sub">Что происходит в издательстве, на платформе и в сообществе β→α</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- News content -->
+    <div class="news-section">
+      <div class="container">
+
+        <!-- Featured story -->
+        <article class="news-featured" role="button" tabindex="0" aria-label="Читать статью: Книги β→α появились в «Подписных изданиях»">
+          <div class="news-featured-img-col">
+            <img
+              class="news-featured-img"
+              src="assets/news/news4.png"
+              alt="Стенд с книгами beta→alpha в книжном магазине — Гореть вместе, Избегание эмоций, Научение на опыте"
+            />
+          </div>
+          <div class="news-featured-content">
+            <div class="news-featured-meta">
+              <span class="domain-chip domain-chip--publisher">Издательство</span>
+              <time class="news-date" datetime="2026-06-12">12 июня 2026</time>
+            </div>
+            <h2 class="news-featured-title">Книги β→α появились в «Подписных изданиях»</h2>
+            <p class="news-featured-excerpt">
+              Специальный стенд с нашими изданиями открыт в петербургском «Подписных изданиях»&nbsp;—
+              одном из лучших книжных магазинов страны. Встречайте в бумаге: Бион, Ферро, Николи.
+              Для тех, кто хочет подержать книгу в руках прежде чем открыть читалку.
+            </p>
+            <a class="news-read-more" href="#" data-stub>Читать далее →</a>
+          </div>
+        </article>
+
+        <!-- ILLUSTRATED — "Культура" section -->
+        <p class="news-section-label" aria-hidden="true">Книги в неожиданных местах</p>
+        <div class="news-grid">
+
+          <!-- news1: stadium -->
+          <article class="news-card" tabindex="0" role="button" aria-label="Читать: Психоанализ в третьем тайме">
+            <div class="news-card-img-wrap">
+              <img
+                class="news-card-img"
+                src="assets/news/news1.png"
+                alt="Болельщики на стадионе читают книги beta→alpha во время матча"
+                loading="lazy"
+              />
+            </div>
+            <div class="news-card-body">
+              <div class="news-card-meta">
+                <span class="domain-chip domain-chip--culture">Культура</span>
+                <time class="news-date" datetime="2026-06-09">9 июня 2026</time>
+              </div>
+              <h3 class="news-card-title">Психоанализ в третьем тайме</h3>
+              <p class="news-card-excerpt">
+                Подписчики β→α читают везде. Стадион «Лужники», матч ЦСКА — и три книги из нашего каталога на трибунах. Это не постановка. Счёт 1:1, перерыв, Бион.
+              </p>
+              <a class="news-card-link" href="#" data-stub>Читать →</a>
+            </div>
+          </article>
+
+          <!-- news2: F1 cockpit -->
+          <article class="news-card" tabindex="0" role="button" aria-label="Читать: Биономерная модель на скорости 300 км/ч">
+            <div class="news-card-img-wrap">
+              <img
+                class="news-card-img"
+                src="assets/news/news2.png"
+                alt="Открытая книга с диаграммой психики на руле гоночного автомобиля Формулы-1"
+                loading="lazy"
+              />
+            </div>
+            <div class="news-card-body">
+              <div class="news-card-meta">
+                <span class="domain-chip domain-chip--culture">Культура</span>
+                <time class="news-date" datetime="2026-06-06">6 июня 2026</time>
+              </div>
+              <h3 class="news-card-title">Биономерная модель на скорости 300 км/ч</h3>
+              <p class="news-card-excerpt">
+                Что, если аналитическая работа — это гонка, где каждый поворот требует полного присутствия? Виньетка без слов — только изображение и пауза.
+              </p>
+              <a class="news-card-link" href="#" data-stub>Читать →</a>
+            </div>
+          </article>
+
+          <!-- news3: lake + Nessie -->
+          <article class="news-card" tabindex="0" role="button" aria-label="Читать: Нужно больше Несси">
+            <div class="news-card-img-wrap">
+              <img
+                class="news-card-img"
+                src="assets/news/news3.png"
+                alt="Девушка читает книгу beta→alpha у лесного озера, на фоне — силуэт Лох-Несского чудовища"
+                loading="lazy"
+              />
+            </div>
+            <div class="news-card-body">
+              <div class="news-card-meta">
+                <span class="domain-chip domain-chip--culture">Культура</span>
+                <time class="news-date" datetime="2026-06-03">3 июня 2026</time>
+              </div>
+              <h3 class="news-card-title">Нужно больше Несси: идеальная компания для летнего чтения</h3>
+              <p class="news-card-excerpt">
+                Читать Ферро у лесного озера&nbsp;— уже само по себе сюрреализм. Но иногда природа идёт навстречу и присылает подходящего собеседника.
+              </p>
+              <a class="news-card-link" href="#" data-stub>Читать →</a>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- TEXT NEWS — from the landing B2 block + more -->
+        <p class="news-section-label" aria-hidden="true">Издательство · Сообщество · Платформа</p>
+        <div class="news-grid">
+
+          <!-- From landing B2 #1 -->
+          <article class="news-card news-card--text" tabindex="0" role="button" aria-label="Читать: β→α выпускает третье издание книги Биона">
+            <div class="news-card-body">
+              <div class="news-card-meta">
+                <span class="domain-chip domain-chip--publisher">Издательство</span>
+                <time class="news-date" datetime="2026-06-10">10 июня 2026</time>
+              </div>
+              <h3 class="news-card-title">β→α выпускает третье издание книги Биона</h3>
+              <p class="news-card-excerpt">
+                «Научение на опыте» в переработанном переводе: уточнённая терминология, сверенный с оригиналом текст, новая расстановка приоритетов в ключевых понятиях.
+              </p>
+              <a class="news-card-link" href="#" data-stub>Читать →</a>
+            </div>
+          </article>
+
+          <!-- From landing B2 #2 -->
+          <article class="news-card news-card--text" tabindex="0" role="button" aria-label="Читать: Обсуждение аффективной регуляции">
+            <div class="news-card-body">
+              <div class="news-card-meta">
+                <span class="domain-chip domain-chip--community">Сообщество</span>
+                <time class="news-date" datetime="2026-06-08">8 июня 2026</time>
+              </div>
+              <h3 class="news-card-title">Обсуждение: аффективная регуляция в клиническом контексте</h3>
+              <p class="news-card-excerpt">
+                Дискуссия, которая началась в комментариях к Ферро и переросла в тред на 40 участников. Сохранили — он длинный и очень хороший.
+              </p>
+              <a class="news-card-link" href="#" data-stub>Читать →</a>
+            </div>
+          </article>
+
+          <!-- From landing B2 #3 -->
+          <article class="news-card news-card--text" tabindex="0" role="button" aria-label="Читать: Открыт читальный зал">
+            <div class="news-card-body">
+              <div class="news-card-meta">
+                <span class="domain-chip domain-chip--platform">Платформа</span>
+                <time class="news-date" datetime="2026-06-04">4 июня 2026</time>
+              </div>
+              <h3 class="news-card-title">Открыт читальный зал: первые 50 участников получили доступ</h3>
+              <p class="news-card-excerpt">
+                Первая волна приглашений отправлена. Мы выбрали специалистов, которые давно работают с психоаналитической литературой и готовы оставлять развёрнутые отзывы.
+              </p>
+              <a class="news-card-link" href="#" data-stub>Читать →</a>
+            </div>
+          </article>
+
+          <!-- Extra #1 -->
+          <article class="news-card news-card--text" tabindex="0" role="button" aria-label="Читать: Новый перевод Томаса Огдена">
+            <div class="news-card-body">
+              <div class="news-card-meta">
+                <span class="domain-chip domain-chip--publisher">Издательство</span>
+                <time class="news-date" datetime="2026-06-01">1 июня 2026</time>
+              </div>
+              <h3 class="news-card-title">«Пространство сновидения» Томаса Огдена: перевод завершён</h3>
+              <p class="news-card-excerpt">
+                Работа над переводом одной из ключевых книг Огдена завершена. Профессиональная редактура займёт ещё шесть недель — после чего книга выйдет на платформе.
+              </p>
+              <a class="news-card-link" href="#" data-stub>Читать →</a>
+            </div>
+          </article>
+
+          <!-- Extra #2 -->
+          <article class="news-card news-card--text" tabindex="0" role="button" aria-label="Читать: Интервью с Антонино Ферро">
+            <div class="news-card-body">
+              <div class="news-card-meta">
+                <span class="domain-chip domain-chip--community">Сообщество</span>
+                <time class="news-date" datetime="2026-05-25">25 мая 2026</time>
+              </div>
+              <h3 class="news-card-title">Антонино Ферро: о переводе психоаналитических понятий на русский</h3>
+              <p class="news-card-excerpt">
+                «Ревери» нельзя перевести буквально — но и транслитерацией оставлять нельзя. Разговор с переводчиком «Избегания эмоций» о том, что значит понять текст через живой опыт.
+              </p>
+              <a class="news-card-link" href="#" data-stub>Читать →</a>
+            </div>
+          </article>
+
+          <!-- Extra #3 -->
+          <article class="news-card news-card--text" tabindex="0" role="button" aria-label="Читать: Обновление читалки 1.2">
+            <div class="news-card-body">
+              <div class="news-card-meta">
+                <span class="domain-chip domain-chip--platform">Платформа</span>
+                <time class="news-date" datetime="2026-05-20">20 мая 2026</time>
+              </div>
+              <h3 class="news-card-title">Читалка β→α: обновление 1.2&nbsp;— закладки, заметки, прогресс</h3>
+              <p class="news-card-excerpt">
+                В веб-ридере теперь: личные заметки на полях, закладки, отображение прогресса и точная академическая цитата для любой страницы с указанием версии.
+              </p>
+              <a class="news-card-link" href="#" data-stub>Читать →</a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===================================================================
+       FOOTER
+       =================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="text-mark" aria-hidden="true">β<span class="arrow">→</span>α</span>
+          <span class="footer-tagline">© 2026 beta→alpha. Для профессионального сообщества.</span>
+        </div>
+        <span class="build-tag">v0.2.3-primer · news</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================
+       OVERLAY A — Login
+       =================================================================== -->
+  <div id="modal-login" class="modal-backdrop"
+       role="dialog" aria-modal="true" aria-labelledby="login-title" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <button class="modal-close" id="login-close" type="button" aria-label="Закрыть">×</button>
+        <div class="modal-seal" aria-hidden="true">β<span class="arrow">→</span>α</div>
+        <h2 class="modal-title" id="login-title">Вход</h2>
+        <p class="modal-subtitle">Войдите, чтобы читать и участвовать в сообществе</p>
+      </div>
+      <div class="modal-error" id="login-error" aria-live="polite">
+        Неверный адрес или пароль. Попробуйте ещё раз.
+      </div>
+      <form class="modal-form" id="login-form" novalidate>
+        <div class="form-field">
+          <label class="form-label" for="login-email">Email</label>
+          <input class="form-input" id="login-email" type="email" name="email"
+                 value="test@beta2alpha.academy" autocomplete="email" required aria-required="true" />
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="login-password">Пароль</label>
+          <input class="form-input" id="login-password" type="password" name="password"
+                 value="testpass123" autocomplete="current-password" required aria-required="true" />
+          <a class="form-forgot" id="login-forgot" href="#">Забыли пароль?</a>
+        </div>
+        <button class="btn btn-primary modal-submit" type="submit">Зайти</button>
+      </form>
+      <p class="modal-footer-links">
+        Нет аккаунта? <a href="#" id="login-to-reg">Зарегистрироваться</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       OVERLAY B — Registration
+       =================================================================== -->
+  <div id="modal-reg" class="modal-backdrop"
+       role="dialog" aria-modal="true" aria-labelledby="reg-title" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <button class="modal-close" id="reg-close" type="button" aria-label="Закрыть">×</button>
+        <div class="modal-seal" aria-hidden="true">β<span class="arrow">→</span>α</div>
+        <h2 class="modal-title" id="reg-title">Регистрация</h2>
+        <p class="modal-subtitle">Оставьте заявку — мы свяжемся с вами</p>
+      </div>
+      <div class="modal-error" id="reg-error" aria-live="polite"></div>
+      <div class="modal-success" id="reg-success" tabindex="-1" aria-live="polite">
+        Заявка принята. Мы свяжемся с вами в ближайшее время.
+      </div>
+      <form class="modal-form" id="reg-form" novalidate>
+        <div class="form-field">
+          <label class="form-label" for="reg-name">Имя</label>
+          <input class="form-input" id="reg-name" type="text" name="name" autocomplete="name" required aria-required="true" />
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="reg-email">Email</label>
+          <input class="form-input" id="reg-email" type="email" name="email" autocomplete="email" required aria-required="true" />
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="reg-password">Пароль</label>
+          <input class="form-input" id="reg-password" type="password" name="password" autocomplete="new-password" required aria-required="true" />
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="reg-pw2">Повторите пароль</label>
+          <input class="form-input" id="reg-pw2" type="password" name="password2" autocomplete="new-password" required aria-required="true" />
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="reg-spec">
+            Специализация <span class="form-label-opt">(необязательно)</span>
+          </label>
+          <input class="form-input" id="reg-spec" type="text" name="spec"
+                 placeholder="Например: Психоаналитик" autocomplete="off" />
+        </div>
+        <button class="btn btn-primary modal-submit" type="submit">Зарегистрироваться</button>
+      </form>
+      <p class="modal-footer-links" id="reg-footer-links">
+        Уже есть аккаунт? <a href="#" id="reg-to-login">Зайти</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       SCRIPTS
+       =================================================================== -->
+
+  <!-- Nav indicator -->
+  <script>
+    (function () {
+      var nav         = document.querySelector(".primary-nav");
+      var headerInner = document.querySelector(".header-inner");
+      if (!nav || !headerInner) return;
+
+      var aboutLink = document.querySelector(".header-about");
+      var navLinks  = Array.prototype.slice.call(nav.querySelectorAll(".nav-link"));
+      var allLinks  = aboutLink ? [aboutLink].concat(navLinks) : navLinks;
+
+      var strip = document.querySelector(".nav-strip");
+      var dot   = document.querySelector(".nav-dot");
+      if (!allLinks.length || !strip || !dot) return;
+
+      var DOT_RADIUS = 3.5;
+
+      function isHome(link) { return link.classList.contains("nav-link-home"); }
+
+      function moveTo(link) {
+        var hRect = headerInner.getBoundingClientRect();
+        var lRect = link.getBoundingClientRect();
+        var left  = Math.round(lRect.left - hRect.left);
+        var width = Math.round(lRect.width);
+        strip.style.left  = left + "px";
+        strip.style.width = width + "px";
+        dot.style.left    = (left + Math.round(width / 2)) + "px";
+        dot.style.bottom  = isHome(link)
+          ? Math.round(hRect.bottom - lRect.bottom - DOT_RADIUS) + "px"
+          : "17px";
+      }
+
+      function activeLink() {
+        if (aboutLink && aboutLink.getAttribute("aria-current") === "page") return aboutLink;
+        return nav.querySelector('.nav-link[aria-current="page"]');
+      }
+
+      function syncVisibility() {
+        var active = activeLink();
+        if (!active) { strip.style.opacity = "0"; dot.style.opacity = "0"; return; }
+        strip.style.opacity = isHome(active) ? "0" : "1";
+        dot.style.opacity   = "1";
+      }
+
+      function place(link, instant) {
+        if (!link) { syncVisibility(); return; }
+        if (instant) { strip.style.transition = "none"; dot.style.transition = "none"; }
+        moveTo(link);
+        syncVisibility();
+        if (instant) { void dot.offsetWidth; strip.style.transition = ""; dot.style.transition = ""; }
+      }
+
+      document.fonts.ready.then(function () { place(activeLink(), true); });
+
+      allLinks.forEach(function (link) {
+        link.addEventListener("click", function (e) {
+          var href   = link.getAttribute("href") || "";
+          var isStub = link.hasAttribute("data-stub");
+          if (isStub || href === "#" || href.charAt(0) === "#") e.preventDefault();
+          allLinks.forEach(function (l) { l.removeAttribute("aria-current"); });
+          link.setAttribute("aria-current", "page");
+          place(link, false);
+        });
+      });
+
+      window.addEventListener("resize", function () { place(activeLink(), true); });
+    })();
+  </script>
+
+  <!-- Modal script -->
+  <script>
+    (function () {
+      var btnLogin    = document.getElementById("btn-login");
+      var btnReg      = document.getElementById("btn-reg");
+      var modalLogin  = document.getElementById("modal-login");
+      var modalReg    = document.getElementById("modal-reg");
+      var loginClose  = document.getElementById("login-close");
+      var regClose    = document.getElementById("reg-close");
+      var loginToReg  = document.getElementById("login-to-reg");
+      var regToLogin  = document.getElementById("reg-to-login");
+      var loginForm   = document.getElementById("login-form");
+      var regForm     = document.getElementById("reg-form");
+      var loginForgot = document.getElementById("login-forgot");
+      var regError    = document.getElementById("reg-error");
+      var regSuccess  = document.getElementById("reg-success");
+      var regFooter   = document.getElementById("reg-footer-links");
+
+      var activeModal = null;
+      var triggerEl   = null;
+
+      function focusableElements(el) {
+        return Array.prototype.slice.call(el.querySelectorAll(
+          "button:not([disabled]), input:not([disabled]), a[href], " +
+          "select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex=\"-1\"])"
+        ));
+      }
+
+      function openModal(modal) {
+        activeModal = modal;
+        modal.setAttribute("aria-hidden", "false");
+        modal.classList.add("is-open");
+        document.body.style.overflow = "hidden";
+        setTimeout(function () { var f = focusableElements(modal)[0]; if (f) f.focus(); }, 60);
+      }
+
+      function closeModal(modal) {
+        if (!modal) return;
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        if (activeModal === modal) activeModal = null;
+        document.body.style.overflow = "";
+        if (triggerEl) { var t = triggerEl; triggerEl = null; setTimeout(function () { t.focus(); }, 60); }
+      }
+
+      function switchModal(from, to, newTrigger) {
+        from.classList.remove("is-open"); from.setAttribute("aria-hidden", "true");
+        activeModal = null; triggerEl = newTrigger; openModal(to);
+      }
+
+      btnLogin.addEventListener("click", function (e) { e.preventDefault(); triggerEl = btnLogin; openModal(modalLogin); });
+      btnReg.addEventListener("click",   function (e) { e.preventDefault(); triggerEl = btnReg;   openModal(modalReg);   });
+      loginClose.addEventListener("click", function () { closeModal(modalLogin); });
+      regClose.addEventListener("click",   function () { closeModal(modalReg);   });
+      modalLogin.addEventListener("click", function (e) { if (e.target === modalLogin) closeModal(modalLogin); });
+      modalReg.addEventListener("click",   function (e) { if (e.target === modalReg)   closeModal(modalReg);   });
+
+      document.addEventListener("keydown", function (e) {
+        if (!activeModal) return;
+        if (e.key === "Escape") { closeModal(activeModal); return; }
+        if (e.key === "Tab") {
+          var focusable = focusableElements(activeModal);
+          if (!focusable.length) return;
+          var first = focusable[0], last = focusable[focusable.length - 1];
+          if (e.shiftKey) { if (document.activeElement === first) { e.preventDefault(); last.focus(); } }
+          else            { if (document.activeElement === last)  { e.preventDefault(); first.focus(); } }
+        }
+      });
+
+      loginToReg.addEventListener("click", function (e) { e.preventDefault(); switchModal(modalLogin, modalReg,   btnReg);   });
+      regToLogin.addEventListener("click", function (e) { e.preventDefault(); switchModal(modalReg,   modalLogin, btnLogin); });
+      loginForgot.addEventListener("click", function (e) { e.preventDefault(); });
+
+      loginForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        closeModal(modalLogin);
+        showToast("Добро пожаловать!");
+        setTimeout(function () { window.location.href = "home.html"; }, 900);
+      });
+
+      regForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var name  = document.getElementById("reg-name").value.trim();
+        var email = document.getElementById("reg-email").value.trim();
+        var pw    = document.getElementById("reg-password").value;
+        var pw2   = document.getElementById("reg-pw2").value;
+        regError.classList.remove("is-visible");
+        if (!name || !email || !pw || !pw2) {
+          regError.textContent = "Пожалуйста, заполните все обязательные поля.";
+          regError.classList.add("is-visible"); return;
+        }
+        if (pw !== pw2) {
+          regError.textContent = "Пароли не совпадают. Попробуйте ещё раз.";
+          regError.classList.add("is-visible"); return;
+        }
+        regForm.style.display = "none"; regFooter.style.display = "none";
+        regSuccess.classList.add("is-visible"); regSuccess.focus();
+        setTimeout(function () {
+          closeModal(modalReg);
+          setTimeout(function () {
+            regForm.reset(); regForm.style.display = ""; regFooter.style.display = "";
+            regError.classList.remove("is-visible"); regSuccess.classList.remove("is-visible");
+          }, 300);
+        }, 2000);
+      });
+
+      function showToast(msg) {
+        var toast = document.createElement("div");
+        toast.className = "site-toast";
+        toast.setAttribute("role", "status");
+        toast.setAttribute("aria-live", "polite");
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        void toast.offsetWidth;
+        toast.classList.add("is-visible");
+        setTimeout(function () {
+          toast.classList.remove("is-visible");
+          setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+        }, 2500);
+      }
+    })();
+  </script>
+
+  <!-- Scroll-aware header -->
+  <script>
+    (function () {
+      var header = document.querySelector(".site-header");
+      function update() {
+        var scroll = window.scrollY;
+        if (scroll > 200) {
+          header.classList.add("is-scrolled"); header.style.background = "";
+        } else if (scroll > 150) {
+          var t = (scroll - 150) / 50;
+          header.classList.remove("is-scrolled");
+          header.style.background = "color-mix(in srgb, var(--paper) " + Math.round(t * 95) + "%, transparent)";
+        } else {
+          header.classList.remove("is-scrolled"); header.style.background = "";
+        }
+      }
+      window.addEventListener("scroll", update, { passive: true });
+      update();
+    })();
+  </script>
+
+  <!-- Page-exit veil -->
+  <script>
+    (function () {
+      var veil     = document.getElementById("page-exit-veil");
+      var homeLink = document.querySelector(".nav-link-home");
+      if (!veil || !homeLink) return;
+      homeLink.addEventListener("click", function (e) {
+        var href = homeLink.getAttribute("href");
+        if (!href || href === "#") return;
+        e.preventDefault();
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          window.location.href = href; return;
+        }
+        veil.classList.add("is-active");
+        setTimeout(function () { window.location.href = href; }, 400);
+      });
+    })();
+  </script>
+
+</body>
+</html>

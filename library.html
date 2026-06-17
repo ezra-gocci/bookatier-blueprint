@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="sepia-contrast">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Библиотека — beta→alpha</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles/tokens.css" />
+
+  <style>
+    /* ================================================================
+       library.html — Авторизованный каталог
+       Chrome: authorized frame (home.html). Active nav: Библиотека.
+       Features vs pub-library: full reader access, shelf actions,
+       rating stars, community data (discussion counts, active readers),
+       quick-preview side panel, editorial collection strip.
+       site-map.md §5.8 · ux-structure.md §5.3
+       ================================================================ */
+
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      background-image: url("assets/backgrounds/monogram-cream.png");
+      background-repeat: repeat; background-size: 320px;
+      opacity: var(--grain-opacity); pointer-events: none; z-index: 0;
+    }
+
+    .container { width: 100%; max-width: var(--container-max); margin-inline: auto; padding-inline: var(--gutter); }
+
+    .skip-link {
+      position: absolute; left: var(--space-4); top: calc(var(--space-2) * -8);
+      z-index: var(--z-toast); background: var(--surface); color: var(--ink);
+      border: var(--hairline) solid var(--line); border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-4); font-size: var(--fs-small);
+      transition: top var(--dur-base) var(--ease-out-quart);
+    }
+    .skip-link:focus { top: var(--space-2); }
+
+    /* ---- Header ----------------------------------------------- */
+    .site-header {
+      position: sticky; top: 0; z-index: var(--z-sticky);
+      background: color-mix(in srgb, var(--paper) 88%, transparent);
+      backdrop-filter: saturate(140%) blur(8px);
+      border-bottom: var(--hairline) solid var(--line);
+    }
+    .header-inner {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      align-items: center; gap: var(--space-4); height: var(--header-height);
+    }
+    .wordmark { justify-self: start; display: inline-flex; align-items: center; flex-shrink: 0; opacity: 1; transition: opacity var(--dur-fast) var(--ease-out-quart); }
+    .wordmark:hover { opacity: 0.82; }
+    .wordmark-img { height: 32px; width: auto; display: block; }
+
+    .text-mark { font-family: var(--font-serif); font-size: var(--fs-h1); font-weight: var(--fw-semibold); color: var(--ink); letter-spacing: var(--tracking-display); line-height: 1; display: inline-flex; align-items: baseline; gap: 0.04em; flex-shrink: 0; transition: color var(--dur-fast) var(--ease-out-quart); }
+    .text-mark .arrow { color: var(--accent); }
+    .text-mark:hover { color: var(--accent); }
+
+    .primary-nav { justify-self: center; position: relative; display: flex; align-items: center; gap: var(--space-6); padding-bottom: 10px; }
+    .nav-link { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-medium); letter-spacing: var(--tracking-label); color: var(--ink-soft); line-height: 1; padding-block: var(--space-1); transition: color var(--dur-fast) var(--ease-out-quart); }
+    .nav-link:hover, .nav-link[aria-current="page"] { color: var(--accent); }
+
+    .nav-link-home { font-family: var(--font-serif); font-size: var(--fs-body); font-weight: var(--fw-semibold); letter-spacing: var(--tracking-display); background: #1F1B18; color: #ECE3D6; padding: var(--space-1) var(--space-3) calc(var(--space-1) + 3px); border-radius: var(--radius-md); transition: opacity var(--dur-fast) var(--ease-out-quart); }
+    .nav-link-home .arrow { color: #D2674A; }
+    .nav-link-home:hover, .nav-link-home[aria-current="page"] { color: #ECE3D6; opacity: 0.85; }
+    .nav-link-home:hover .arrow, .nav-link-home[aria-current="page"] .arrow { color: #D2674A; }
+
+    .nav-strip, .nav-dot { position: absolute; pointer-events: none; }
+    .nav-strip { background: var(--accent); bottom: 7px; height: var(--hairline); border-radius: var(--radius-pill); -webkit-mask: linear-gradient(90deg, #000 0, #000 calc(50% - 7px), transparent calc(50% - 7px), transparent calc(50% + 7px), #000 calc(50% + 7px), #000 100%); mask: linear-gradient(90deg, #000 0, #000 calc(50% - 7px), transparent calc(50% - 7px), transparent calc(50% + 7px), #000 calc(50% + 7px), #000 100%); transition: left 280ms var(--ease-out-quart), width 280ms var(--ease-out-quart), opacity 160ms var(--ease-out-quart); }
+    .nav-dot { background: var(--amber); bottom: 4px; width: 7px; height: 7px; border-radius: var(--radius-pill); transform: translateX(-50%); transition: left 360ms cubic-bezier(0.34,1.56,0.64,1), bottom 360ms cubic-bezier(0.34,1.56,0.64,1); }
+    .nav-strip:not([style]), .nav-dot:not([style]) { opacity: 0; }
+    @media (prefers-reduced-motion: reduce) { .nav-strip, .nav-dot { transition: none; } }
+
+    .header-actions { justify-self: end; display: flex; align-items: center; gap: var(--space-3); flex-shrink: 0; }
+    .icon-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; background: transparent; color: var(--ink-soft); border: var(--hairline) solid transparent; border-radius: var(--radius-md); cursor: pointer; transition: color var(--dur-fast) var(--ease-out-quart), border-color var(--dur-fast) var(--ease-out-quart); }
+    .icon-btn:hover { color: var(--ink); border-color: var(--line); }
+    .icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .notif-count { position: absolute; top: 4px; right: 4px; min-width: 16px; height: 16px; padding-inline: 4px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: var(--fw-semibold); line-height: 1; color: var(--on-accent); background: var(--accent); border-radius: var(--radius-pill); }
+
+    .avatar-rep { display: inline-flex; align-items: center; gap: var(--space-2); padding: 3px 8px 3px 3px; border: var(--hairline) solid var(--line); border-radius: var(--radius-pill); background: var(--surface); text-decoration: none; transition: border-color var(--dur-fast) var(--ease-out-quart), background var(--dur-fast) var(--ease-out-quart); }
+    .avatar-rep:hover { border-color: var(--accent); background: var(--surface-sunk); }
+    .avatar-rep__face { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: var(--radius-pill); background: var(--accent); color: var(--on-accent); font-size: var(--fs-caption); font-weight: var(--fw-semibold); letter-spacing: 0; }
+    .avatar-rep__score { display: inline-flex; align-items: center; gap: 3px; color: var(--amber); }
+    .avatar-rep__num { font-size: var(--fs-caption); font-weight: var(--fw-semibold); color: var(--ink); font-variant-numeric: tabular-nums; }
+
+    /* ---- Footer ----------------------------------------------- */
+    .site-footer { position: relative; z-index: 1; border-top: var(--hairline) solid var(--line); }
+    .footer-inner { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: var(--space-4); padding-block: var(--space-8); }
+    .footer-brand { display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; }
+    .footer-brand .text-mark { font-size: var(--fs-h2); }
+    .footer-tagline { font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-caption); color: var(--ink-soft); }
+    .build-tag { font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-caption); color: var(--ink-soft); }
+    .footer-links { display: inline-flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; }
+    .footer-link { font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-caption); color: var(--ink-soft); text-decoration: none; transition: color var(--dur-fast) var(--ease-out-quart); }
+    .footer-link:hover { color: var(--accent); }
+
+    /* ================================================================
+       LIBRARY PAGE — page-specific
+       ================================================================ */
+
+    .lib-main { flex: 1; position: relative; z-index: 1; }
+
+    /* ---- Page hero -------------------------------------------- */
+    .lib-hero { padding-block: var(--space-8) var(--space-6); border-bottom: var(--hairline) solid var(--line); }
+    .lib-hero-inner { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-8); flex-wrap: wrap; }
+    .lib-hero-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); letter-spacing: var(--tracking-caption); text-transform: uppercase; color: var(--ink-faint); margin-bottom: var(--space-2); }
+    .lib-hero h1 { font-family: var(--font-serif); font-size: var(--fs-h1); font-weight: var(--fw-semibold); color: var(--ink); margin: 0; }
+    .lib-hero-meta { font-family: var(--font-sans); font-size: var(--fs-small); color: var(--ink-soft); display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+    .lib-hero-dot { color: var(--line); }
+
+    /* ---- Editorial strip -------------------------------------- */
+    .editorial-strip { padding-block: var(--space-6); border-bottom: var(--hairline) solid var(--line); background: var(--surface); }
+    .ed-header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-4); }
+    .ed-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); letter-spacing: var(--tracking-caption); text-transform: uppercase; color: var(--ink-faint); }
+    .ed-title { font-family: var(--font-serif); font-size: var(--fs-h3); font-weight: var(--fw-semibold); color: var(--ink); margin: var(--space-1) 0 0; }
+    .ed-link { font-family: var(--font-sans); font-size: var(--fs-small); color: var(--accent); white-space: nowrap; transition: color var(--dur-fast) var(--ease-out-quart); }
+    .ed-link:hover { color: var(--accent-hover); }
+    .ed-books { display: flex; gap: var(--space-4); overflow-x: auto; padding-bottom: var(--space-2); }
+    .ed-book { display: flex; gap: var(--space-3); align-items: center; min-width: 260px; padding: var(--space-3); background: var(--paper); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); cursor: pointer; transition: border-color var(--dur-fast) var(--ease-out-quart), box-shadow var(--dur-fast) var(--ease-out-quart); flex-shrink: 0; }
+    .ed-book:hover { border-color: var(--accent); box-shadow: var(--shadow-soft); }
+    .ed-cover { width: 44px; height: 60px; border-radius: 3px; object-fit: cover; border: var(--hairline) solid var(--line); flex-shrink: 0; }
+    .ed-info { min-width: 0; }
+    .ed-author { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); letter-spacing: var(--tracking-caption); text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ed-book-title { font-family: var(--font-serif); font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--ink); line-height: 1.3; margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .ed-readers { margin-top: var(--space-1); display: flex; align-items: center; gap: var(--space-2); }
+    .mini-avs { display: flex; }
+    .mini-av { width: 18px; height: 18px; border-radius: 50%; font-size: 8px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; border: 1.5px solid var(--surface); margin-left: -5px; color: #ECE3D6; }
+    .mini-av:first-child { margin-left: 0; }
+    .mini-av-1 { background: var(--slate); }
+    .mini-av-2 { background: var(--sage); }
+    .mini-av-3 { background: #7A4A3A; }
+    .ed-readers-label { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); }
+
+    /* ---- Catalog toolbar (sticky) ----------------------------- */
+    .catalog-toolbar {
+      position: sticky; top: var(--header-height); z-index: 90;
+      background: color-mix(in srgb, var(--paper) 92%, transparent);
+      backdrop-filter: saturate(130%) blur(6px);
+      border-bottom: var(--hairline) solid var(--line);
+      padding-block: var(--space-3);
+    }
+    .toolbar-row { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+    .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 280px; }
+    .search-icon { position: absolute; left: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--ink-faint); pointer-events: none; }
+    .search-input { width: 100%; padding: var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) * 2 + 16px); background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); font-family: var(--font-sans); font-size: var(--fs-small); color: var(--ink); outline: none; transition: border-color var(--dur-fast) var(--ease-out-quart); }
+    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: var(--ink-faint); }
+
+    .filter-chips { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
+    .filter-chip { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: var(--radius-pill); font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); cursor: pointer; border: var(--hairline) solid var(--line); background: transparent; color: var(--ink-soft); transition: all var(--dur-fast) var(--ease-out-quart); }
+    .filter-chip.is-active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .filter-chip:hover:not(.is-active) { border-color: var(--ink-soft); color: var(--ink); }
+
+    .toolbar-right { display: flex; align-items: center; gap: var(--space-3); margin-left: auto; }
+    .sort-select { padding: 4px var(--space-3); background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-soft); cursor: pointer; outline: none; transition: border-color var(--dur-fast); }
+    .sort-select:focus { border-color: var(--accent); }
+    .count-label { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); white-space: nowrap; }
+
+    .view-btns { display: flex; gap: 2px; }
+    .view-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: transparent; border: var(--hairline) solid var(--line); border-radius: var(--radius-md); color: var(--ink-soft); cursor: pointer; transition: all var(--dur-fast) var(--ease-out-quart); }
+    .view-btn.is-active { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .view-btn:hover:not(.is-active) { border-color: var(--ink-soft); color: var(--ink); }
+
+    /* ---- Catalog grid ----------------------------------------- */
+    .catalog-body { padding-block: var(--space-6) var(--space-12); }
+    .catalog-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-5); }
+    .catalog-list { display: flex; flex-direction: column; gap: var(--space-3); }
+    .is-hidden { display: none !important; }
+
+    /* GRID TILE */
+    .book-tile {
+      background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-md);
+      overflow: hidden; cursor: pointer; display: flex; flex-direction: column;
+      transition: border-color var(--dur-fast) var(--ease-out-quart), box-shadow var(--dur-fast) var(--ease-out-quart), transform var(--dur-base) var(--ease-out-quart);
+    }
+    .book-tile:hover { border-color: var(--accent); box-shadow: var(--shadow-raise); transform: translateY(-2px); }
+    .book-tile.is-reading { border-left: 3px solid var(--accent); }
+
+    .tile-cover-wrap { position: relative; aspect-ratio: 2/3; overflow: hidden; background: var(--surface-sunk); }
+    .tile-cover { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 400ms var(--ease-out-quart); }
+    .book-tile:hover .tile-cover { transform: scale(1.03); }
+    .tile-shelf-overlay { position: absolute; top: var(--space-2); right: var(--space-2); }
+    .tile-shelf-badge { display: inline-flex; align-items: center; gap: 3px; padding: 3px 7px; border-radius: var(--radius-pill); font-size: 10px; font-weight: var(--fw-semibold); background: rgba(36,31,27,0.78); color: #ECE3D6; backdrop-filter: blur(4px); white-space: nowrap; }
+    .tile-progress-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--surface-sunk); }
+    .tile-progress-fill { height: 100%; background: var(--accent); }
+
+    .tile-body { padding: var(--space-3) var(--space-4) var(--space-4); display: flex; flex-direction: column; flex: 1; }
+    .tile-chips { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2); }
+    .topic-chip { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: var(--radius-pill); font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); border: var(--hairline) solid; }
+    .topic-chip--analysis { color: var(--slate); border-color: var(--slate); }
+    .topic-chip--therapy  { color: var(--sage);  border-color: var(--sage); }
+    .topic-chip--theory   { color: var(--amber); border-color: var(--amber); }
+    .discuss-count { display: inline-flex; align-items: center; gap: 3px; font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); }
+
+    .tile-title { font-family: var(--font-serif); font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--ink); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: var(--space-1); }
+    .tile-author { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .tile-stars { display: flex; align-items: center; gap: var(--space-2); margin-top: auto; padding-top: var(--space-3); border-top: var(--hairline) solid var(--line); margin-top: var(--space-3); }
+    .star-row { display: inline-flex; gap: 1px; }
+    .star-g { font-size: 11px; line-height: 1; }
+    .star-g.f { color: var(--amber); }
+    .star-g.e { color: var(--line); }
+    .star-num { font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-semibold); color: var(--amber); font-variant-numeric: tabular-nums; }
+    .star-count { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); }
+    .version-chip { margin-left: auto; display: inline-flex; padding: 1px 6px; border-radius: var(--radius-pill); font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); background: var(--surface-sunk); color: var(--ink-faint); border: var(--hairline) solid var(--line); }
+
+    .tile-actions { display: flex; gap: var(--space-2); margin-top: var(--space-3); }
+    .btn-read { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: var(--space-2) var(--space-3); background: var(--accent); color: var(--on-accent); border: none; border-radius: var(--radius-md); font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); cursor: pointer; text-decoration: none; transition: background var(--dur-fast) var(--ease-out-quart); }
+    .btn-read:hover { background: var(--accent-hover); color: var(--on-accent); }
+    .btn-read.continue { background: var(--surface-sunk); color: var(--accent); border: var(--hairline) solid var(--accent-tint); }
+    .btn-read.continue:hover { background: var(--accent-tint); }
+
+    /* Shelf dropdown */
+    .shelf-wrap { position: relative; flex-shrink: 0; }
+    .btn-shelf { display: inline-flex; align-items: center; gap: 4px; padding: var(--space-2) var(--space-3); background: var(--surface-sunk); color: var(--ink-soft); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); font-family: var(--font-sans); font-size: var(--fs-caption); cursor: pointer; transition: border-color var(--dur-fast), color var(--dur-fast); white-space: nowrap; }
+    .btn-shelf:hover, .btn-shelf.has-status { border-color: var(--accent); color: var(--accent); background: var(--accent-tint); }
+    .shelf-menu { display: none; position: absolute; bottom: calc(100% + 4px); left: 0; min-width: 170px; background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); box-shadow: var(--shadow-raise); z-index: 50; flex-direction: column; overflow: hidden; }
+    .shelf-menu.is-open { display: flex; }
+    .shelf-opt { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); font-family: var(--font-sans); font-size: var(--fs-small); color: var(--ink); background: none; border: none; cursor: pointer; text-align: left; transition: background var(--dur-fast); }
+    .shelf-opt:hover { background: var(--surface-sunk); }
+    .shelf-opt.is-current { color: var(--accent); font-weight: var(--fw-medium); }
+
+    /* LIST ROW */
+    .book-row { display: flex; align-items: flex-start; gap: var(--space-5); padding: var(--space-4) var(--space-5); background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); cursor: pointer; transition: border-color var(--dur-fast) var(--ease-out-quart), box-shadow var(--dur-fast) var(--ease-out-quart); }
+    .book-row:hover { border-color: var(--accent); box-shadow: var(--shadow-soft); }
+    .book-row.is-reading { border-left: 3px solid var(--accent); }
+    .row-cover { width: 56px; height: 78px; border-radius: var(--radius-sm); object-fit: cover; flex-shrink: 0; border: var(--hairline) solid var(--line); }
+    .row-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); }
+    .row-chips { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+    .row-title { font-family: var(--font-serif); font-size: var(--fs-body); font-weight: var(--fw-semibold); color: var(--ink); line-height: 1.35; margin-block: var(--space-1); }
+    .row-author { font-family: var(--font-sans); font-size: var(--fs-small); color: var(--ink-soft); }
+    .row-annotation { font-family: var(--font-sans); font-size: var(--fs-small); color: var(--ink-soft); line-height: var(--lh-small); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: var(--space-2); }
+    .row-stars { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-3); }
+    .row-actions { display: flex; align-items: flex-start; flex-direction: column; gap: var(--space-2); flex-shrink: 0; min-width: 140px; }
+
+    /* Community column in list */
+    .row-community { display: flex; flex-direction: column; gap: var(--space-2); flex-shrink: 0; min-width: 130px; padding-top: var(--space-1); }
+    .readers-row { display: flex; align-items: center; gap: var(--space-2); }
+    .reader-avs { display: flex; }
+    .reader-av { width: 22px; height: 22px; border-radius: 50%; font-size: 8px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; border: 1.5px solid var(--surface); color: #ECE3D6; margin-left: -5px; }
+    .reader-av:first-child { margin-left: 0; }
+    .ra-1 { background: var(--slate); }
+    .ra-2 { background: var(--sage); }
+    .ra-3 { background: #7A4A3A; }
+    .readers-label { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); }
+    .discuss-link { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-soft); }
+    .discuss-link:hover { color: var(--accent); }
+
+    /* ---- Quick preview panel ---------------------------------- */
+    .qp-backdrop { position: fixed; inset: 0; background: rgba(36,31,27,0); pointer-events: none; transition: background 280ms; z-index: 95; }
+    .qp-backdrop.is-active { background: rgba(36,31,27,0.18); pointer-events: auto; }
+
+    .qp-panel { position: fixed; top: var(--header-height); right: 0; bottom: 0; width: 380px; background: var(--surface); border-left: var(--hairline) solid var(--line); z-index: 96; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 280ms var(--ease-out-quart); overflow: hidden; }
+    .qp-panel.is-open { transform: translateX(0); box-shadow: var(--shadow-raise); }
+
+    .qp-close-bar { display: flex; align-items: center; justify-content: space-between; padding: var(--space-3) var(--space-4); border-bottom: var(--hairline) solid var(--line); flex-shrink: 0; }
+    .qp-close-label { font-family: var(--font-sans); font-size: var(--fs-caption); letter-spacing: var(--tracking-caption); text-transform: uppercase; color: var(--ink-faint); }
+    .qp-close-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; background: transparent; color: var(--ink-soft); border-radius: var(--radius-md); cursor: pointer; font-size: 18px; line-height: 1; transition: color var(--dur-fast); }
+    .qp-close-btn:hover { color: var(--ink); background: var(--surface-sunk); }
+
+    .qp-scroll { overflow-y: auto; flex: 1; }
+    .qp-cover-row { display: flex; gap: var(--space-4); padding: var(--space-5) var(--space-5) var(--space-4); border-bottom: var(--hairline) solid var(--line); }
+    .qp-cover { width: 80px; height: 112px; border-radius: var(--radius-sm); object-fit: cover; flex-shrink: 0; border: var(--hairline) solid var(--line); }
+    .qp-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); }
+    .qp-version { display: inline-flex; align-items: center; gap: var(--space-1); padding: 2px 8px; border-radius: var(--radius-pill); font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); background: var(--accent-tint); color: var(--accent); border: var(--hairline) solid var(--accent-tint); align-self: flex-start; margin-bottom: var(--space-1); }
+    .qp-title { font-family: var(--font-serif); font-size: var(--fs-h3); font-weight: var(--fw-semibold); color: var(--ink); line-height: 1.3; }
+    .qp-author { font-family: var(--font-sans); font-size: var(--fs-small); color: var(--ink-soft); }
+    .qp-year { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); }
+    .qp-stars { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-2); }
+
+    .qp-section { padding: var(--space-4) var(--space-5); border-bottom: var(--hairline) solid var(--line); }
+    .qp-section-label { font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); letter-spacing: var(--tracking-caption); text-transform: uppercase; color: var(--ink-faint); margin-bottom: var(--space-3); }
+    .qp-annotation { font-family: var(--font-sans); font-size: var(--fs-small); color: var(--ink-soft); line-height: var(--lh-body); }
+
+    .qp-toc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+    .qp-toc-item { display: flex; align-items: baseline; gap: var(--space-2); font-family: var(--font-sans); font-size: var(--fs-small); color: var(--ink-soft); }
+    .qp-toc-num { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); font-variant-numeric: tabular-nums; min-width: 16px; }
+
+    .qp-community-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-3); }
+    .qp-reading-now { display: flex; align-items: center; gap: var(--space-3); }
+    .qp-reading-label { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-soft); }
+    .qp-discuss-btn { display: inline-flex; align-items: center; gap: 4px; padding: var(--space-1) var(--space-3); border: var(--hairline) solid var(--line); border-radius: var(--radius-pill); font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-soft); background: none; cursor: pointer; transition: border-color var(--dur-fast), color var(--dur-fast); }
+    .qp-discuss-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .qp-latest-comment { padding: var(--space-3); background: var(--surface-sunk); border-radius: var(--radius-md); }
+    .qp-comment-author { font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-semibold); color: var(--ink-soft); margin-bottom: var(--space-1); }
+    .qp-comment-text { font-family: var(--font-serif); font-size: var(--fs-small); color: var(--ink-soft); font-style: italic; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+    .qp-actions { padding: var(--space-4) var(--space-5); border-top: var(--hairline) solid var(--line); flex-shrink: 0; display: flex; flex-direction: column; gap: var(--space-2); background: var(--surface); }
+    .qp-btn-read { display: flex; align-items: center; justify-content: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); background: var(--accent); color: var(--on-accent); border: none; border-radius: var(--radius-md); font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-semibold); cursor: pointer; text-decoration: none; transition: background var(--dur-fast); }
+    .qp-btn-read:hover { background: var(--accent-hover); color: var(--on-accent); }
+    .qp-btn-read.continue { background: var(--surface-sunk); color: var(--accent); border: var(--hairline) solid var(--accent-tint); }
+    .qp-btn-read.continue:hover { background: var(--accent-tint); }
+    .qp-btn-row { display: flex; gap: var(--space-2); }
+    .qp-btn-sec { flex: 1; display: flex; align-items: center; justify-content: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--surface-sunk); color: var(--ink-soft); border: var(--hairline) solid var(--line); border-radius: var(--radius-md); font-family: var(--font-sans); font-size: var(--fs-small); cursor: pointer; transition: border-color var(--dur-fast), color var(--dur-fast); }
+    .qp-btn-sec:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ---- Responsive ------------------------------------------- */
+    @media (max-width: 1100px) { .catalog-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 900px)  { .catalog-grid { grid-template-columns: repeat(2, 1fr); } .row-community { display: none; } }
+    @media (max-width: 760px)  { .primary-nav { display: none; } :root { --gutter: var(--space-6); } .catalog-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-3); } .qp-panel { width: 100%; } }
+    @media (max-width: 480px)  { .catalog-grid { grid-template-columns: 1fr; } .header-inner { gap: var(--space-3); } .avatar-rep__score { display: none; } }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#content">К содержимому</a>
+
+  <!-- HEADER — authorized, Библиотека active -->
+  <header class="site-header">
+    <div class="header-inner container">
+      <a class="wordmark" href="pub-about.html" aria-label="beta→alpha — о проекте">
+        <img class="wordmark-img" src="assets/decor/a2b-logo.png" alt="beta→alpha" />
+      </a>
+      <nav class="primary-nav" aria-label="Основная навигация">
+        <a class="nav-link" href="community.html">Сообщество</a>
+        <a class="nav-link nav-link-home" href="home.html" aria-label="Домашняя">β<span class="arrow">→</span>α</a>
+        <a class="nav-link" href="library.html" aria-current="page">Библиотека</a>
+        <span class="nav-strip" aria-hidden="true"></span>
+        <span class="nav-dot"   aria-hidden="true"></span>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn" type="button" aria-label="Поиск" data-stub>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+        </button>
+        <button class="icon-btn" type="button" aria-label="Пульс" data-stub>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </button>
+        <button class="icon-btn" type="button" aria-label="Уведомления" data-stub>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+          <span class="notif-count" aria-hidden="true">3</span>
+        </button>
+        <a class="avatar-rep" href="#" data-stub aria-label="Аккаунт — репутация 142">
+          <span class="avatar-rep__face" aria-hidden="true">АИ</span>
+          <span class="avatar-rep__score" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 18l-5.9 3.2 1.2-6.6L2.5 9l6.6-.9z"/></svg>
+            <span class="avatar-rep__num">142</span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="lib-main" id="content">
+
+    <!-- Page hero -->
+    <div class="lib-hero">
+      <div class="container">
+        <div class="lib-hero-inner">
+          <div>
+            <p class="lib-hero-eyebrow">Каталог</p>
+            <h1>Библиотека</h1>
+          </div>
+          <div class="lib-hero-meta">
+            <span id="hero-total">25 изданий</span>
+            <span class="lib-hero-dot" aria-hidden="true">·</span>
+            <span>по подписке</span>
+            <span class="lib-hero-dot" aria-hidden="true">·</span>
+            <span>3 у вас на полке</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Editorial collection strip -->
+    <div class="editorial-strip">
+      <div class="container">
+        <div class="ed-header">
+          <div>
+            <p class="ed-eyebrow">Подборка редакции</p>
+            <p class="ed-title">Итальянская школа психоанализа</p>
+          </div>
+          <a class="ed-link" href="#" data-stub>Все подборки →</a>
+        </div>
+        <div class="ed-books">
+          <div class="ed-book" data-book-id="1">
+            <img class="ed-cover" src="assets/covers/bion-nauchenie-na-opyte-cover.png" alt="" />
+            <div class="ed-info">
+              <p class="ed-author">Вилфред Р. Бион</p>
+              <p class="ed-book-title">Научение на опыте. Итальянские семинары</p>
+              <div class="ed-readers">
+                <div class="mini-avs"><span class="mini-av mini-av-1">МС</span><span class="mini-av mini-av-2">АП</span><span class="mini-av mini-av-3">ВН</span></div>
+                <span class="ed-readers-label">+5 читают</span>
+              </div>
+            </div>
+          </div>
+          <div class="ed-book" data-book-id="2">
+            <img class="ed-cover" src="assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png" alt="" />
+            <div class="ed-info">
+              <p class="ed-author">Антонино Ферро</p>
+              <p class="ed-book-title">Избегание эмоций, проживание эмоций</p>
+              <div class="ed-readers">
+                <div class="mini-avs"><span class="mini-av mini-av-2">ВН</span><span class="mini-av mini-av-3">НК</span></div>
+                <span class="ed-readers-label">+2 читают</span>
+              </div>
+            </div>
+          </div>
+          <div class="ed-book" data-book-id="3">
+            <img class="ed-cover" src="assets/covers/nikoli-goret-vmeste-cover.png" alt="" />
+            <div class="ed-info">
+              <p class="ed-author">под ред. Луки Николи</p>
+              <p class="ed-book-title">Гореть вместе</p>
+              <div class="ed-readers">
+                <div class="mini-avs"><span class="mini-av mini-av-1">АП</span><span class="mini-av mini-av-3">МС</span><span class="mini-av mini-av-2">ВН</span></div>
+                <span class="ed-readers-label">+1 читает</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Catalog toolbar (sticky) -->
+    <div class="catalog-toolbar">
+      <div class="container">
+        <div class="toolbar-row">
+          <div class="search-wrap">
+            <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+            <input class="search-input" id="search" type="search" placeholder="Поиск по каталогу…" aria-label="Поиск по каталогу" />
+          </div>
+          <div class="filter-chips" role="group" aria-label="Фильтр по теме">
+            <button class="filter-chip is-active" data-topic="">Все</button>
+            <button class="filter-chip" data-topic="psychoanalysis">Психоанализ</button>
+            <button class="filter-chip" data-topic="therapy">Психотерапия</button>
+            <button class="filter-chip" data-topic="theory">Теория</button>
+          </div>
+          <div class="toolbar-right">
+            <select class="sort-select" id="sort-sel" aria-label="Сортировка">
+              <option value="date">По дате</option>
+              <option value="rating">По рейтингу</option>
+              <option value="activity">По активности</option>
+            </select>
+            <span class="count-label" id="count-label">25 изданий</span>
+            <div class="view-btns" role="group" aria-label="Вид">
+              <button class="view-btn is-active" id="btn-grid" aria-label="Сетка" aria-pressed="true">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              </button>
+              <button class="view-btn" id="btn-list" aria-label="Список" aria-pressed="false">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Catalog body -->
+    <div class="catalog-body">
+      <div class="container">
+        <div id="catalog-grid" class="catalog-grid"></div>
+        <div id="catalog-list" class="catalog-list is-hidden"></div>
+        <div id="catalog-empty" class="is-hidden" style="text-align:center;padding:var(--space-16) 0;color:var(--ink-faint);font-family:var(--font-sans);font-size:var(--fs-small);">Ничего не найдено</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Quick preview backdrop -->
+  <div class="qp-backdrop" id="qp-backdrop" aria-hidden="true"></div>
+
+  <!-- Quick preview panel -->
+  <aside class="qp-panel" id="qp-panel" aria-label="Предпросмотр книги" aria-hidden="true">
+    <div class="qp-close-bar">
+      <span class="qp-close-label">Издание</span>
+      <button class="qp-close-btn" id="qp-close" aria-label="Закрыть предпросмотр">×</button>
+    </div>
+    <div class="qp-scroll" id="qp-scroll"></div>
+    <div class="qp-actions" id="qp-actions"></div>
+  </aside>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" data-band="noir">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="text-mark" aria-hidden="true">β<span class="arrow">→</span>α</span>
+          <span class="footer-tagline">© 2026 beta→alpha. Для профессионального сообщества.</span>
+        </div>
+        <nav class="footer-links" aria-label="Служебные ссылки">
+          <a class="footer-link" href="pub-about.html">О проекте</a>
+          <a class="footer-link" href="#" data-stub>Консоль</a>
+          <span class="build-tag">v0.2.0-primer · library</span>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    /* ============================================================
+       DATA
+       ============================================================ */
+    var COVERS = {
+      bion:   "assets/covers/bion-nauchenie-na-opyte-cover.png",
+      ferro:  "assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png",
+      nicoli: "assets/covers/nikoli-goret-vmeste-cover.png"
+    };
+
+    var SHELF_OPTS = [
+      { value: "toread",    icon: "📕", label: "К прочтению" },
+      { value: "reading",   icon: "📖", label: "Читаю" },
+      { value: "done",      icon: "✅", label: "Прочитал" },
+      { value: "fav",       icon: "❤️", label: "Любимые" }
+    ];
+    var SHELF_LABELS = { toread: "📕 К прочтению", reading: "📖 Читаю", done: "✅ Прочитал", fav: "❤️ Любимые" };
+
+    /* Reading progress for books on shelf */
+    var PROGRESS = { bion: 42, ferro: 12 };
+
+    var BOOKS = [
+      { id:1,  cover:"bion",   author:"Вилфред Р. Бион",          title:"Научение на опыте. Итальянские семинары", year:2023, topic:"psychoanalysis", topicLabel:"Психоанализ", rating:4.8, reviews:12, version:"v3", discussions:24, readers:8,  shelf:"reading", lastRead:true,  annotation:"Цикл семинаров Биона в Италии — живая встреча с мышлением одного из крупнейших психоаналитиков XX века. Сжатые, плотные разговоры о клинической практике, сновидениях и природе психоаналитического знания. Незаменимый текст для понимания поздней биновской мысли.", toc:["Предисловие редактора","Семинар I. Психоанализ как ремесло","Семинар II. Сновидение и мышление","Семинар III. Знание и рост","Семинар IV. Контейнирование","Семинары V–VII. Техника и практика","Указатель"] },
+      { id:2,  cover:"ferro",  author:"Антонино Ферро",             title:"Избегание эмоций, проживание эмоций",   year:2023, topic:"therapy",         topicLabel:"Психотерапия", rating:4.6, reviews:8,  version:"v1", discussions:17, readers:4,  shelf:"reading", lastRead:true,  annotation:"Антонино Ферро исследует диалектику избегания и проживания эмоций в клинической ситуации. Опираясь на богатый клинический материал, автор показывает, как работа с эмоциональным полем сессии становится главным инструментом трансформации.", toc:["Введение","Ч. I. Теоретические основы","Ч. II. Клинические сцены","Эпилог","Именной указатель"] },
+      { id:3,  cover:"nicoli", author:"под ред. Луки Николи",       title:"Гореть вместе",                         year:2022, topic:"psychoanalysis", topicLabel:"Психоанализ", rating:4.4, reviews:6,  version:"v1", discussions:9,  readers:5,  shelf:"toread",  lastRead:false, annotation:"Коллективный труд посвящён феномену выгорания в помогающих профессиях и возможности его трансформации через супервизию и групповую работу. Авторы исследуют, как профессиональная идентичность формируется в столкновении с тяжёлым опытом пациентов.", toc:["Предисловие Луки Николи","Ч. I. Выгорание как клинический феномен","Ч. II. Групповая супервизия","Ч. III. Трансформация и обновление","Об авторах"] },
+      { id:4,  cover:"bion",   author:"Дональд В. Винникотт",       title:"Игра и реальность",                     year:2021, topic:"theory",          topicLabel:"Теория",       rating:4.9, reviews:21, version:"v2", discussions:31, readers:12, shelf:null,      lastRead:false, annotation:"Классический труд Винникотта о природе игры, переходных объектах и потенциальном пространстве — одна из ключевых книг в истории теории объектных отношений.", toc:["Введение","Переходные объекты","Игра и её место","Психоанализ и искусство","Зеркало лица матери","Заключение"] },
+      { id:5,  cover:"ferro",  author:"Мелани Кляйн",               title:"Зависть и благодарность",               year:2020, topic:"psychoanalysis", topicLabel:"Психоанализ", rating:4.7, reviews:18, version:"v3", discussions:28, readers:9,  shelf:null,      lastRead:false, annotation:"Поздняя работа Кляйн, в которой она разворачивает теорию первичной зависти как деструктивного влечения, направленного против хорошего объекта. Полемическая и богатая клинически.", toc:["Предисловие","Зависть и благодарность","Теоретические следствия","Ранние тревоги и защиты","Указатель"] },
+      { id:6,  cover:"nicoli", author:"Кристофер Боллас",            title:"Тень объекта",                          year:2022, topic:"theory",          topicLabel:"Теория",       rating:4.5, reviews:11, version:"v1", discussions:14, readers:6,  shelf:null,      lastRead:false, annotation:"Теория несознаваемого — «знаемого-несознаваемого» — в клинике и культуре. Боллас вводит понятие преобразующего объекта, заложенного до появления речи.", toc:["Введение","Часть I. Ядро понятия","Часть II. Клинические применения","Часть III. Культура и объект","Библиография"] },
+      { id:7,  cover:"bion",   author:"Томас Огден",                 title:"Аналитическая третья",                  year:2021, topic:"psychoanalysis", topicLabel:"Психоанализ", rating:4.6, reviews:9,  version:"v1", discussions:19, readers:7,  shelf:null,      lastRead:false, annotation:"Огден разрабатывает концепцию аналитической третьей — субъективности, со-создаваемой аналитиком и анализандом в пространстве переноса-контрпереноса.", toc:["Предисловие","Аналитическая третья","Сновидение аналитика","Клинические виньетки","Послесловие"] },
+      { id:8,  cover:"ferro",  author:"Отто Кернберг",               title:"Тяжёлые личностные расстройства",       year:2019, topic:"therapy",         topicLabel:"Психотерапия", rating:4.3, reviews:15, version:"v2", discussions:22, readers:8,  shelf:null,      lastRead:false, annotation:"Систематическое изложение психоаналитической техники при работе с пограничными и нарциссическими расстройствами личности.", toc:["Введение","Диагностика","Техника","Специфические расстройства","Клинические случаи","Библиография"] },
+      { id:9,  cover:"nicoli", author:"Джойс МакДугалл",             title:"Театры тела",                           year:2020, topic:"therapy",         topicLabel:"Психотерапия", rating:4.4, reviews:7,  version:"v1", discussions:11, readers:4,  shelf:null,      lastRead:false, annotation:"Психосоматические феномены через призму психоанализа. МакДугалл рассматривает тело как театр, на сцене которого разыгрываются бессознательные конфликты.", toc:["Предисловие","Психосоматический феномен","Тело как режиссёр","Клинические случаи","Заключение"] },
+      { id:10, cover:"bion",   author:"Андре Грин",                  title:"Работа негатива",                       year:2021, topic:"theory",          topicLabel:"Теория",       rating:4.7, reviews:13, version:"v1", discussions:16, readers:5,  shelf:null,      lastRead:false, annotation:"Центральная работа Грина о негативе в психоанализе: об отсутствии, пустоте и негативной галлюцинации как фундаментальных психических операциях.", toc:["Предисловие","Ч. I. Теория негатива","Ч. II. Клинические проявления","Ч. III. Метапсихология","Библиография"] },
+      { id:11, cover:"ferro",  author:"Майкл Балинт",                title:"Базисный дефект",                       year:2018, topic:"psychoanalysis", topicLabel:"Психоанализ", rating:4.5, reviews:10, version:"v2", discussions:13, readers:4,  shelf:null,      lastRead:false, annotation:"Балинт описывает три уровня психического функционирования, особо выделяя область «базисного дефекта» — доэдипальную зону ранних нарушений.", toc:["Введение","Три уровня","Базисный дефект","Регрессия","Новое начало","Указатель"] },
+      { id:12, cover:"nicoli", author:"Джеймс Гротштейн",            title:"Расщепление и проективная идентификация", year:2022, topic:"psychoanalysis", topicLabel:"Психоанализ", rating:4.2, reviews:5, version:"v1", discussions:8,  readers:3,  shelf:null,      lastRead:false, annotation:"Подробный анализ механизмов расщепления и проективной идентификации, их роли в психопатологии и психоаналитической технике.", toc:["Введение","Расщепление","Проективная идентификация","Клинические применения","Заключение"] },
+      { id:13, cover:"bion",   author:"Гарольд Сирлз",               title:"Контрперенос",                          year:2020, topic:"therapy",         topicLabel:"Психотерапия", rating:4.6, reviews:9,  version:"v1", discussions:15, readers:5,  shelf:null,      lastRead:false, annotation:"Классические эссе Сирлза о контрпереносе при работе с тяжёлыми пациентами, включая шизофренических. Откровенная и революционная книга.", toc:["Предисловие","Контрперенос как инструмент","Работа с шизофренией","Усилие свести с ума","Клинические случаи"] },
+      { id:14, cover:"ferro",  author:"Дональд В. Винникотт",        title:"Мать и дитя",                           year:2019, topic:"theory",          topicLabel:"Теория",       rating:4.8, reviews:16, version:"v2", discussions:26, readers:10, shelf:null,      lastRead:false, annotation:"Собрание ключевых работ Винникотта о ранних отношениях мать–дитя, об окружающей среде и первичных материнских заботах.", toc:["Предисловие","Первичные материнские заботы","Объект и феномен","Достаточно хорошая мать","Заключение"] },
+      { id:15, cover:"nicoli", author:"Шандор Ференци",              title:"Клинический дневник",                   year:2021, topic:"psychoanalysis", topicLabel:"Психоанализ", rating:4.3, reviews:8,  version:"v1", discussions:12, readers:4,  shelf:null,      lastRead:false, annotation:"Дневниковые записи Ференци 1932 года, в которых он переосмысливает теорию Фрейда и разрабатывает собственную клиническую технику взаимного анализа.", toc:["Предисловие переводчика","Записи января–апреля","Записи мая–декабря","Письмо Фрейду","Комментарии редактора"] },
+      { id:16, cover:"bion",   author:"Питер Фонаги",                title:"Ментализация в клинической практике",   year:2023, topic:"therapy",         topicLabel:"Психотерапия", rating:4.5, reviews:11, version:"v1", discussions:18, readers:7,  shelf:null,      lastRead:false, annotation:"Систематическое введение в основанную на ментализации терапию (МВТ) и её применение при пограничных расстройствах личности.", toc:["Введение","Ментализация: теория","Техника МВТ","Клинические протоколы","Исследования","Заключение"] },
+      { id:17, cover:"ferro",  author:"Рональд Фэйрберн",            title:"Психоаналитические исследования личности", year:2018, topic:"theory",       topicLabel:"Теория",       rating:4.4, reviews:7,  version:"v1", discussions:10, readers:3,  shelf:null,      lastRead:false, annotation:"Основополагающий труд Фэйрберна: либидо ищет объект, а не удовольствие. Переосмысление всей психоаналитической теории.", toc:["Предисловие","Пересмотр психопатологии","Либидинальное эго","Структура личности","Шизоидная позиция","Библиография"] },
+      { id:18, cover:"nicoli", author:"Вилфред Р. Бион",             title:"Трансформации",                         year:2020, topic:"psychoanalysis", topicLabel:"Психоанализ", rating:4.7, reviews:10, version:"v1", discussions:20, readers:6,  shelf:null,      lastRead:false, annotation:"В «Трансформациях» Бион формализует теорию: как клинический материал преобразуется в мысль, как терапевт трансформирует β-элементы в α-функцию.", toc:["Предисловие","Трансформации","Алгебра и геометрия","Клиника","Указатель"] },
+      { id:19, cover:"bion",   author:"Маргарет Малер",              title:"Психологическое рождение человека",      year:2019, topic:"theory",          topicLabel:"Теория",       rating:4.6, reviews:14, version:"v2", discussions:21, readers:8,  shelf:null,      lastRead:false, annotation:"Классическое исследование сепарации–индивидуации у детей от рождения до трёх лет. Основа для понимания ранних нарциссических нарушений.", toc:["Предисловие","Нормальный аутизм","Симбиоз","Сепарация и индивидуация","Объектные отношения","Заключение"] },
+      { id:20, cover:"ferro",  author:"Элла Фримен Шарп",            title:"Сновидение",                            year:2021, topic:"psychoanalysis", topicLabel:"Психоанализ", rating:4.3, reviews:6,  version:"v1", discussions:9,  readers:3,  shelf:null,      lastRead:false, annotation:"Детальный анализ работы со сновидениями в клинической практике, с акцентом на технике интерпретации и связи сна с переносом.", toc:["Предисловие","Теория сновидения","Техника интерпретации","Клинические разборы","Заключение"] },
+      { id:21, cover:"nicoli", author:"Герберт Розенфельд",          title:"Импас и интерпретация",                 year:2020, topic:"therapy",         topicLabel:"Психотерапия", rating:4.4, reviews:8,  version:"v1", discussions:12, readers:4,  shelf:null,      lastRead:false, annotation:"Розенфельд исследует клинические тупики при работе с нарциссическими и психотическими пациентами и роль интерпретации в их разрешении.", toc:["Предисловие","Нарциссические структуры","Тупики в анализе","Деструктивный нарциссизм","Клинические случаи","Библиография"] },
+      { id:22, cover:"bion",   author:"Дэниел Стерн",                title:"Межличностный мир младенца",             year:2021, topic:"theory",          topicLabel:"Теория",       rating:4.8, reviews:17, version:"v2", discussions:27, readers:11, shelf:null,      lastRead:false, annotation:"Синтез исследований раннего развития и психоаналитической теории. Стерн описывает четыре ощущения «я» в младенчестве и их значение для клиники взрослых.", toc:["Введение","Возникающее «я»","Ядерное «я»","Субъективное «я»","Вербальное «я»","Клинические следствия","Заключение"] },
+      { id:23, cover:"ferro",  author:"Жан Лапланш",                 title:"Соблазн и теория обольщения",           year:2022, topic:"theory",          topicLabel:"Теория",       rating:4.5, reviews:9,  version:"v1", discussions:13, readers:5,  shelf:null,      lastRead:false, annotation:"Лапланш разворачивает общую теорию соблазнения как основу психоанализа. Взрослый неизбежно передаёт ребёнку неассимилированные послания своего бессознательного.", toc:["Введение","Теория соблазнения","Загадочное послание","Прото-нарциссизм","Сексуальность","Библиография"] },
+      { id:24, cover:"nicoli", author:"Мари-Луиза фон Франц",        title:"Проблема зла в сказке",                 year:2019, topic:"theory",          topicLabel:"Теория",       rating:4.2, reviews:5,  version:"v1", discussions:7,  readers:3,  shelf:null,      lastRead:false, annotation:"Юнгианский анализ образов зла и тени в европейских народных сказках. Архетипический подход к деструктивным силам психики.", toc:["Предисловие","Тень в сказке","Злая ведьма","Дьявол и трикстер","Клиническое применение","Заключение"] },
+      { id:25, cover:"bion",   author:"Дональд Мелтцер",             title:"Психоаналитический процесс",            year:2022, topic:"psychoanalysis", topicLabel:"Психоанализ", rating:4.6, reviews:8,  version:"v1", discussions:16, readers:6,  shelf:null,      lastRead:false, annotation:"Мелтцер описывает психоаналитический процесс как разворачивание интрапсихических структур во времени клинической работы, опираясь на кляйнианскую традицию.", toc:["Предисловие","Сбор", "Прохождение","Терминация","Послесловие"] }
+    ];
+
+    /* ============================================================
+       STATE
+       ============================================================ */
+    var state = { topic: "", query: "", sort: "date", view: "grid", previewId: null };
+
+    /* Track shelf changes reactively */
+    var shelfState = {};
+    BOOKS.forEach(function (b) { shelfState[b.id] = b.shelf; });
+
+    /* ============================================================
+       HELPERS
+       ============================================================ */
+    function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+    function topicClass(t) { return t === "therapy" ? "topic-chip--therapy" : t === "theory" ? "topic-chip--theory" : "topic-chip--analysis"; }
+
+    function renderStars(rating) {
+      var html = '<span class="star-row" aria-label="Рейтинг ' + rating + ' из 5">';
+      for (var i = 1; i <= 5; i++) {
+        html += '<span class="star-g ' + (rating >= i - 0.25 ? "f" : "e") + '">★</span>';
+      }
+      html += '</span>';
+      return html;
+    }
+
+    function getShelfLabel(id) {
+      var s = shelfState[id];
+      return s ? SHELF_LABELS[s] : null;
+    }
+
+    function shelfMenuHTML(bookId) {
+      var current = shelfState[bookId];
+      var html = '';
+      SHELF_OPTS.forEach(function (opt) {
+        var isCur = current === opt.value;
+        html += '<button class="shelf-opt' + (isCur ? ' is-current' : '') + '" data-shelf-val="' + opt.value + '" data-shelf-book="' + bookId + '">' + opt.icon + ' ' + esc(opt.label) + '</button>';
+      });
+      return html;
+    }
+
+    /* ============================================================
+       RENDER
+       ============================================================ */
+    function filteredSorted() {
+      return BOOKS
+        .filter(function (b) {
+          var topicOk = !state.topic || b.topic === state.topic;
+          var queryOk = !state.query || b.title.toLowerCase().indexOf(state.query) !== -1 || b.author.toLowerCase().indexOf(state.query) !== -1;
+          return topicOk && queryOk;
+        })
+        .sort(function (a, b) {
+          if (state.sort === "rating")   return b.rating - a.rating;
+          if (state.sort === "activity") return b.discussions - a.discussions;
+          return b.year - a.year;
+        });
+    }
+
+    function makeTile(b) {
+      var shelf  = shelfState[b.id];
+      var isRead = b.lastRead && shelf === "reading";
+      var prog   = PROGRESS[b.cover] || 0;
+
+      var div = document.createElement("div");
+      div.className = "book-tile" + (isRead ? " is-reading" : "");
+      div.dataset.bookId = b.id;
+      div.setAttribute("tabindex", "0");
+      div.setAttribute("role", "article");
+      div.setAttribute("aria-label", b.title);
+
+      var progressBar = isRead ? '<div class="tile-progress-bar"><div class="tile-progress-fill" style="width:' + prog + '%"></div></div>' : "";
+      var shelfBadge  = shelf ? '<span class="tile-shelf-badge">' + esc(SHELF_LABELS[shelf]) + '</span>' : "";
+      var readLabel   = isRead ? "Продолжить" : "Читать";
+      var readClass   = isRead ? "btn-read continue" : "btn-read";
+      var shelfLabel  = shelf ? esc(SHELF_LABELS[shelf]) : "На полку";
+
+      div.innerHTML =
+        '<div class="tile-cover-wrap">' +
+          '<img class="tile-cover" src="' + esc(COVERS[b.cover]) + '" alt="" loading="lazy" />' +
+          '<div class="tile-shelf-overlay">' + shelfBadge + '</div>' +
+          progressBar +
+        '</div>' +
+        '<div class="tile-body">' +
+          '<div class="tile-chips">' +
+            '<span class="topic-chip ' + topicClass(b.topic) + '">' + esc(b.topicLabel) + '</span>' +
+            '<span class="discuss-count" title="Обсуждений"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> ' + b.discussions + '</span>' +
+          '</div>' +
+          '<p class="tile-title">' + esc(b.title) + '</p>' +
+          '<p class="tile-author">' + esc(b.author) + '</p>' +
+          '<div class="tile-stars">' +
+            renderStars(b.rating) +
+            '<span class="star-num">' + b.rating + '</span>' +
+            '<span class="star-count">(' + b.reviews + ')</span>' +
+            '<span class="version-chip">' + esc(b.version) + '</span>' +
+          '</div>' +
+          '<div class="tile-actions">' +
+            '<button class="' + readClass + '" data-read="' + b.id + '">' + readLabel + ' <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>' +
+            '<div class="shelf-wrap">' +
+              '<button class="btn-shelf' + (shelf ? ' has-status' : '') + '" data-shelf-btn="' + b.id + '" aria-haspopup="true" aria-expanded="false">' + shelfLabel + ' ▾</button>' +
+              '<div class="shelf-menu" data-shelf-menu="' + b.id + '">' + shelfMenuHTML(b.id) + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      return div;
+    }
+
+    function makeRow(b) {
+      var shelf  = shelfState[b.id];
+      var isRead = b.lastRead && shelf === "reading";
+      var prog   = PROGRESS[b.cover] || 0;
+      var readLabel = isRead ? "Продолжить" : "Читать";
+      var readClass = isRead ? "btn-read continue" : "btn-read";
+      var shelfLabel = shelf ? esc(SHELF_LABELS[shelf]) : "На полку";
+
+      var div = document.createElement("div");
+      div.className = "book-row" + (isRead ? " is-reading" : "");
+      div.dataset.bookId = b.id;
+      div.setAttribute("tabindex", "0");
+      div.setAttribute("role", "article");
+
+      div.innerHTML =
+        '<img class="row-cover" src="' + esc(COVERS[b.cover]) + '" alt="" loading="lazy" />' +
+        '<div class="row-main">' +
+          '<div class="row-chips">' +
+            '<span class="topic-chip ' + topicClass(b.topic) + '">' + esc(b.topicLabel) + '</span>' +
+            (shelf ? '<span class="tile-shelf-badge" style="position:static;font-size:11px;background:var(--surface-sunk);color:var(--accent);backdrop-filter:none;">' + esc(SHELF_LABELS[shelf]) + '</span>' : '') +
+            (isRead ? '<span style="font-size:var(--fs-caption);color:var(--ink-faint);">стр. ' + Math.round(prog/100*112) + ' из 112</span>' : '') +
+          '</div>' +
+          '<p class="row-title">' + esc(b.title) + '</p>' +
+          '<p class="row-author">' + esc(b.author) + ' · ' + b.year + '</p>' +
+          '<p class="row-annotation">' + esc(b.annotation) + '</p>' +
+          '<div class="row-stars">' +
+            renderStars(b.rating) +
+            '<span class="star-num">' + b.rating + '</span>' +
+            '<span class="star-count">(' + b.reviews + ' оценок)</span>' +
+            '<span class="version-chip">' + esc(b.version) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="row-community">' +
+          '<div class="readers-row">' +
+            '<div class="reader-avs"><span class="reader-av ra-1">МС</span><span class="reader-av ra-2">АП</span><span class="reader-av ra-3">ВН</span></div>' +
+            '<span class="readers-label">' + b.readers + ' читают</span>' +
+          '</div>' +
+          '<button class="discuss-link" data-stub><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> ' + b.discussions + ' обсуждений</button>' +
+        '</div>' +
+        '<div class="row-actions">' +
+          '<button class="btn-read ' + readClass.split(' ').slice(1).join(' ') + '" data-read="' + b.id + '" style="width:100%">' + readLabel + '</button>' +
+          '<div class="shelf-wrap">' +
+            '<button class="btn-shelf' + (shelf ? ' has-status' : '') + '" data-shelf-btn="' + b.id + '" style="width:100%;justify-content:center;">' + shelfLabel + ' ▾</button>' +
+            '<div class="shelf-menu" data-shelf-menu="' + b.id + '" style="bottom:auto;top:calc(100% + 4px);">' + shelfMenuHTML(b.id) + '</div>' +
+          '</div>' +
+        '</div>';
+      return div;
+    }
+
+    function render() {
+      var list = filteredSorted();
+      var grid = document.getElementById("catalog-grid");
+      var lst  = document.getElementById("catalog-list");
+      var empty = document.getElementById("catalog-empty");
+      var countLabel = document.getElementById("count-label");
+      var heroTotal  = document.getElementById("hero-total");
+      grid.innerHTML = "";
+      lst.innerHTML  = "";
+      if (!list.length) {
+        empty.classList.remove("is-hidden");
+        countLabel.textContent = "0 изданий";
+        return;
+      }
+      empty.classList.add("is-hidden");
+      var n = list.length;
+      countLabel.textContent = n + " " + (n === 1 ? "издание" : n < 5 ? "издания" : "изданий");
+      list.forEach(function (b) {
+        grid.appendChild(makeTile(b));
+        lst.appendChild(makeRow(b));
+      });
+      attachTileEvents();
+      if (state.previewId) renderPreview(state.previewId);
+    }
+
+    /* ============================================================
+       QUICK PREVIEW
+       ============================================================ */
+    var qpPanel    = document.getElementById("qp-panel");
+    var qpBackdrop = document.getElementById("qp-backdrop");
+    var qpScroll   = document.getElementById("qp-scroll");
+    var qpActions  = document.getElementById("qp-actions");
+
+    function openPreview(id) {
+      state.previewId = id;
+      renderPreview(id);
+      qpPanel.classList.add("is-open");
+      qpPanel.removeAttribute("aria-hidden");
+      qpBackdrop.classList.add("is-active");
+    }
+
+    function closePreview() {
+      state.previewId = null;
+      qpPanel.classList.remove("is-open");
+      qpPanel.setAttribute("aria-hidden", "true");
+      qpBackdrop.classList.remove("is-active");
+    }
+
+    function renderPreview(id) {
+      var b = BOOKS.filter(function (x) { return x.id === id; })[0];
+      if (!b) return;
+      var shelf     = shelfState[b.id];
+      var isRead    = b.lastRead && shelf === "reading";
+      var prog      = PROGRESS[b.cover] || 0;
+      var readLabel = isRead ? "Продолжить чтение (стр. " + Math.round(prog/100*112) + ")" : "Читать книгу";
+      var readClass = isRead ? "qp-btn-read continue" : "qp-btn-read";
+      var shelfLabel = shelf ? esc(SHELF_LABELS[shelf]) : "На полку";
+
+      var tocHTML = b.toc.map(function (entry, i) {
+        return '<li class="qp-toc-item"><span class="qp-toc-num">' + (i + 1) + '</span>' + esc(entry) + '</li>';
+      }).join('');
+
+      qpScroll.innerHTML =
+        '<div class="qp-cover-row">' +
+          '<img class="qp-cover" src="' + esc(COVERS[b.cover]) + '" alt="" />' +
+          '<div class="qp-meta">' +
+            '<span class="qp-version">' + esc(b.version) + ' · ' + b.year + '</span>' +
+            '<p class="qp-title">' + esc(b.title) + '</p>' +
+            '<p class="qp-author">' + esc(b.author) + '</p>' +
+            '<div class="qp-stars">' +
+              renderStars(b.rating) +
+              '<span class="star-num">' + b.rating + '</span>' +
+              '<span class="star-count">(' + b.reviews + ' оценок · ' + b.reviews + ' рецензий)</span>' +
+            '</div>' +
+            '<div style="margin-top:var(--space-2)"><span class="topic-chip ' + topicClass(b.topic) + '">' + esc(b.topicLabel) + '</span></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="qp-section">' +
+          '<p class="qp-section-label">Аннотация</p>' +
+          '<p class="qp-annotation">' + esc(b.annotation) + '</p>' +
+        '</div>' +
+        '<div class="qp-section">' +
+          '<p class="qp-section-label">Оглавление</p>' +
+          '<ol class="qp-toc-list">' + tocHTML + '</ol>' +
+        '</div>' +
+        '<div class="qp-section">' +
+          '<p class="qp-section-label">Сообщество</p>' +
+          '<div class="qp-community-row">' +
+            '<div class="qp-reading-now">' +
+              '<div class="reader-avs"><span class="reader-av ra-1">МС</span><span class="reader-av ra-2">АП</span><span class="reader-av ra-3">ВН</span></div>' +
+              '<span class="qp-reading-label">' + b.readers + ' читают сейчас</span>' +
+            '</div>' +
+            '<button class="qp-discuss-btn" data-stub><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> ' + b.discussions + ' обсуждений</button>' +
+          '</div>' +
+          '<div class="qp-latest-comment">' +
+            '<p class="qp-comment-author">Мария С. · 2 часа назад</p>' +
+            '<p class="qp-comment-text">«Здесь Бион очень точен — концепция контейнирования раскрывается через конкретные клинические ситуации, что делает её куда более живой, чем в более ранних текстах...»</p>' +
+          '</div>' +
+        '</div>';
+
+      qpActions.innerHTML =
+        '<button class="' + readClass + '" data-read="' + b.id + '">' + readLabel + ' <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>' +
+        '<div class="qp-btn-row">' +
+          '<div class="shelf-wrap" style="flex:1">' +
+            '<button class="qp-btn-sec' + (shelf ? ' has-status' : '') + '" data-shelf-btn="' + b.id + '" style="width:100%">' + shelfLabel + ' ▾</button>' +
+            '<div class="shelf-menu" data-shelf-menu="' + b.id + '" style="bottom:auto;top:calc(100%+4px);">' + shelfMenuHTML(b.id) + '</div>' +
+          '</div>' +
+          '<button class="qp-btn-sec" data-stub style="flex:1">Следить</button>' +
+        '</div>' +
+        '<a href="book.html" style="display:block;text-align:center;padding:8px 0 0;font-size:13px;color:var(--accent);text-decoration:none;">Полная карточка книги →</a>';
+
+      attachQpEvents();
+    }
+
+    /* ============================================================
+       EVENT ATTACHMENT
+       ============================================================ */
+    function attachTileEvents() {
+      /* Open preview on tile click (but not action buttons) */
+      var tiles = document.querySelectorAll(".book-tile, .book-row");
+      Array.prototype.forEach.call(tiles, function (tile) {
+        tile.onclick = function (e) {
+          if (e.target.closest(".tile-actions, .row-actions")) return;
+          openPreview(parseInt(tile.dataset.bookId));
+        };
+        tile.onkeydown = function (e) {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPreview(parseInt(tile.dataset.bookId)); }
+        };
+      });
+
+      /* Shelf dropdowns on tiles */
+      attachShelfBtns(document);
+      /* Read buttons → reader */
+      var readBtns = document.querySelectorAll("[data-read]");
+      Array.prototype.forEach.call(readBtns, function (btn) {
+        btn.onclick = function (e) { e.stopPropagation(); window.location.href = 'reader.html'; };
+      });
+    }
+
+    function attachQpEvents() {
+      attachShelfBtns(qpPanel);
+      var readBtns = qpPanel.querySelectorAll("[data-read]");
+      Array.prototype.forEach.call(readBtns, function (btn) { btn.onclick = function (e) { e.stopPropagation(); window.location.href = 'reader.html'; }; });
+      var stubs = qpPanel.querySelectorAll("[data-stub]");
+      Array.prototype.forEach.call(stubs, function (el) { el.onclick = function (e) { e.preventDefault(); e.stopPropagation(); }; });
+    }
+
+    function attachShelfBtns(root) {
+      /* Toggle shelf dropdown */
+      var btns = root.querySelectorAll("[data-shelf-btn]");
+      Array.prototype.forEach.call(btns, function (btn) {
+        btn.onclick = function (e) {
+          e.stopPropagation();
+          var bookId = btn.dataset.shelfBtn;
+          var menu   = root.querySelector('[data-shelf-menu="' + bookId + '"]');
+          if (!menu) return;
+          var isOpen = menu.classList.contains("is-open");
+          closeAllMenus();
+          if (!isOpen) { menu.classList.add("is-open"); btn.setAttribute("aria-expanded", "true"); }
+        };
+      });
+
+      /* Shelf option selection */
+      var opts = root.querySelectorAll(".shelf-opt");
+      Array.prototype.forEach.call(opts, function (opt) {
+        opt.onclick = function (e) {
+          e.stopPropagation();
+          var id  = parseInt(opt.dataset.shelfBook);
+          var val = opt.dataset.shelfVal;
+          shelfState[id] = val;
+          closeAllMenus();
+          render();
+          if (state.previewId === id) renderPreview(id);
+        };
+      });
+    }
+
+    function closeAllMenus() {
+      document.querySelectorAll(".shelf-menu.is-open").forEach(function (m) { m.classList.remove("is-open"); });
+      document.querySelectorAll("[data-shelf-btn][aria-expanded='true']").forEach(function (b) { b.setAttribute("aria-expanded", "false"); });
+    }
+
+    /* ============================================================
+       TOOLBAR EVENTS
+       ============================================================ */
+    document.getElementById("search").addEventListener("input", function (e) {
+      state.query = e.target.value.trim().toLowerCase();
+      render();
+    });
+
+    document.querySelectorAll(".filter-chip").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        document.querySelectorAll(".filter-chip").forEach(function (c) { c.classList.remove("is-active"); });
+        chip.classList.add("is-active");
+        state.topic = chip.dataset.topic;
+        render();
+      });
+    });
+
+    document.getElementById("sort-sel").addEventListener("change", function (e) {
+      state.sort = e.target.value;
+      render();
+    });
+
+    document.getElementById("btn-grid").addEventListener("click", function () {
+      state.view = "grid";
+      document.getElementById("catalog-grid").classList.remove("is-hidden");
+      document.getElementById("catalog-list").classList.add("is-hidden");
+      document.getElementById("btn-grid").classList.add("is-active");
+      document.getElementById("btn-list").classList.remove("is-active");
+    });
+    document.getElementById("btn-list").addEventListener("click", function () {
+      state.view = "list";
+      document.getElementById("catalog-list").classList.remove("is-hidden");
+      document.getElementById("catalog-grid").classList.add("is-hidden");
+      document.getElementById("btn-list").classList.add("is-active");
+      document.getElementById("btn-grid").classList.remove("is-active");
+    });
+
+    /* ============================================================
+       QUICK PREVIEW CLOSE
+       ============================================================ */
+    document.getElementById("qp-close").addEventListener("click", closePreview);
+    qpBackdrop.addEventListener("click", closePreview);
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && state.previewId) closePreview(); });
+
+    /* Close shelf menus on outside click */
+    document.addEventListener("click", function () { closeAllMenus(); });
+
+    /* Editorial strip book clicks */
+    document.querySelectorAll(".ed-book").forEach(function (el) {
+      el.addEventListener("click", function () { openPreview(parseInt(el.dataset.bookId)); });
+    });
+
+    /* ============================================================
+       NAV INDICATOR
+       ============================================================ */
+    (function () {
+      var nav   = document.querySelector(".primary-nav");
+      if (!nav) return;
+      var links = Array.prototype.slice.call(nav.querySelectorAll(".nav-link"));
+      var strip = nav.querySelector(".nav-strip");
+      var dot   = nav.querySelector(".nav-dot");
+      var DOT_RADIUS = 3.5;
+
+      function isHome(link) { return link.classList.contains("nav-link-home"); }
+
+      function moveTo(link) {
+        strip.style.left  = link.offsetLeft + "px";
+        strip.style.width = link.offsetWidth + "px";
+        dot.style.left    = link.offsetLeft + link.offsetWidth / 2 + "px";
+        dot.style.bottom  = isHome(link) ? (nav.clientHeight - (link.offsetTop + link.offsetHeight) - DOT_RADIUS) + "px" : "4px";
+      }
+
+      function activeLink() { return nav.querySelector('.nav-link[aria-current="page"]') || links[0]; }
+      function syncVis() { strip.style.opacity = isHome(activeLink()) ? "0" : "1"; dot.style.opacity = "1"; }
+
+      function place(link, instant) {
+        if (instant) { strip.style.transition = "none"; dot.style.transition = "none"; }
+        moveTo(link); syncVis();
+        if (instant) { void dot.offsetWidth; strip.style.transition = ""; dot.style.transition = ""; }
+      }
+
+      document.fonts.ready.then(function () { place(activeLink(), true); });
+
+      links.forEach(function (link) {
+        link.addEventListener("click", function (e) {
+          var href   = link.getAttribute("href") || "";
+          var isStub = link.hasAttribute("data-stub");
+          if (isStub || href === "#" || href.charAt(0) === "#") e.preventDefault();
+          links.forEach(function (l) { l.removeAttribute("aria-current"); });
+          link.setAttribute("aria-current", "page");
+          place(link, false);
+        });
+      });
+
+      window.addEventListener("resize", function () { place(activeLink(), true); });
+    })();
+
+    /* ============================================================
+       STUBS
+       ============================================================ */
+    document.querySelectorAll("[data-stub]").forEach(function (el) {
+      if (document.querySelector(".primary-nav") && document.querySelector(".primary-nav").contains(el)) return;
+      el.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); });
+    });
+
+    /* ============================================================
+       INIT
+       ============================================================ */
+    render();
+  })();
+  </script>
+  <script src="assets/overlays.js"></script>
+</body>
+</html>

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="sepia-contrast">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Кабинет — beta→alpha</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/tokens.css" />
+  <style>
+    body { min-height:100vh; display:flex; flex-direction:column; }
+    body::before { content:""; position:fixed; inset:0; background-image:url("assets/backgrounds/monogram-cream.png"); background-repeat:repeat; background-size:320px; opacity:var(--grain-opacity); pointer-events:none; z-index:0; }
+    .container { width:100%; max-width:var(--container-max); margin-inline:auto; padding-inline:var(--gutter); }
+    .skip-link { position:absolute; left:var(--space-4); top:calc(var(--space-2)*-8); z-index:var(--z-toast); background:var(--surface); color:var(--ink); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); padding:var(--space-2) var(--space-4); font-size:var(--fs-small); transition:top var(--dur-base); }
+    .skip-link:focus { top:var(--space-2); }
+
+    /* Header */
+    .site-header { position:sticky; top:0; z-index:var(--z-sticky); background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:saturate(140%) blur(8px); border-bottom:var(--hairline) solid var(--line); }
+    .header-inner { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:var(--space-4); height:var(--header-height); }
+    .wordmark { justify-self:start; display:inline-flex; align-items:center; }
+    .wordmark-img { height:32px; width:auto; display:block; }
+    .text-mark { font-family:var(--font-serif); font-size:var(--fs-h1); font-weight:var(--fw-semibold); color:var(--ink); letter-spacing:var(--tracking-display); line-height:1; display:inline-flex; align-items:baseline; gap:.04em; }
+    .text-mark .arrow { color:var(--accent); }
+    .primary-nav { justify-self:center; position:relative; display:flex; align-items:center; gap:var(--space-6); padding-bottom:10px; }
+    .nav-link { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); letter-spacing:var(--tracking-label); color:var(--ink-soft); line-height:1; padding-block:var(--space-1); transition:color var(--dur-fast); }
+    .nav-link:hover,.nav-link[aria-current="page"] { color:var(--accent); }
+    .nav-link-home { font-family:var(--font-serif); font-size:var(--fs-body); font-weight:var(--fw-semibold); letter-spacing:var(--tracking-display); background:#1F1B18; color:#ECE3D6; padding:var(--space-1) var(--space-3) calc(var(--space-1)+3px); border-radius:var(--radius-md); }
+    .nav-link-home .arrow { color:#D2674A; }
+    .nav-strip,.nav-dot { position:absolute; pointer-events:none; }
+    .nav-strip { background:var(--accent); bottom:7px; height:var(--hairline); border-radius:var(--radius-pill); transition:left 280ms var(--ease-out-quart),width 280ms var(--ease-out-quart),opacity 160ms; }
+    .nav-dot { background:var(--amber); bottom:4px; width:7px; height:7px; border-radius:var(--radius-pill); transform:translateX(-50%); transition:left 360ms cubic-bezier(.34,1.56,.64,1); }
+    .header-actions { justify-self:end; display:flex; align-items:center; gap:var(--space-3); }
+    .icon-btn { position:relative; display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; background:transparent; color:var(--ink-soft); border:var(--hairline) solid transparent; border-radius:var(--radius-md); cursor:pointer; transition:color var(--dur-fast),border-color var(--dur-fast); }
+    .icon-btn:hover { color:var(--ink); border-color:var(--line); }
+    .notif-count { position:absolute; top:4px; right:4px; min-width:16px; height:16px; padding-inline:4px; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:var(--fw-semibold); color:var(--on-accent); background:var(--accent); border-radius:var(--radius-pill); }
+    .avatar-rep { display:inline-flex; align-items:center; gap:var(--space-2); padding:3px 8px 3px 3px; border:var(--hairline) solid var(--line); border-radius:var(--radius-pill); background:var(--surface); cursor:pointer; transition:border-color var(--dur-fast); }
+    .avatar-rep:hover { border-color:var(--accent); }
+    .avatar-rep__face { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:var(--radius-pill); background:var(--accent); color:var(--on-accent); font-size:var(--fs-caption); font-weight:var(--fw-semibold); }
+    .avatar-rep__score { display:inline-flex; align-items:center; gap:3px; }
+    .avatar-rep__num { font-size:var(--fs-caption); font-weight:var(--fw-semibold); color:var(--ink); font-variant-numeric:tabular-nums; }
+
+    /* Footer */
+    .site-footer { position:relative; z-index:1; border-top:var(--hairline) solid var(--line); margin-top:auto; }
+    .footer-inner { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:var(--space-4); padding-block:var(--space-8); }
+    .footer-brand { display:flex; align-items:baseline; gap:var(--space-4); }
+    .footer-brand .text-mark { font-size:var(--fs-h2); }
+    .footer-tagline,.build-tag { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); }
+    .footer-links { display:inline-flex; align-items:baseline; gap:var(--space-4); }
+    .footer-link { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); text-decoration:none; transition:color var(--dur-fast); }
+    .footer-link:hover { color:var(--accent); }
+
+    /* ================================================================
+       CABINET
+       ================================================================ */
+    .cabinet-main { flex:1; position:relative; z-index:1; }
+    .cabinet-hero { padding-block:var(--space-8); border-bottom:var(--hairline) solid var(--line); }
+    .cabinet-hero-inner { display:flex; align-items:center; gap:var(--space-6); }
+    .cab-avatar { width:72px; height:72px; border-radius:var(--radius-pill); display:flex; align-items:center; justify-content:center; font-family:var(--font-serif); font-size:24px; font-weight:var(--fw-semibold); color:#ECE3D6; flex-shrink:0; }
+    .cab-info { flex:1; }
+    .cab-name { font-family:var(--font-serif); font-size:var(--fs-h2); font-weight:var(--fw-semibold); color:var(--ink); margin:0 0 4px; }
+    .cab-role { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-faint); }
+    .cab-rep-pill { display:inline-flex; align-items:center; gap:5px; padding:3px 12px; border-radius:var(--radius-pill); font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); border:var(--hairline) solid var(--amber); color:var(--amber); background:color-mix(in srgb,var(--amber) 8%,var(--surface)); margin-top:var(--space-2); }
+
+    /* Two-column layout */
+    .cabinet-layout { display:grid; grid-template-columns:240px 1fr; gap:0; align-items:start; padding-block:var(--space-8) var(--space-16); }
+    .cabinet-nav { border-right:var(--hairline) solid var(--line); padding-right:var(--space-6); position:sticky; top:calc(var(--header-height) + var(--space-6)); }
+    .cab-nav-section { margin-bottom:var(--space-5); }
+    .cab-nav-label { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); letter-spacing:var(--tracking-caption); text-transform:uppercase; color:var(--ink-faint); padding:0 var(--space-3) var(--space-2); }
+    .cab-nav-item { display:flex; align-items:center; gap:var(--space-3); padding:var(--space-2) var(--space-3); border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-soft); cursor:pointer; transition:all var(--dur-fast); text-decoration:none; }
+    .cab-nav-item:hover { background:var(--surface-sunk); color:var(--ink); }
+    .cab-nav-item.is-active { background:color-mix(in srgb,var(--accent) 8%,transparent); color:var(--accent); font-weight:var(--fw-medium); }
+    .cab-nav-icon { flex-shrink:0; opacity:.7; }
+    .cab-nav-item.is-active .cab-nav-icon { opacity:1; }
+
+    /* Section panels */
+    .cabinet-content { padding-left:var(--space-8); min-width:0; }
+    .cab-section { display:none; }
+    .cab-section.is-active { display:block; }
+    .sec-title { font-family:var(--font-serif); font-size:var(--fs-h2); font-weight:var(--fw-semibold); color:var(--ink); margin:0 0 var(--space-6); }
+    .sec-title-sm { font-family:var(--font-serif); font-size:var(--fs-h3); font-weight:var(--fw-semibold); color:var(--ink); margin:0 0 var(--space-4); }
+
+    /* Form rows */
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-5); margin-bottom:var(--space-6); }
+    .form-field { display:flex; flex-direction:column; gap:var(--space-2); }
+    .form-field.full-width { grid-column:1/-1; }
+    .form-label { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); color:var(--ink); }
+    .form-input { padding:var(--space-3) var(--space-4); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink); outline:none; transition:border-color var(--dur-fast); }
+    .form-input:focus { border-color:var(--accent); }
+    .form-input::placeholder { color:var(--ink-faint); }
+    .form-textarea { min-height:80px; resize:vertical; }
+    .form-hint { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+    .form-row { display:flex; align-items:center; justify-content:space-between; gap:var(--space-4); margin-bottom:var(--space-6); flex-wrap:wrap; }
+    .btn-save { padding:var(--space-3) var(--space-6); background:var(--accent); color:var(--on-accent); border:none; border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-semibold); cursor:pointer; transition:background var(--dur-fast); }
+    .btn-save:hover { background:var(--accent-hover); }
+    .btn-secondary { padding:var(--space-2) var(--space-4); background:transparent; color:var(--ink-soft); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); cursor:pointer; transition:all var(--dur-fast); }
+    .btn-secondary:hover { border-color:var(--accent); color:var(--accent); }
+    .saved-badge { display:inline-flex; align-items:center; gap:4px; padding:4px 10px; background:color-mix(in srgb,var(--sage) 12%,var(--surface)); border:var(--hairline) solid var(--sage); border-radius:var(--radius-pill); font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--sage); font-weight:var(--fw-medium); opacity:0; transition:opacity var(--dur-base); }
+    .saved-badge.is-visible { opacity:1; }
+
+    /* Info card */
+    .info-card { padding:var(--space-5); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); margin-bottom:var(--space-6); }
+    .info-row { display:flex; align-items:baseline; justify-content:space-between; padding-block:var(--space-3); border-bottom:var(--hairline) solid var(--line); gap:var(--space-4); }
+    .info-row:last-child { border-bottom:none; }
+    .info-label { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-faint); }
+    .info-val { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink); font-weight:var(--fw-medium); }
+    .info-val a { color:var(--accent); }
+
+    /* Stat grid */
+    .stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--space-4); margin-bottom:var(--space-6); }
+    .stat-card { padding:var(--space-5); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); text-align:center; }
+    .stat-val { font-family:var(--font-serif); font-size:var(--fs-h1); font-weight:var(--fw-semibold); color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; margin-bottom:4px; }
+    .stat-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+
+    /* Reputation tiers table */
+    .tiers-table { width:100%; border-collapse:collapse; margin-bottom:var(--space-6); }
+    .tiers-table th { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); color:var(--ink-faint); text-transform:uppercase; letter-spacing:var(--tracking-caption); text-align:left; padding:var(--space-2) var(--space-4) var(--space-2) 0; border-bottom:var(--hairline) solid var(--line); }
+    .tiers-table td { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink); padding:var(--space-3) var(--space-4) var(--space-3) 0; border-bottom:var(--hairline) solid var(--line); }
+    .tiers-table tr:last-child td { border-bottom:none; }
+    .tiers-table tr.is-current td { background:color-mix(in srgb,var(--accent) 5%,transparent); }
+    .tiers-table tr.is-current td:first-child { border-left:3px solid var(--accent); padding-left:calc(var(--space-4) - 3px); }
+    .tier-pill { display:inline-flex; padding:1px 8px; border-radius:var(--radius-pill); font-size:var(--fs-caption); font-weight:var(--fw-medium); border:var(--hairline) solid; }
+    .tier-pill--maitre { color:var(--accent); border-color:var(--accent); }
+    .tier-pill--expert { color:var(--slate); border-color:var(--slate); }
+    .tier-pill--practik { color:var(--amber); border-color:var(--amber); }
+    .tier-pill--novice { color:var(--ink-faint); border-color:var(--line); }
+
+    /* Toggle switch */
+    .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:var(--space-3) 0; border-bottom:var(--hairline) solid var(--line); }
+    .toggle-row:last-child { border-bottom:none; }
+    .toggle-info { flex:1; }
+    .toggle-title { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); color:var(--ink); }
+    .toggle-desc { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); margin-top:2px; }
+    .toggle { position:relative; width:44px; height:24px; flex-shrink:0; }
+    .toggle input { opacity:0; width:0; height:0; position:absolute; }
+    .toggle-slider { position:absolute; inset:0; background:var(--line); border-radius:var(--radius-pill); cursor:pointer; transition:background var(--dur-fast); }
+    .toggle-slider::before { content:""; position:absolute; height:18px; width:18px; left:3px; bottom:3px; background:#fff; border-radius:var(--radius-pill); transition:transform var(--dur-fast); }
+    .toggle input:checked ~ .toggle-slider { background:var(--accent); }
+    .toggle input:checked ~ .toggle-slider::before { transform:translateX(20px); }
+
+    /* History list */
+    .history-list { display:flex; flex-direction:column; gap:var(--space-3); }
+    .history-item { display:flex; align-items:center; gap:var(--space-4); padding:var(--space-3); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); }
+    .history-cover { width:40px; height:54px; object-fit:cover; border-radius:var(--radius-sm); border:var(--hairline) solid var(--line); flex-shrink:0; }
+    .history-info { flex:1; min-width:0; }
+    .history-title { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); color:var(--ink); }
+    .history-meta { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); margin-top:2px; }
+    .history-progress { display:flex; align-items:center; gap:var(--space-3); flex-shrink:0; }
+    .h-prog-bar { width:60px; height:4px; background:var(--line); border-radius:var(--radius-pill); overflow:hidden; }
+    .h-prog-fill { height:100%; background:var(--accent); border-radius:var(--radius-pill); }
+    .h-prog-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); font-variant-numeric:tabular-nums; }
+
+    @media (max-width:900px) { .cabinet-layout { grid-template-columns:1fr; } .cabinet-nav { position:static; border-right:none; border-bottom:var(--hairline) solid var(--line); padding-right:0; padding-bottom:var(--space-6); display:flex; flex-wrap:wrap; gap:var(--space-1); } .cabinet-content { padding-left:0; padding-top:var(--space-6); } .cab-nav-label { display:none; } .cab-nav-section { display:flex; flex-wrap:wrap; gap:var(--space-1); margin-bottom:0; } .form-grid { grid-template-columns:1fr; } .stat-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:760px) { .primary-nav { display:none; } }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#content">К содержимому</a>
+
+  <header class="site-header">
+    <div class="header-inner container">
+      <a class="wordmark" href="pub-about.html" aria-label="beta→alpha">
+        <img class="wordmark-img" src="assets/decor/a2b-logo.png" alt="beta→alpha" />
+      </a>
+      <nav class="primary-nav" aria-label="Основная навигация">
+        <a class="nav-link" href="community.html">Сообщество</a>
+        <a class="nav-link nav-link-home" href="home.html" aria-label="Домашняя">β<span class="arrow">→</span>α</a>
+        <a class="nav-link" href="library.html">Библиотека</a>
+        <span class="nav-strip" aria-hidden="true"></span>
+        <span class="nav-dot" aria-hidden="true"></span>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn" type="button" aria-label="Поиск"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></button>
+        <button class="icon-btn" type="button" aria-label="Пульс"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></button>
+        <button class="icon-btn" type="button" aria-label="Уведомления"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="notif-count">3</span></button>
+        <button class="avatar-rep" type="button" aria-label="Аккаунт" style="border:var(--hairline) solid var(--accent);">
+          <span class="avatar-rep__face" style="background:var(--accent);" aria-hidden="true">АИ</span>
+          <span class="avatar-rep__score" aria-hidden="true"><svg viewBox="0 0 24 24" width="11" height="11" fill="var(--amber)" aria-hidden="true"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 18l-5.9 3.2 1.2-6.6L2.5 9l6.6-.9z"/></svg><span class="avatar-rep__num">142</span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="cabinet-main" id="content">
+    <!-- Cabinet hero -->
+    <div class="cabinet-hero">
+      <div class="container">
+        <div class="cabinet-hero-inner">
+          <div class="cab-avatar" style="background:var(--accent);" aria-hidden="true">АИ</div>
+          <div class="cab-info">
+            <h1 class="cab-name">Александра Иванова</h1>
+            <p class="cab-role">Практик · Участник платформы</p>
+            <div class="cab-rep-pill">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 18l-5.9 3.2 1.2-6.6L2.5 9l6.6-.9z"/></svg>
+              142 — Практик
+            </div>
+          </div>
+          <a class="btn-secondary" href="profile.html">Публичный профиль →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cabinet body -->
+    <div class="container">
+      <div class="cabinet-layout">
+
+        <!-- Left nav -->
+        <nav class="cabinet-nav" aria-label="Разделы кабинета">
+          <div class="cab-nav-section">
+            <p class="cab-nav-label">Личное</p>
+            <a class="cab-nav-item is-active" data-sec="profile" href="#">
+              <svg class="cab-nav-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              Профиль
+            </a>
+            <a class="cab-nav-item" data-sec="account" href="#">
+              <svg class="cab-nav-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Аккаунт
+            </a>
+          </div>
+          <div class="cab-nav-section">
+            <p class="cab-nav-label">Платформа</p>
+            <a class="cab-nav-item" data-sec="subscription" href="#">
+              <svg class="cab-nav-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              Подписка
+            </a>
+            <a class="cab-nav-item" data-sec="reputation" href="#">
+              <svg class="cab-nav-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 18l-5.9 3.2 1.2-6.6L2.5 9l6.6-.9z"/></svg>
+              Репутация
+            </a>
+            <a class="cab-nav-item" data-sec="stats" href="#">
+              <svg class="cab-nav-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              Статистика
+            </a>
+          </div>
+          <div class="cab-nav-section">
+            <p class="cab-nav-label">Библиотека</p>
+            <a class="cab-nav-item" data-sec="history" href="#">
+              <svg class="cab-nav-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              История чтения
+            </a>
+            <a class="cab-nav-item" href="shelf.html">
+              <svg class="cab-nav-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              Моя полка
+            </a>
+            <a class="cab-nav-item" data-sec="tracking" href="#">
+              <svg class="cab-nav-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              Отслеживание
+            </a>
+          </div>
+          <div class="cab-nav-section">
+            <p class="cab-nav-label">Настройки</p>
+            <a class="cab-nav-item" data-sec="settings" href="#">
+              <svg class="cab-nav-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Настройки
+            </a>
+          </div>
+        </nav>
+
+        <!-- Content panels -->
+        <div class="cabinet-content">
+
+          <!-- Profile -->
+          <div class="cab-section is-active" id="sec-profile">
+            <h2 class="sec-title">Профиль</h2>
+            <div class="form-grid">
+              <div class="form-field">
+                <label class="form-label" for="f-name">Имя</label>
+                <input class="form-input" id="f-name" type="text" value="Александра" />
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="f-surname">Фамилия</label>
+                <input class="form-input" id="f-surname" type="text" value="Иванова" />
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="f-city">Город</label>
+                <input class="form-input" id="f-city" type="text" value="Москва" />
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="f-role">Специализация</label>
+                <input class="form-input" id="f-role" type="text" value="Психотерапевт, психоаналитик" />
+              </div>
+              <div class="form-field full-width">
+                <label class="form-label" for="f-bio">Биография</label>
+                <textarea class="form-input form-textarea" id="f-bio" rows="3">Клинический психолог, психоаналитик. Практикую индивидуальный и групповой анализ. Интересы: теория объектных отношений, бионианский анализ.</textarea>
+                <span class="form-hint">Отображается на публичном профиле</span>
+              </div>
+            </div>
+            <div class="form-row">
+              <button class="btn-save" type="button" id="btn-save-profile">Сохранить</button>
+              <span class="saved-badge" id="saved-badge-profile">✓ Сохранено</span>
+            </div>
+          </div>
+
+          <!-- Account -->
+          <div class="cab-section" id="sec-account">
+            <h2 class="sec-title">Аккаунт</h2>
+            <div class="info-card" style="margin-bottom:var(--space-6);">
+              <div class="info-row"><span class="info-label">Email</span><span class="info-val">a.ivanova@example.com</span></div>
+              <div class="info-row"><span class="info-label">Тип аккаунта</span><span class="info-val">Участник платформы</span></div>
+              <div class="info-row"><span class="info-label">Зарегистрирован</span><span class="info-val">12 мая 2026</span></div>
+              <div class="info-row"><span class="info-label">Последний вход</span><span class="info-val">сегодня</span></div>
+            </div>
+            <h3 class="sec-title-sm">Смена пароля</h3>
+            <div class="form-grid">
+              <div class="form-field">
+                <label class="form-label" for="f-pw-old">Текущий пароль</label>
+                <input class="form-input" id="f-pw-old" type="password" placeholder="••••••••" />
+              </div>
+              <div class="form-field">
+                <label class="form-label" for="f-pw-new">Новый пароль</label>
+                <input class="form-input" id="f-pw-new" type="password" placeholder="••••••••" />
+              </div>
+            </div>
+            <div class="form-row">
+              <button class="btn-save" type="button">Сменить пароль</button>
+            </div>
+          </div>
+
+          <!-- Subscription -->
+          <div class="cab-section" id="sec-subscription">
+            <h2 class="sec-title">Подписка</h2>
+            <div class="info-card" style="margin-bottom:var(--space-5);">
+              <div class="info-row"><span class="info-label">Тарифный план</span><span class="info-val" style="color:var(--accent);font-weight:var(--fw-semibold);">Профессиональный</span></div>
+              <div class="info-row"><span class="info-label">Стоимость</span><span class="info-val">1 000 ₽ / месяц</span></div>
+              <div class="info-row"><span class="info-label">Следующий платёж</span><span class="info-val">1 июля 2026</span></div>
+              <div class="info-row"><span class="info-label">Статус</span><span class="info-val" style="color:var(--sage);">✓ Активна</span></div>
+            </div>
+            <p style="font-family:var(--font-sans);font-size:var(--fs-small);color:var(--ink-faint);margin-bottom:var(--space-5);">Управление оплатой будет доступно в Launching. Сейчас подписка назначается через debug-консоль.</p>
+            <button class="btn-secondary" type="button" data-stub>Управление подпиской</button>
+          </div>
+
+          <!-- Reputation -->
+          <div class="cab-section" id="sec-reputation">
+            <h2 class="sec-title">Репутация</h2>
+            <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);">
+              <div class="stat-card">
+                <div class="stat-val">142</div>
+                <div class="stat-label">Текущий счёт</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-val" style="color:var(--amber);">×2</div>
+                <div class="stat-label">Мой вес голоса</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-val" style="color:var(--slate);">208</div>
+                <div class="stat-label">До уровня Эксперт</div>
+              </div>
+            </div>
+            <h3 class="sec-title-sm">Уровни репутации</h3>
+            <table class="tiers-table">
+              <thead><tr><th>Уровень</th><th>Порог</th><th>Вес голоса</th></tr></thead>
+              <tbody>
+                <tr><td><span class="tier-pill tier-pill--novice">Новичок</span></td><td>0–49</td><td>×1</td></tr>
+                <tr class="is-current"><td><span class="tier-pill tier-pill--practik">Практик ← вы</span></td><td>50–149</td><td>×2</td></tr>
+                <tr><td><span class="tier-pill tier-pill--expert">Эксперт</span></td><td>150–349</td><td>×3</td></tr>
+                <tr><td><span class="tier-pill tier-pill--maitre">Мэтр</span></td><td>350+</td><td>×5</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Stats -->
+          <div class="cab-section" id="sec-stats">
+            <h2 class="sec-title">Статистика чтения</h2>
+            <div class="stat-grid">
+              <div class="stat-card"><div class="stat-val">34%</div><div class="stat-label">Завершено книг</div></div>
+              <div class="stat-card"><div class="stat-val">12</div><div class="stat-label">Сессий чтения</div></div>
+              <div class="stat-card"><div class="stat-val">3 ч</div><div class="stat-label">Всего прочитано</div></div>
+              <div class="stat-card"><div class="stat-val">38</div><div class="stat-label">Страниц за неделю</div></div>
+              <div class="stat-card"><div class="stat-val">3</div><div class="stat-label">Закладки</div></div>
+              <div class="stat-card"><div class="stat-val">5</div><div class="stat-label">Заметок</div></div>
+            </div>
+          </div>
+
+          <!-- History -->
+          <div class="cab-section" id="sec-history">
+            <h2 class="sec-title">История чтения</h2>
+            <div class="history-list">
+              <div class="history-item">
+                <img class="history-cover" src="assets/covers/bion-nauchenie-na-opyte-cover.png" alt="Научение на опыте" />
+                <div class="history-info">
+                  <p class="history-title"><a href="book.html" style="color:var(--accent);">Научение на опыте</a></p>
+                  <p class="history-meta">У.Р. Бион · с. 38 из 112 · последняя сессия: вчера</p>
+                </div>
+                <div class="history-progress">
+                  <div class="h-prog-bar"><div class="h-prog-fill" style="width:34%;"></div></div>
+                  <span class="h-prog-label">34%</span>
+                </div>
+              </div>
+              <div class="history-item">
+                <img class="history-cover" src="assets/covers/nikoli-goret-vmeste-cover.png" alt="Гореть вместе" />
+                <div class="history-info">
+                  <p class="history-title"><a href="book.html" style="color:var(--accent);">Гореть вместе</a></p>
+                  <p class="history-meta">ред. Л. Николи · с. 5 из 228 · начало: 14 июня 2026</p>
+                </div>
+                <div class="history-progress">
+                  <div class="h-prog-bar"><div class="h-prog-fill" style="width:2%;"></div></div>
+                  <span class="h-prog-label">2%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Settings -->
+          <div class="cab-section" id="sec-settings">
+            <h2 class="sec-title">Настройки</h2>
+            <h3 class="sec-title-sm">Уведомления</h3>
+            <div style="margin-bottom:var(--space-6);">
+              <div class="toggle-row">
+                <div class="toggle-info"><p class="toggle-title">Ответы на комментарии</p><p class="toggle-desc">Уведомление, когда кто-то ответил на ваш комментарий</p></div>
+                <label class="toggle"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-info"><p class="toggle-title">Новые версии книг</p><p class="toggle-desc">Уведомление о выходе новой версии книги с вашей полки</p></div>
+                <label class="toggle"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-info"><p class="toggle-title">Изменения репутации</p><p class="toggle-desc">Уведомление при переходе на новый уровень</p></div>
+                <label class="toggle"><input type="checkbox" /><span class="toggle-slider"></span></label>
+              </div>
+            </div>
+            <h3 class="sec-title-sm">Читалка</h3>
+            <div>
+              <div class="toggle-row">
+                <div class="toggle-info"><p class="toggle-title">Тема: Сепия</p><p class="toggle-desc">Тема читалки по умолчанию</p></div>
+                <label class="toggle"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+              </div>
+              <div class="toggle-row">
+                <div class="toggle-info"><p class="toggle-title">Автосохранение позиции</p><p class="toggle-desc">Запоминать позицию между сессиями</p></div>
+                <label class="toggle"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tracking -->
+          <div class="cab-section" id="sec-tracking">
+            <h2 class="sec-title">Отслеживание</h2>
+            <p style="font-family:var(--font-sans);font-size:var(--fs-small);color:var(--ink-soft);margin-bottom:var(--space-6);line-height:1.5;">Книги и авторы, за которыми вы следите. <strong>Слабая привязка</strong> — автоматически при взаимодействии с книгой; <strong>сильная</strong> — по явному нажатию «Следить».</p>
+
+            <h3 class="sec-title-sm">Книги</h3>
+            <div style="display:flex;flex-direction:column;gap:var(--space-3);margin-bottom:var(--space-8);">
+              <div style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-3) var(--space-4);background:var(--surface);border:var(--hairline) solid var(--line);border-radius:var(--radius-md);">
+                <img src="assets/covers/bion-nauchenie-na-opyte-cover.png" alt="" style="width:36px;height:50px;object-fit:cover;border-radius:2px;border:var(--hairline) solid var(--line);flex-shrink:0;" />
+                <div style="flex:1;min-width:0;">
+                  <p style="font-family:var(--font-serif);font-size:var(--fs-small);font-weight:600;color:var(--ink);">Научение на опыте. Итальянские семинары</p>
+                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);margin-top:2px;">Автоматически · читаю</p>
+                </div>
+                <span style="font-family:var(--font-sans);font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--accent);color:var(--accent);">Сильная</span>
+                <button style="background:none;border:none;font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);cursor:pointer;padding:var(--space-1) var(--space-2);border-radius:var(--radius-md);" data-stub>Убрать</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-3) var(--space-4);background:var(--surface);border:var(--hairline) solid var(--line);border-radius:var(--radius-md);">
+                <img src="assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png" alt="" style="width:36px;height:50px;object-fit:cover;border-radius:2px;border:var(--hairline) solid var(--line);flex-shrink:0;" />
+                <div style="flex:1;min-width:0;">
+                  <p style="font-family:var(--font-serif);font-size:var(--fs-small);font-weight:600;color:var(--ink);">Избегание эмоций, проживание эмоций</p>
+                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);margin-top:2px;">Автоматически · добавлена на полку</p>
+                </div>
+                <span style="font-family:var(--font-sans);font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--ink-faint);">Слабая</span>
+                <button style="background:none;border:none;font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);cursor:pointer;padding:var(--space-1) var(--space-2);border-radius:var(--radius-md);" data-stub>Убрать</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-3) var(--space-4);background:var(--surface);border:var(--hairline) solid var(--line);border-radius:var(--radius-md);">
+                <img src="assets/covers/nikoli-goret-vmeste-cover.png" alt="" style="width:36px;height:50px;object-fit:cover;border-radius:2px;border:var(--hairline) solid var(--line);flex-shrink:0;" />
+                <div style="flex:1;min-width:0;">
+                  <p style="font-family:var(--font-serif);font-size:var(--fs-small);font-weight:600;color:var(--ink);">Гореть вместе</p>
+                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);margin-top:2px;">Явное · прочитана</p>
+                </div>
+                <span style="font-family:var(--font-sans);font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--accent);color:var(--accent);">Сильная</span>
+                <button style="background:none;border:none;font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);cursor:pointer;padding:var(--space-1) var(--space-2);border-radius:var(--radius-md);" data-stub>Убрать</button>
+              </div>
+            </div>
+
+            <h3 class="sec-title-sm">Авторы и участники</h3>
+            <div style="display:flex;flex-direction:column;gap:var(--space-3);">
+              <div style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-3) var(--space-4);background:var(--surface);border:var(--hairline) solid var(--line);border-radius:var(--radius-md);">
+                <span style="width:36px;height:36px;border-radius:50%;background:#7A4A3A;display:flex;align-items:center;justify-content:center;font-family:var(--font-sans);font-size:12px;font-weight:700;color:#ECE3D6;flex-shrink:0;">ДО</span>
+                <div style="flex:1;min-width:0;">
+                  <p style="font-family:var(--font-sans);font-size:var(--fs-small);font-weight:600;color:var(--ink);">Дмитрий Орлов</p>
+                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);margin-top:2px;">Явное · Мэтр · 412 реп.</p>
+                </div>
+                <span style="font-family:var(--font-sans);font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--accent);color:var(--accent);">Сильная</span>
+                <a href="profile.html" style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--accent);text-decoration:none;padding:var(--space-1) var(--space-2);">Профиль</a>
+              </div>
+              <div style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-3) var(--space-4);background:var(--surface);border:var(--hairline) solid var(--line);border-radius:var(--radius-md);">
+                <span style="width:36px;height:36px;border-radius:50%;background:var(--slate,#5A6E7A);display:flex;align-items:center;justify-content:center;font-family:var(--font-sans);font-size:12px;font-weight:700;color:#ECE3D6;flex-shrink:0;">МС</span>
+                <div style="flex:1;min-width:0;">
+                  <p style="font-family:var(--font-sans);font-size:var(--fs-small);font-weight:600;color:var(--ink);">Мария Соколова</p>
+                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);margin-top:2px;">Явное · Эксперт · 287 реп.</p>
+                </div>
+                <span style="font-family:var(--font-sans);font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--accent);color:var(--accent);">Сильная</span>
+                <a href="profile.html" style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--accent);text-decoration:none;padding:var(--space-1) var(--space-2);">Профиль</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="text-mark" aria-hidden="true">β<span class="arrow">→</span>α</span>
+          <span class="footer-tagline">© 2026 beta→alpha</span>
+        </div>
+        <nav class="footer-links">
+          <a class="footer-link" href="pub-about.html">О проекте</a>
+          <a class="footer-link" href="#" id="footer-console-link">Консоль</a>
+          <span class="build-tag">v0.2.0-primer · cabinet</span>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    /* Nav indicator */
+    (function(){var nav=document.querySelector(".primary-nav");if(!nav)return;var links=Array.prototype.slice.call(nav.querySelectorAll(".nav-link"));var strip=nav.querySelector(".nav-strip");var dot=nav.querySelector(".nav-dot");function moveTo(l){strip.style.left=l.offsetLeft+"px";strip.style.width=l.offsetWidth+"px";dot.style.left=(l.offsetLeft+l.offsetWidth/2)+"px";}document.fonts.ready.then(function(){strip.style.opacity="0";dot.style.opacity="0";});links.forEach(function(l){l.addEventListener("click",function(e){if((l.getAttribute("href")||"").charAt(0)==="#")e.preventDefault();links.forEach(function(x){x.removeAttribute("aria-current");});l.setAttribute("aria-current","page");moveTo(l);strip.style.opacity="1";dot.style.opacity="1";});});window.addEventListener("resize",function(){var c=nav.querySelector('[aria-current="page"]');if(c)moveTo(c);});})();
+
+    /* Cabinet section nav */
+    var navItems = Array.prototype.slice.call(document.querySelectorAll(".cab-nav-item[data-sec]"));
+    navItems.forEach(function(item) {
+      item.addEventListener("click", function(e) {
+        e.preventDefault();
+        navItems.forEach(function(i){ i.classList.remove("is-active"); });
+        item.classList.add("is-active");
+        document.querySelectorAll(".cab-section").forEach(function(s){ s.classList.remove("is-active"); });
+        var sec = document.getElementById("sec-" + item.dataset.sec);
+        if (sec) sec.classList.add("is-active");
+      });
+    });
+
+    /* Save profile */
+    document.getElementById("btn-save-profile").addEventListener("click", function(){
+      var badge = document.getElementById("saved-badge-profile");
+      badge.classList.add("is-visible");
+      setTimeout(function(){ badge.classList.remove("is-visible"); }, 2400);
+    });
+
+    /* Stub links */
+    document.querySelectorAll("[data-stub]").forEach(function(el){
+      el.addEventListener("click", function(e){ e.preventDefault(); });
+    });
+  })();
+  </script>
+  <script src="assets/overlays.js"></script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="sepia-contrast">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Поиск — beta→alpha</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/tokens.css" />
+  <style>
+    body { min-height:100vh; display:flex; flex-direction:column; }
+    body::before { content:""; position:fixed; inset:0; background-image:url("assets/backgrounds/monogram-cream.png"); background-repeat:repeat; background-size:320px; opacity:var(--grain-opacity); pointer-events:none; z-index:0; }
+    .container { width:100%; max-width:var(--container-max); margin-inline:auto; padding-inline:var(--gutter); }
+    .skip-link { position:absolute; left:var(--space-4); top:calc(var(--space-2)*-8); z-index:var(--z-toast); background:var(--surface); color:var(--ink); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); padding:var(--space-2) var(--space-4); font-size:var(--fs-small); transition:top var(--dur-base); }
+    .skip-link:focus { top:var(--space-2); }
+    .site-header { position:sticky; top:0; z-index:var(--z-sticky); background:color-mix(in srgb,var(--paper) 88%,transparent); backdrop-filter:saturate(140%) blur(8px); border-bottom:var(--hairline) solid var(--line); }
+    .header-inner { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:var(--space-4); height:var(--header-height); }
+    .wordmark { justify-self:start; display:inline-flex; align-items:center; }
+    .wordmark-img { height:32px; width:auto; display:block; }
+    .text-mark { font-family:var(--font-serif); font-size:var(--fs-h1); font-weight:var(--fw-semibold); color:var(--ink); letter-spacing:var(--tracking-display); line-height:1; display:inline-flex; align-items:baseline; gap:.04em; }
+    .text-mark .arrow { color:var(--accent); }
+    .primary-nav { justify-self:center; position:relative; display:flex; align-items:center; gap:var(--space-6); padding-bottom:10px; }
+    .nav-link { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); letter-spacing:var(--tracking-label); color:var(--ink-soft); line-height:1; padding-block:var(--space-1); transition:color var(--dur-fast); }
+    .nav-link:hover,.nav-link[aria-current="page"] { color:var(--accent); }
+    .nav-link-home { font-family:var(--font-serif); font-size:var(--fs-body); font-weight:var(--fw-semibold); letter-spacing:var(--tracking-display); background:#1F1B18; color:#ECE3D6; padding:var(--space-1) var(--space-3) calc(var(--space-1)+3px); border-radius:var(--radius-md); }
+    .nav-link-home .arrow { color:#D2674A; }
+    .nav-strip,.nav-dot { position:absolute; pointer-events:none; }
+    .nav-strip { background:var(--accent); bottom:7px; height:var(--hairline); border-radius:var(--radius-pill); transition:left 280ms var(--ease-out-quart),width 280ms,opacity 160ms; }
+    .nav-dot { background:var(--amber); bottom:4px; width:7px; height:7px; border-radius:var(--radius-pill); transform:translateX(-50%); transition:left 360ms cubic-bezier(.34,1.56,.64,1); }
+    .header-actions { justify-self:end; display:flex; align-items:center; gap:var(--space-3); }
+    .icon-btn { position:relative; display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; background:transparent; color:var(--ink-soft); border:var(--hairline) solid transparent; border-radius:var(--radius-md); cursor:pointer; transition:color var(--dur-fast),border-color var(--dur-fast); }
+    .icon-btn:hover { color:var(--ink); border-color:var(--line); }
+    .notif-count { position:absolute; top:4px; right:4px; min-width:16px; height:16px; padding-inline:4px; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:var(--fw-semibold); color:var(--on-accent); background:var(--accent); border-radius:var(--radius-pill); }
+    .avatar-rep { display:inline-flex; align-items:center; gap:var(--space-2); padding:3px 8px 3px 3px; border:var(--hairline) solid var(--line); border-radius:var(--radius-pill); background:var(--surface); cursor:pointer; transition:border-color var(--dur-fast); }
+    .avatar-rep:hover { border-color:var(--accent); }
+    .avatar-rep__face { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:var(--radius-pill); background:var(--accent); color:var(--on-accent); font-size:var(--fs-caption); font-weight:var(--fw-semibold); }
+    .avatar-rep__num { font-size:var(--fs-caption); font-weight:var(--fw-semibold); color:var(--ink); font-variant-numeric:tabular-nums; margin-left:4px; }
+    .site-footer { position:relative; z-index:1; border-top:var(--hairline) solid var(--line); margin-top:auto; }
+    .footer-inner { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:var(--space-4); padding-block:var(--space-8); }
+    .footer-brand { display:flex; align-items:baseline; gap:var(--space-4); }
+    .footer-brand .text-mark { font-size:var(--fs-h2); }
+    .footer-tagline,.build-tag { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); }
+    .footer-links { display:inline-flex; align-items:baseline; gap:var(--space-4); }
+    .footer-link { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); text-decoration:none; transition:color var(--dur-fast); }
+    .footer-link:hover { color:var(--accent); }
+
+    /* ================================================================
+       SEARCH PAGE
+       ================================================================ */
+    .search-main { flex:1; position:relative; z-index:1; }
+
+    /* Search bar hero */
+    .search-hero { padding-block:var(--space-8); border-bottom:var(--hairline) solid var(--line); }
+    .search-bar-wrap { display:flex; align-items:center; gap:var(--space-3); max-width:640px; margin-bottom:var(--space-5); }
+    .search-bar { flex:1; display:flex; align-items:center; gap:var(--space-3); padding:var(--space-3) var(--space-4); background:var(--surface); border:var(--hairline) solid var(--accent); border-radius:var(--radius-md); box-shadow:0 2px 12px rgba(184,81,56,.08); }
+    .search-icon { color:var(--ink-faint); flex-shrink:0; }
+    .search-input { flex:1; background:transparent; border:none; outline:none; font-family:var(--font-sans); font-size:var(--fs-body); color:var(--ink); }
+    .search-input::placeholder { color:var(--ink-faint); }
+    .search-clear { background:none; border:none; color:var(--ink-faint); cursor:pointer; padding:0; font-size:18px; line-height:1; transition:color var(--dur-fast); }
+    .search-clear:hover { color:var(--accent); }
+    .btn-search { padding:var(--space-3) var(--space-5); background:var(--accent); color:var(--on-accent); border:none; border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-semibold); cursor:pointer; white-space:nowrap; transition:background var(--dur-fast); }
+    .btn-search:hover { background:var(--accent-hover); }
+
+    /* Scope toggles */
+    .scope-row { display:flex; align-items:center; gap:var(--space-2); flex-wrap:wrap; }
+    .scope-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); margin-right:var(--space-1); }
+    .scope-toggle { display:inline-flex; align-items:center; gap:var(--space-2); padding:4px 12px; border-radius:var(--radius-pill); border:var(--hairline) solid var(--line); font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); color:var(--ink-soft); background:transparent; cursor:pointer; transition:all var(--dur-fast); }
+    .scope-toggle.is-on { border-color:var(--accent); color:var(--accent); background:color-mix(in srgb,var(--accent) 8%,transparent); }
+    .scope-toggle .scope-check { display:none; }
+    .scope-toggle.is-on .scope-check { display:inline; }
+
+    /* Filter bar */
+    .search-filter { border-bottom:var(--hairline) solid var(--line); background:color-mix(in srgb,var(--paper) 95%,transparent); position:sticky; top:var(--header-height); z-index:calc(var(--z-sticky)-1); }
+    .filter-inner { display:flex; align-items:stretch; overflow-x:auto; }
+    .filter-btn { flex-shrink:0; padding:var(--space-3) var(--space-5); font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); color:var(--ink-soft); background:transparent; border:none; border-bottom:2px solid transparent; cursor:pointer; transition:color var(--dur-fast),border-color var(--dur-fast); margin-bottom:-1px; white-space:nowrap; display:flex; align-items:center; gap:var(--space-2); }
+    .filter-btn:hover { color:var(--ink); }
+    .filter-btn.is-active { color:var(--accent); border-bottom-color:var(--accent); }
+    .filter-count-sm { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+
+    /* Results */
+    .search-body { padding-block:var(--space-6) var(--space-16); }
+    .search-layout { display:grid; grid-template-columns:1fr 260px; gap:var(--space-10); align-items:start; }
+    .search-results { min-width:0; }
+    .search-aside { display:flex; flex-direction:column; gap:var(--space-5); position:sticky; top:calc(var(--header-height) + 56px); }
+    .results-meta { display:flex; align-items:baseline; justify-content:space-between; gap:var(--space-4); margin-bottom:var(--space-5); flex-wrap:wrap; }
+    .results-count { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-faint); }
+    .results-count strong { color:var(--ink); font-weight:var(--fw-semibold); }
+    .sort-select { padding:4px var(--space-3); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink); outline:none; cursor:pointer; }
+
+    /* Result section label */
+    .results-section-label { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); letter-spacing:var(--tracking-caption); text-transform:uppercase; color:var(--ink-faint); padding-block:0 var(--space-3); margin-bottom:var(--space-3); border-bottom:var(--hairline) solid var(--line); }
+
+    /* Book result card */
+    .book-result { display:flex; align-items:flex-start; gap:var(--space-4); padding:var(--space-4); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); margin-bottom:var(--space-3); transition:border-color var(--dur-fast); text-decoration:none; }
+    .book-result:hover { border-color:var(--accent); }
+    .book-result-cover { width:52px; height:70px; object-fit:cover; border-radius:var(--radius-sm); border:var(--hairline) solid var(--line); flex-shrink:0; }
+    .book-result-info { flex:1; min-width:0; }
+    .book-result-title { font-family:var(--font-serif); font-size:var(--fs-body); font-weight:var(--fw-semibold); color:var(--ink); margin-bottom:2px; }
+    .book-result-title mark { background:color-mix(in srgb,var(--amber) 40%,transparent); border-radius:2px; }
+    .book-result-author { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-faint); margin-bottom:var(--space-2); }
+    .book-result-snippet { font-family:var(--font-serif); font-size:var(--fs-small); color:var(--ink-soft); line-height:1.5; font-style:italic; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+    .book-result-snippet mark { background:color-mix(in srgb,var(--amber) 40%,transparent); border-radius:2px; font-style:normal; }
+    .book-result-chips { display:flex; gap:var(--space-2); margin-top:var(--space-2); flex-wrap:wrap; }
+    .result-chip { display:inline-flex; padding:1px 8px; border-radius:var(--radius-pill); font-family:var(--font-sans); font-size:var(--fs-caption); border:var(--hairline) solid; }
+    .result-chip--psycho { color:var(--slate); border-color:var(--slate); }
+    .result-chip--theory { color:var(--amber); border-color:var(--amber); }
+
+    /* Community result card */
+    .comm-result { display:flex; align-items:flex-start; gap:var(--space-4); padding:var(--space-4); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); margin-bottom:var(--space-3); transition:border-color var(--dur-fast); cursor:pointer; }
+    .comm-result:hover { border-color:var(--accent); }
+    .comm-result-av { width:36px; height:36px; border-radius:var(--radius-pill); display:flex; align-items:center; justify-content:center; font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-semibold); color:#ECE3D6; flex-shrink:0; }
+    .comm-result-info { flex:1; min-width:0; }
+    .comm-result-context { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); margin-bottom:var(--space-1); }
+    .comm-result-context a { color:var(--accent); }
+    .comm-result-text { font-family:var(--font-serif); font-size:var(--fs-small); color:var(--ink); line-height:1.5; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; }
+    .comm-result-text mark { background:color-mix(in srgb,var(--amber) 40%,transparent); border-radius:2px; }
+    .comm-result-meta { display:flex; align-items:center; gap:var(--space-3); margin-top:var(--space-2); }
+    .comm-result-author { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+    .comm-result-vote { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--amber); }
+
+    /* Aside */
+    .aside-card { padding:var(--space-4); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); }
+    .aside-title { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-semibold); color:var(--ink); margin-bottom:var(--space-3); }
+    .suggestion-list { display:flex; flex-direction:column; gap:var(--space-1); }
+    .suggestion-item { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--accent); cursor:pointer; padding:var(--space-1) var(--space-2); border-radius:var(--radius-md); transition:background var(--dur-fast); }
+    .suggestion-item:hover { background:var(--surface-sunk); }
+
+    @media (max-width:900px) { .search-layout { grid-template-columns:1fr; } .search-aside { position:static; } }
+    @media (max-width:760px) { .primary-nav { display:none; } }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#content">К содержимому</a>
+
+  <header class="site-header">
+    <div class="header-inner container">
+      <a class="wordmark" href="pub-about.html" aria-label="beta→alpha">
+        <img class="wordmark-img" src="assets/decor/a2b-logo.png" alt="beta→alpha" />
+      </a>
+      <nav class="primary-nav">
+        <a class="nav-link" href="community.html">Сообщество</a>
+        <a class="nav-link nav-link-home" href="home.html" aria-label="Домашняя">β<span class="arrow">→</span>α</a>
+        <a class="nav-link" href="library.html">Библиотека</a>
+        <span class="nav-strip" aria-hidden="true"></span>
+        <span class="nav-dot" aria-hidden="true"></span>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn is-active" type="button" aria-label="Поиск (текущая страница)" style="border-color:var(--accent);color:var(--accent);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></button>
+        <button class="icon-btn" type="button" aria-label="Пульс"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></button>
+        <button class="icon-btn" type="button" aria-label="Уведомления"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="notif-count">3</span></button>
+        <button class="avatar-rep" type="button" aria-label="Аккаунт">
+          <span class="avatar-rep__face" aria-hidden="true">АИ</span>
+          <span class="avatar-rep__num">142</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="search-main" id="content">
+
+    <!-- Search hero -->
+    <div class="search-hero">
+      <div class="container">
+        <div class="search-bar-wrap">
+          <div class="search-bar" role="search">
+            <span class="search-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></span>
+            <input class="search-input" id="search-q" type="search" value="контейнирование" aria-label="Поисковый запрос" autocomplete="off" spellcheck="false" />
+            <button class="search-clear" id="btn-search-clear" type="button" aria-label="Очистить">×</button>
+          </div>
+          <button class="btn-search" type="button">Найти</button>
+        </div>
+        <div class="scope-row">
+          <span class="scope-label">Область:</span>
+          <button class="scope-toggle is-on" id="scope-books" type="button">
+            <span class="scope-check" aria-hidden="true">✓</span> Книги
+          </button>
+          <button class="scope-toggle is-on" id="scope-community" type="button">
+            <span class="scope-check" aria-hidden="true">✓</span> Сообщество
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="search-filter">
+      <div class="container">
+        <div class="filter-inner">
+          <button class="filter-btn is-active" data-tab="all">Всё <span class="filter-count-sm">(5)</span></button>
+          <button class="filter-btn" data-tab="books">Книги <span class="filter-count-sm">(2)</span></button>
+          <button class="filter-btn" data-tab="comments">Комментарии <span class="filter-count-sm">(2)</span></button>
+          <button class="filter-btn" data-tab="reviews">Рецензии <span class="filter-count-sm">(1)</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="search-body">
+      <div class="container">
+        <div class="search-layout">
+
+          <div class="search-results" id="search-results">
+            <div class="results-meta">
+              <p class="results-count">Найдено <strong>5 результатов</strong> по запросу «контейнирование»</p>
+              <select class="sort-select" aria-label="Сортировка">
+                <option>По релевантности</option>
+                <option>По дате</option>
+                <option>По голосам</option>
+              </select>
+            </div>
+
+            <!-- Books section -->
+            <div class="results-section" data-section="books">
+              <p class="results-section-label">Книги (2)</p>
+
+              <a class="book-result" href="book.html">
+                <img class="book-result-cover" src="assets/covers/bion-nauchenie-na-opyte-cover.png" alt="Научение на опыте" />
+                <div class="book-result-info">
+                  <p class="book-result-title">Научение на опыте. Итальянские семинары</p>
+                  <p class="book-result-author">У.Р. Бион · 2023 · 112 с.</p>
+                  <p class="book-result-snippet">…<mark>контейнирование</mark> есть форма присутствия: не методическое удержание, а способность оставаться рядом с тем, что ещё не имеет формы…</p>
+                  <div class="book-result-chips">
+                    <span class="result-chip result-chip--psycho">Психоанализ</span>
+                    <span class="result-chip result-chip--theory">Бион</span>
+                  </div>
+                </div>
+              </a>
+
+              <a class="book-result" href="book.html">
+                <img class="book-result-cover" src="assets/covers/nikoli-goret-vmeste-cover.png" alt="Гореть вместе" />
+                <div class="book-result-info">
+                  <p class="book-result-title">Гореть вместе</p>
+                  <p class="book-result-author">ред. Лука Николи · 2024 · 228 с.</p>
+                  <p class="book-result-snippet">…групповой <mark>контейнирующий</mark> процесс — центральная тема третьей главы; авторы исследуют, как поле группы модифицирует функцию <mark>контейнирования</mark>…</p>
+                  <div class="book-result-chips">
+                    <span class="result-chip result-chip--psycho">Групповой анализ</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <!-- Community section -->
+            <div class="results-section" data-section="comments" style="margin-top:var(--space-6);">
+              <p class="results-section-label">Комментарии (2)</p>
+
+              <div class="comm-result" onclick="location.href='book.html'">
+                <span class="comm-result-av" style="background:var(--slate);">МС</span>
+                <div class="comm-result-info">
+                  <p class="comm-result-context">в <a href="book.html" onclick="event.stopPropagation()">«Научение на опыте»</a></p>
+                  <p class="comm-result-text"><mark>Контейнирование</mark> как метафора и как техника — Бион сам нигде не проводит эту черту чётко. В семинарах это особенно заметно: он говорит так, как будто разницы нет.</p>
+                  <div class="comm-result-meta">
+                    <span class="comm-result-author">Мария Соколова · Эксперт</span>
+                    <span class="comm-result-vote">★ 12</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="comm-result" onclick="location.href='book.html'">
+                <span class="comm-result-av" style="background:var(--sage);">НК</span>
+                <div class="comm-result-info">
+                  <p class="comm-result-context">в <a href="book.html" onclick="event.stopPropagation()">«Научение на опыте»</a></p>
+                  <p class="comm-result-text">Если вы можете сформулировать <mark>контейнирование</mark> как технику, вы, вероятно, уже не контейнируете.</p>
+                  <div class="comm-result-meta">
+                    <span class="comm-result-author">Наталья Кузнецова · Эксперт</span>
+                    <span class="comm-result-vote">★ 7</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Reviews section -->
+            <div class="results-section" data-section="reviews" style="margin-top:var(--space-6);">
+              <p class="results-section-label">Рецензии (1)</p>
+
+              <div class="comm-result" onclick="location.href='book.html'">
+                <span class="comm-result-av" style="background:var(--accent);">ДО</span>
+                <div class="comm-result-info">
+                  <p class="comm-result-context">Рецензия на <a href="book.html" onclick="event.stopPropagation()">«Научение на опыте»</a></p>
+                  <p class="comm-result-text">…Семинары особенно ценны именно в этой форме: живые, неотредактированные, они позволяют проследить, как Бион строит понятие <mark>контейнирования</mark> в живом диалоге, а не в теоретическом тексте…</p>
+                  <div class="comm-result-meta">
+                    <span class="comm-result-author">Дмитрий Орлов · Мэтр · Профессионал</span>
+                    <span class="comm-result-vote">★ 31</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Aside -->
+          <aside class="search-aside">
+            <div class="aside-card">
+              <p class="aside-title">Похожие запросы</p>
+              <div class="suggestion-list">
+                <span class="suggestion-item" onclick="document.getElementById('search-q').value=this.textContent.trim();"> ревери Бион</span>
+                <span class="suggestion-item" onclick="document.getElementById('search-q').value=this.textContent.trim();"> альфа-функция</span>
+                <span class="suggestion-item" onclick="document.getElementById('search-q').value=this.textContent.trim();"> бета-элементы</span>
+                <span class="suggestion-item" onclick="document.getElementById('search-q').value=this.textContent.trim();"> негативная способность</span>
+                <span class="suggestion-item" onclick="document.getElementById('search-q').value=this.textContent.trim();"> групповой анализ поле</span>
+              </div>
+            </div>
+            <div class="aside-card">
+              <p class="aside-title">Авторы результатов</p>
+              <div style="display:flex;flex-direction:column;gap:var(--space-2);">
+                <a href="profile.html" style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) 0;border-bottom:var(--hairline) solid var(--line);text-decoration:none;">
+                  <span style="width:28px;height:28px;border-radius:50%;background:var(--slate);display:flex;align-items:center;justify-content:center;font-size:var(--fs-caption);font-weight:var(--fw-semibold);color:#ECE3D6;flex-shrink:0;">МС</span>
+                  <span style="font-family:var(--font-sans);font-size:var(--fs-small);color:var(--ink);">Мария Соколова</span>
+                </a>
+                <a href="profile.html" style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) 0;border-bottom:var(--hairline) solid var(--line);text-decoration:none;">
+                  <span style="width:28px;height:28px;border-radius:50%;background:#7A4A3A;display:flex;align-items:center;justify-content:center;font-size:var(--fs-caption);font-weight:var(--fw-semibold);color:#ECE3D6;flex-shrink:0;">ДО</span>
+                  <span style="font-family:var(--font-sans);font-size:var(--fs-small);color:var(--ink);">Дмитрий Орлов</span>
+                </a>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="text-mark" aria-hidden="true">β<span class="arrow">→</span>α</span>
+          <span class="footer-tagline">© 2026 beta→alpha</span>
+        </div>
+        <nav class="footer-links">
+          <a class="footer-link" href="pub-about.html">О проекте</a>
+          <a class="footer-link" href="#" id="footer-console-link">Консоль</a>
+          <span class="build-tag">v0.2.0-primer · search</span>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    /* Scope toggles */
+    document.querySelectorAll(".scope-toggle").forEach(function(btn) {
+      btn.addEventListener("click", function() { btn.classList.toggle("is-on"); });
+    });
+
+    /* Filter tabs */
+    var filterBtns = Array.prototype.slice.call(document.querySelectorAll(".filter-btn[data-tab]"));
+    filterBtns.forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        filterBtns.forEach(function(b){ b.classList.remove("is-active"); });
+        btn.classList.add("is-active");
+        var t = btn.dataset.tab;
+        document.querySelectorAll(".results-section").forEach(function(sec){
+          sec.style.display = (t === "all" || sec.dataset.section === t) ? "" : "none";
+        });
+      });
+    });
+
+    /* Clear */
+    document.getElementById("btn-search-clear").addEventListener("click", function() {
+      document.getElementById("search-q").value = "";
+      document.getElementById("search-q").focus();
+    });
+  })();
+  </script>
+  <script src="assets/overlays.js"></script>
+</body>
+</html>

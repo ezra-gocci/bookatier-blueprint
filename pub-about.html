@@ -882,9 +882,9 @@
       </div>
 
       <nav class="primary-nav" aria-label="Основная навигация">
-        <a class="nav-link" href="#library" data-stub>Библиотека</a>
+        <a class="nav-link" href="pub-library.html">Библиотека</a>
         <a class="nav-link nav-link-home" href="pub-landing.html" aria-label="Главная">β<span class="arrow">→</span>α</a>
-        <a class="nav-link" href="#news" data-stub>Новости</a>
+        <a class="nav-link" href="pub-news.html">Новости</a>
       </nav>
 
       <div class="header-actions">
@@ -1293,7 +1293,7 @@
         e.preventDefault();
         closeModal(modalLogin);
         showToast("Добро пожаловать!");
-        setTimeout(function () { window.location.href = "frame-user.html"; }, 900);
+        setTimeout(function () { window.location.href = "home.html"; }, 900);
       });
 
       regForm.addEventListener("submit", function (e) {
