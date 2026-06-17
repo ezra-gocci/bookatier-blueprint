@@ -82,6 +82,7 @@
       align-items: center;
       gap: var(--space-4);
       height: var(--header-height);
+      position: relative;
     }
 
     .header-left {
@@ -167,7 +168,7 @@
     .nav-dot { position: absolute; pointer-events: none; }
     .nav-strip {
       background: var(--accent);
-      bottom: 7px;
+      bottom: 20px;
       height: var(--hairline);
       border-radius: var(--radius-pill);
       -webkit-mask: linear-gradient(90deg,
@@ -1005,10 +1006,11 @@
 
     /* ---- B3 + B4: Split section ----------------------------------------- */
     .landing-split {
+      scroll-margin-top: var(--header-height);
       display: flex;
       align-items: stretch;
       gap: 0;
-      padding-block-end: var(--space-16);
+      padding-block-end: 0;
       background: var(--paper);
     }
     .split-divider {
@@ -1349,7 +1351,8 @@
     /* ---- B6: Closing CTA ----------------------------------------------- */
     .landing-cta-closing {
       border-top: var(--hairline) solid var(--line);
-      padding-block: var(--space-16);
+      padding-block-start: 0;
+      padding-block-end: var(--space-16);
       text-align: center;
       background: var(--surface-sunk);
     }
@@ -1359,7 +1362,7 @@
       font-size: var(--fs-h1);
       font-weight: var(--fw-semibold);
       color: var(--ink);
-      margin: 0 0 var(--space-4);
+      margin: 18px 0 var(--space-4);
       line-height: var(--lh-h1);
     }
 
@@ -1407,10 +1410,375 @@
         transform: none !important;
       }
     }
+
+    /* ===================================================================
+       BOOK CARD + MINI-READER — landing page overlay
+       =================================================================== */
+
+    /* ---- Hover affordance on book rows ---------------------------------- */
+    .book-row {
+      cursor: pointer;
+      transition: transform var(--dur-base) var(--ease-out-quart),
+                  box-shadow var(--dur-base) var(--ease-out-quart);
+    }
+    .book-row:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-soft);
+    }
+    .book-cover-sm { transition: transform var(--dur-base) var(--ease-out-quart); }
+    .book-row:hover .book-cover-sm { transform: scale(1.05); }
+
+    /* ---- Small-cover hover hint ----------------------------------------- */
+    .book-cover-sm-wrap {
+      position: relative;
+      flex-shrink: 0;
+      line-height: 0;
+    }
+    .book-cover-hint {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      padding: var(--space-2) var(--space-4);
+      background: rgba(0, 0, 0, 0.72);
+      border-radius: var(--radius-pill);
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      font-weight: var(--fw-medium);
+      letter-spacing: var(--tracking-label);
+      color: #fff;
+      opacity: 0;
+      transition: opacity var(--dur-base) var(--ease-out-quart);
+      pointer-events: none;
+      user-select: none;
+    }
+    .book-row:hover .book-cover-hint { opacity: 1; }
+    .split-left--mini .book-cover-hint { display: none; }
+
+    /* ---- split-left collapses to a mini sidebar -------------------------- */
+    .split-left { transition: flex-basis 300ms var(--ease-out-quart); }
+    .split-left--mini {
+      flex: 0 0 10%;
+      min-width: 80px;
+      padding-inline: var(--space-2);
+    }
+    .split-left--mini .section-eyebrow,
+    .split-left--mini .book-list-more { display: none; }
+    .split-left--mini .book-list {
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .split-left--mini .book-row {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-1);
+      padding-block: var(--space-2);
+      border-bottom: none;
+      border-left: 3px solid transparent;
+    }
+    .split-left--mini .book-row-meta { display: none; }
+    .split-left--mini .book-cover-sm-wrap {
+      width: 100%;
+      max-width: 64px;
+    }
+    .split-left--mini .book-cover-sm {
+      width: 100%;
+      height: auto;
+    }
+    .split-left--mini .book-row--active { border-left-color: var(--accent); }
+
+    /* Hide B4/B5 siblings while the book card is open */
+    .landing-split.is-card-open .split-divider,
+    .landing-split.is-card-open .split-right,
+    .landing-split.is-card-open .split-divider--reviews,
+    .landing-split.is-card-open .split-carousel { display: none; }
+
+    /* ---- Book card panel --------------------------------------------- */
+    .book-card-panel {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      border-left: var(--hairline) solid var(--line);
+      animation: bookCardSlideIn 260ms var(--ease-out-quart) both;
+    }
+    @keyframes bookCardSlideIn {
+      from { transform: translateX(40px); opacity: 0; }
+      to   { transform: translateX(0);    opacity: 1; }
+    }
+
+    .book-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      padding: var(--space-3) var(--space-4);
+      border-bottom: var(--hairline) solid var(--line);
+      flex-shrink: 0;
+    }
+    .book-card-catalog-link {
+      padding: var(--space-1) var(--space-4);
+      font-size: var(--fs-small);
+    }
+    .book-card-close {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-sm);
+      color: var(--ink-faint);
+      font-size: var(--fs-h2);
+      line-height: 1;
+      cursor: pointer;
+      transition: color var(--dur-fast) var(--ease-out-quart);
+    }
+    .book-card-close:hover { color: var(--ink); }
+    .book-card-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .book-card-body { flex: 1; }
+
+    /* ---- Reader area — hidden until cover click ------------------------- */
+    .book-card-reader-wrap {
+      position: relative;
+      height: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: #1a1a1a;
+      transition: height 320ms var(--ease-out-quart);
+    }
+    .book-card-panel.is-reader-open .book-card-reader-wrap {
+      height: 55vh;
+      min-height: 300px;
+    }
+    .book-card-panel.is-reader-open.is-expanded .book-card-reader-wrap { height: 80vh; }
+
+    /* ---- Book card main: info (left) + cover column (right) ------------ */
+    .book-card-main {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+    }
+    .book-card-cover-col {
+      flex-shrink: 0;
+      width: min(220px, 32%);
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+      border-left: var(--hairline) solid var(--line);
+    }
+    .book-card-cover-col img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+    .book-card-cover-col-hint {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.48);
+      font-family: var(--font-sans);
+      font-size: var(--fs-body);
+      font-weight: var(--fw-medium);
+      letter-spacing: var(--tracking-label);
+      color: #fff;
+      opacity: 0;
+      transition: opacity var(--dur-base) var(--ease-out-quart);
+      user-select: none;
+    }
+    .book-card-cover-col:hover .book-card-cover-col-hint { opacity: 1; }
+
+    /* ---- Mini-reader ---------------------------------------------------- */
+    .mini-reader {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    /* ---- PDF.js canvas spread reader ------------------------------------- */
+    .mini-reader-viewport {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: 1px;
+      background: #1a1a1a;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+    .mini-reader-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      color: rgba(255, 255, 255, 0.45);
+      pointer-events: none;
+    }
+    .spread-canvas { display: block; flex-shrink: 0; }
+    .mini-reader-controls {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-4);
+      padding: var(--space-2) var(--space-4);
+      background: rgba(0, 0, 0, 0.55);
+    }
+    .mini-reader-btn,
+    .mini-reader-expand {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: var(--hairline) solid rgba(255, 255, 255, 0.3);
+      background: transparent;
+      color: rgba(255, 255, 255, 0.85);
+      cursor: pointer;
+      transition: color var(--dur-fast) var(--ease-out-quart),
+                  border-color var(--dur-fast) var(--ease-out-quart);
+    }
+    .mini-reader-btn:hover,
+    .mini-reader-expand:hover { color: #fff; border-color: rgba(255, 255, 255, 0.6); }
+    .mini-reader-btn:disabled { opacity: 0.3; cursor: default; }
+    .mini-reader-expand { border-radius: var(--radius-sm); border: none; margin-left: var(--space-4); }
+    .mini-reader-counter {
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      color: rgba(255, 255, 255, 0.85);
+      min-width: 70px;
+      text-align: center;
+    }
+
+    /* ---- Book info section ----------------------------------------------- */
+    .book-card-info {
+      flex: 1;
+      min-width: 0;
+      position: relative;
+      z-index: 1;
+      padding: var(--space-8) var(--space-8) var(--space-12);
+      background: var(--surface);
+    }
+    .book-card-meta-line {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+    .book-card-year-version {
+      font-family: var(--font-sans);
+      font-size: var(--fs-caption);
+      color: var(--ink-faint);
+    }
+    .book-card-title {
+      font-family: var(--font-serif);
+      font-size: var(--fs-h1);
+      font-weight: var(--fw-semibold);
+      color: var(--ink);
+      text-wrap: balance;
+      margin: 0 0 var(--space-1);
+    }
+    .book-card-subtitle {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: var(--fs-h2);
+      color: var(--ink-soft);
+      margin: 0 0 var(--space-3);
+    }
+    .book-card-authors {
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      color: var(--ink-soft);
+      margin: 0 0 var(--space-6);
+    }
+    .book-card-annotation {
+      font-family: var(--font-serif);
+      font-size: var(--fs-body);
+      line-height: var(--lh-body);
+      color: var(--ink-soft);
+      margin: 0 0 var(--space-2);
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
+      line-clamp: 4;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .book-card-annotation.is-expanded {
+      -webkit-line-clamp: unset;
+      line-clamp: unset;
+      overflow: visible;
+    }
+    .book-card-annotation-toggle {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      font-weight: var(--fw-medium);
+      color: var(--accent);
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      margin-bottom: var(--space-6);
+    }
+    .book-card-annotation-toggle:hover { color: var(--accent-hover); }
+    .book-card-separator {
+      border: none;
+      border-top: var(--hairline) solid var(--line);
+      margin: 0 0 var(--space-6);
+    }
+    .book-card-notice {
+      background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+      border-left: 2px solid var(--accent);
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-sans);
+      font-size: var(--fs-small);
+      color: var(--ink-soft);
+      margin: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .book-row, .book-cover-sm, .split-left, .book-card-panel,
+      .book-card-reader-wrap, .book-cover-hint,
+      .book-card-cover-col-hint { transition: none; animation: none; }
+    }
+
+    /* Page-exit veil — fades to paper before navigating away */
+    .page-exit-veil {
+      position: fixed;
+      inset: 0;
+      background: var(--paper);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 10000;
+      transition: opacity 360ms ease-out;
+    }
+    .page-exit-veil.is-active {
+      opacity: 1;
+      pointer-events: all;
+    }
   </style>
 </head>
 
 <body>
+  <div class="page-exit-veil" id="page-exit-veil" aria-hidden="true"></div>
   <a class="skip-link" href="#content">К содержимому</a>
 
   <!-- ===================================================================
@@ -1419,25 +1787,25 @@
   <header class="site-header">
     <div class="header-inner container">
       <div class="header-left">
-        <a class="wordmark" href="index.html" aria-label="beta→alpha — на главную">
+        <a class="wordmark" href="pub-about.html" aria-label="beta→alpha — об издательстве">
           <img class="wordmark-img" src="assets/decor/a2b-logo.png" alt="beta→alpha">
         </a>
-        <a class="nav-link header-about" href="about.html">О проекте</a>
+        <a class="nav-link header-about" href="pub-about.html">О проекте</a>
       </div>
 
       <nav class="primary-nav" aria-label="Основная навигация">
         <a class="nav-link" href="#library" data-stub>Библиотека</a>
         <a class="nav-link nav-link-home" href="index.html" aria-label="Главная" aria-current="page">β<span class="arrow">→</span>α</a>
         <a class="nav-link" href="#pass-2" data-stub>Новости</a>
-
-        <span class="nav-strip" aria-hidden="true"></span>
-        <span class="nav-dot" aria-hidden="true"></span>
       </nav>
 
       <div class="header-actions">
         <a id="btn-reg" class="btn-landing-primary" href="#">Присоединиться</a>
         <a id="btn-login" class="btn-landing-ghost" href="#">Зайти</a>
       </div>
+
+      <span class="nav-strip" aria-hidden="true"></span>
+      <span class="nav-dot" aria-hidden="true"></span>
     </div>
   </header>
 
@@ -1530,10 +1898,13 @@
       <div class="split-left">
         <span class="section-eyebrow">Наши книги</span>
         <div class="book-list">
-          <article class="book-row">
-            <img class="book-cover-sm" loading="lazy" width="88" height="117"
-                 src="assets/covers/bion-nauchenie-na-opyte-cover.png"
-                 alt="Научение на опыте — Уилфред Р. Бион" />
+          <article class="book-row" data-book-id="bion">
+            <div class="book-cover-sm-wrap">
+              <img class="book-cover-sm" loading="lazy" width="88" height="117"
+                   src="assets/covers/bion-nauchenie-na-opyte-cover.png"
+                   alt="Научение на опыте — Уилфред Р. Бион" />
+              <span class="book-cover-hint" aria-hidden="true">Ознакомиться</span>
+            </div>
             <div class="book-row-meta">
               <span class="book-author">Уилфред Р. Бион</span>
               <p class="book-title">Научение на опыте</p>
@@ -1541,10 +1912,13 @@
             </div>
           </article>
 
-          <article class="book-row">
-            <img class="book-cover-sm" loading="lazy" width="88" height="117"
-                 src="assets/covers/nikoli-goret-vmeste-cover.png"
-                 alt="Гореть вместе — Лука Николи (ред.)" />
+          <article class="book-row" data-book-id="goret">
+            <div class="book-cover-sm-wrap">
+              <img class="book-cover-sm" loading="lazy" width="88" height="117"
+                   src="assets/covers/nikoli-goret-vmeste-cover.png"
+                   alt="Гореть вместе — Лука Николи (ред.)" />
+              <span class="book-cover-hint" aria-hidden="true">Ознакомиться</span>
+            </div>
             <div class="book-row-meta">
               <span class="book-author">Лука Николи (ред.)</span>
               <p class="book-title">Гореть вместе</p>
@@ -1552,10 +1926,13 @@
             </div>
           </article>
 
-          <article class="book-row">
-            <img class="book-cover-sm" loading="lazy" width="88" height="117"
-                 src="assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png"
-                 alt="Избегание эмоций, проживание эмоций — Антонино Ферро" />
+          <article class="book-row" data-book-id="ferro">
+            <div class="book-cover-sm-wrap">
+              <img class="book-cover-sm" loading="lazy" width="88" height="117"
+                   src="assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png"
+                   alt="Избегание эмоций, проживание эмоций — Антонино Ферро" />
+              <span class="book-cover-hint" aria-hidden="true">Ознакомиться</span>
+            </div>
             <div class="book-row-meta">
               <span class="book-author">Антонино Ферро</span>
               <p class="book-title">Избегание эмоций, проживание эмоций</p>
@@ -1918,74 +2295,68 @@
   <!-- Nav indicator script: strip slides, dot bounces -->
   <script>
     (function () {
-      var nav = document.querySelector(".primary-nav");
-      if (!nav) return;
-      var links = Array.prototype.slice.call(nav.querySelectorAll(".nav-link"));
-      var strip = nav.querySelector(".nav-strip");
-      var dot = nav.querySelector(".nav-dot");
-      if (!links.length || !strip || !dot) return;
+      var nav         = document.querySelector(".primary-nav");
+      var headerInner = document.querySelector(".header-inner");
+      if (!nav || !headerInner) return;
+
+      var aboutLink = document.querySelector(".header-about");
+      var navLinks  = Array.prototype.slice.call(nav.querySelectorAll(".nav-link"));
+      var allLinks  = aboutLink ? [aboutLink].concat(navLinks) : navLinks;
+
+      var strip = document.querySelector(".nav-strip");
+      var dot   = document.querySelector(".nav-dot");
+      if (!allLinks.length || !strip || !dot) return;
 
       var DOT_RADIUS = 3.5;
 
-      function isHome(link) {
-        return link.classList.contains("nav-link-home");
-      }
+      function isHome(link) { return link.classList.contains("nav-link-home"); }
 
       function moveTo(link) {
-        var left = link.offsetLeft;
-        var width = link.offsetWidth;
-        strip.style.left = left + "px";
+        var hRect = headerInner.getBoundingClientRect();
+        var lRect = link.getBoundingClientRect();
+        var left  = Math.round(lRect.left - hRect.left);
+        var width = Math.round(lRect.width);
+        strip.style.left  = left + "px";
         strip.style.width = width + "px";
-        dot.style.left = left + width / 2 + "px";
-        if (isHome(link)) {
-          var navBottomToBadgeBottom =
-            nav.clientHeight - (link.offsetTop + link.offsetHeight);
-          dot.style.bottom = navBottomToBadgeBottom - DOT_RADIUS + "px";
-        } else {
-          dot.style.bottom = "4px";
-        }
+        dot.style.left    = (left + Math.round(width / 2)) + "px";
+        dot.style.bottom  = isHome(link)
+          ? Math.round(hRect.bottom - lRect.bottom - DOT_RADIUS) + "px"
+          : "17px";
       }
 
       function activeLink() {
-        return nav.querySelector('.nav-link[aria-current="page"]') || links[0];
+        return nav.querySelector('.nav-link[aria-current="page"]') || navLinks[0];
       }
 
-      function syncIndicatorVisibility() {
-        strip.style.opacity = isHome(activeLink()) ? "0" : "1";
-        dot.style.opacity = "1";
+      function syncVisibility() {
+        var active = activeLink();
+        strip.style.opacity = isHome(active) ? "0" : "1";
+        dot.style.opacity   = "1";
       }
 
       function place(link, instant) {
-        if (instant) {
-          strip.style.transition = "none";
-          dot.style.transition = "none";
-        }
+        if (instant) { strip.style.transition = "none"; dot.style.transition = "none"; }
         moveTo(link);
-        syncIndicatorVisibility();
-        if (instant) {
-          void dot.offsetWidth;
-          strip.style.transition = "";
-          dot.style.transition = "";
-        }
+        syncVisibility();
+        if (instant) { void dot.offsetWidth; strip.style.transition = ""; dot.style.transition = ""; }
       }
 
-      document.fonts.ready.then(function () {
-        place(activeLink(), true);
-      });
+      document.fonts.ready.then(function () { place(activeLink(), true); });
 
-      links.forEach(function (link) {
+      allLinks.forEach(function (link) {
         link.addEventListener("click", function (e) {
-          e.preventDefault();
-          links.forEach(function (l) { l.removeAttribute("aria-current"); });
+          var isAbout = (aboutLink && link === aboutLink);
+          if (!isAbout) e.preventDefault();
+          allLinks.forEach(function (l) { l.removeAttribute("aria-current"); });
           link.setAttribute("aria-current", "page");
           place(link, false);
         });
       });
 
       var outerStubs = Array.prototype.slice.call(document.querySelectorAll("[data-stub]"));
-      outerStubs.forEach(function(el) {
+      outerStubs.forEach(function (el) {
         if (!nav.contains(el)) {
-          el.addEventListener("click", function(e) { e.preventDefault(); });
+          el.addEventListener("click", function (e) { e.preventDefault(); });
         }
       });
 
@@ -2644,6 +3015,440 @@
         }
       );
     })();
+  </script>
+
+  <!-- Book card + mini-reader -->
+  <script>
+    (function () {
+      var BOOKS = {
+        bion: {
+          title: 'Научение на опыте',
+          subtitle: 'Итальянские семинары',
+          authors: ['Уилфред Р. Бион'],
+          year: 2023,
+          version: 'Издание 1.0, 2023',
+          topic: 'Психоанализ',
+          topicVariant: '',
+          cover: 'assets/covers/bion-nauchenie-na-opyte-cover.png',
+          fragment: 'fragments/bion-fragment.pdf',
+          annotation: 'Итальянские семинары Биона — уникальная возможность '
+            + 'услышать мысль великого аналитика в живом диалоге. Пять '
+            + 'семинаров, проведённых в 1977 году, раскрывают его поздние '
+            + 'идеи о бессознательном мышлении, контейнировании и '
+            + 'трансформации аффекта.',
+          catalogHref: '#',
+        },
+        goret: {
+          title: 'Гореть вместе',
+          subtitle: 'Близость, истина и уязвимость',
+          authors: ['Лука Николи (ред.)'],
+          year: 2023,
+          version: 'Издание 1.0, 2023',
+          topic: 'Психотерапия',
+          topicVariant: '--therapy',
+          cover: 'assets/covers/nikoli-goret-vmeste-cover.png',
+          fragment: 'fragments/nicoli-fragment.pdf',
+          annotation: 'Коллективная монография под редакцией Луки Николи '
+            + 'исследует феномен эмоционального выгорания в психотерапии '
+            + 'через призму близости, истины и уязвимости терапевта. '
+            + 'Авторы — ведущие итальянские клиницисты.',
+          catalogHref: '#',
+        },
+        ferro: {
+          title: 'Избегание эмоций, проживание эмоций',
+          subtitle: '',
+          authors: ['Антонино Ферро'],
+          year: 2023,
+          version: 'Издание 1.0, 2023',
+          topic: 'Теория',
+          topicVariant: '--theory',
+          cover: 'assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png',
+          fragment: 'fragments/ferro-fragment.pdf',
+          annotation: 'Ферро разворачивает свою биономерную модель психики, '
+            + 'противопоставляя два фундаментальных способа обращения с '
+            + 'эмоциональным опытом. Книга переосмысляет понятие эвакуации '
+            + 'через трансформирующую функцию альфа-элементов.',
+          catalogHref: '#',
+        },
+      };
+
+      var splitSection = document.querySelector('.landing-split');
+      var splitLeft    = splitSection && splitSection.querySelector('.split-left');
+      var bookRows     = splitLeft ? splitLeft.querySelectorAll('.book-row[data-book-id]') : [];
+      if (!splitSection || !splitLeft || !bookRows.length) return;
+
+      var activeBookId = null;
+      var panelEl = null;
+
+      bookRows.forEach(function (row) {
+        var book = BOOKS[row.dataset.bookId];
+        if (book) row.title = book.title;
+      });
+
+      function expandIcon() {
+        return '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>';
+      }
+      function collapseIcon() {
+        return '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v4a1 1 0 0 1-1 1H4M15 3v4a1 1 0 0 0 1 1h4M9 21v-4a1 1 0 0 0-1-1H4M15 21v-4a1 1 0 0 1 1-1h4"/></svg>';
+      }
+
+      function renderReader(book) {
+        var wrap = document.createElement('div');
+        wrap.className = 'mini-reader';
+
+        /* Spread viewport — canvases are created fresh per render, not persistent */
+        var viewport = document.createElement('div');
+        viewport.className = 'mini-reader-viewport';
+
+        var loader = document.createElement('div');
+        loader.className = 'mini-reader-loading';
+        loader.textContent = 'Загружаем фрагмент…';
+
+        viewport.appendChild(loader);
+
+        /* Controls */
+        var controls = document.createElement('div');
+        controls.className = 'mini-reader-controls';
+
+        var prevBtn = document.createElement('button');
+        prevBtn.type = 'button';
+        prevBtn.className = 'mini-reader-btn';
+        prevBtn.setAttribute('aria-label', 'Предыдущий разворот');
+        prevBtn.innerHTML = '<svg viewBox="0 0 16 16" width="14" height="14" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+        var counter = document.createElement('span');
+        counter.className = 'mini-reader-counter';
+
+        var nextBtn = document.createElement('button');
+        nextBtn.type = 'button';
+        nextBtn.className = 'mini-reader-btn';
+        nextBtn.setAttribute('aria-label', 'Следующий разворот');
+        nextBtn.innerHTML = '<svg viewBox="0 0 16 16" width="14" height="14" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+        var modeLabel = document.createElement('span');
+        modeLabel.className = 'mini-reader-counter';
+        modeLabel.title = 'Нажмите на страницу для смены режима';
+
+        var expandBtn = document.createElement('button');
+        expandBtn.type = 'button';
+        expandBtn.className = 'mini-reader-expand';
+        expandBtn.setAttribute('aria-label', 'Развернуть читалку');
+        expandBtn.innerHTML = expandIcon();
+
+        controls.appendChild(prevBtn);
+        controls.appendChild(counter);
+        controls.appendChild(nextBtn);
+        controls.appendChild(modeLabel);
+        controls.appendChild(expandBtn);
+
+        wrap.appendChild(viewport);
+        wrap.appendChild(controls);
+
+        /* State */
+        var pdfDoc      = null;
+        var spread      = 0;
+        var zoomMode    = 'fit-height';
+        var rendering   = false;
+        var needsRender = false;
+
+        function totalSpreads() {
+          return pdfDoc ? Math.ceil(pdfDoc.numPages / 2) : 0;
+        }
+
+        function updateUI() {
+          var ts = totalSpreads();
+          counter.textContent   = '« ' + (spread + 1) + ' / ' + ts + ' »';
+          modeLabel.textContent = zoomMode === 'fit-height' ? '↕' : '↔';
+          prevBtn.disabled = spread <= 0;
+          nextBtn.disabled = spread >= ts - 1;
+        }
+
+        function renderSpread() {
+          if (!pdfDoc) return;
+          var vH = viewport.clientHeight;
+          var vW = viewport.clientWidth;
+          if (vH < 10 || vW < 10) return;
+
+          /* Sequential lock */
+          if (rendering) { needsRender = true; return; }
+          rendering   = true;
+          needsRender = false;
+
+          updateUI();
+          loader.style.display = 'flex';
+
+          var leftN  = spread * 2 + 1;
+          var rightN = leftN + 1;
+          var hasR   = rightN <= pdfDoc.numPages;
+
+          function done() {
+            rendering = false;
+            if (needsRender) { needsRender = false; renderSpread(); }
+          }
+
+          var pageNums = [leftN];
+          if (hasR) pageNums.push(rightN);
+
+          Promise.all(pageNums.map(function (n) { return pdfDoc.getPage(n); })).then(function (pages) {
+            var pv = pages[0].getViewport({ scale: 1 });
+            var sc = zoomMode === 'fit-height'
+              ? vH / pv.height
+              : vW / (pageNums.length * pv.width);
+
+            /* Render to fresh off-DOM canvases — no shared-canvas conflict */
+            var items = pages.map(function (page) {
+              var c  = document.createElement('canvas');
+              c.className = 'spread-canvas';
+              var rv = page.getViewport({ scale: sc });
+              c.width  = rv.width;
+              c.height = rv.height;
+              return { canvas: c, task: page.render({ canvasContext: c.getContext('2d'), viewport: rv }) };
+            });
+
+            Promise.all(items.map(function (it) { return it.task.promise; })).then(function () {
+              /* Swap rendered canvases into the viewport */
+              var old = viewport.querySelectorAll('.spread-canvas');
+              old.forEach(function (el) { el.parentNode && el.parentNode.removeChild(el); });
+              items.forEach(function (it) { viewport.appendChild(it.canvas); });
+              loader.style.display = 'none';
+              /* Reset page proxies to INITIAL so they can be re-rendered (zoom/nav/resize) */
+              pages.forEach(function (pg) { try { pg.cleanup(); } catch (_) {} });
+              done();
+            }).catch(function () {
+              items.forEach(function (it) { try { it.task.cancel(); } catch (_) {} });
+              /* Also cleanup on failure so subsequent renders can retry */
+              pages.forEach(function (pg) { try { pg.cleanup(); } catch (_) {} });
+              done();
+            });
+          }).catch(done);
+        }
+
+        /* Shared debounced render trigger — used by both ResizeObserver and initPdf
+           so that only ONE renderSpread ever fires, preventing concurrent renders. */
+        var rTimer = null;
+        function scheduleRender() {
+          clearTimeout(rTimer);
+          rTimer = setTimeout(renderSpread, 80);
+        }
+
+        if (window.ResizeObserver) {
+          new ResizeObserver(scheduleRender).observe(viewport);
+        }
+
+        /* Click viewport → toggle fit-height / fit-width */
+        viewport.addEventListener('click', function () {
+          if (!pdfDoc) return;
+          zoomMode = zoomMode === 'fit-height' ? 'fit-width' : 'fit-height';
+          renderSpread();
+        });
+
+        prevBtn.addEventListener('click', function () {
+          if (spread > 0) { spread--; renderSpread(); }
+        });
+        nextBtn.addEventListener('click', function () {
+          if (spread < totalSpreads() - 1) { spread++; renderSpread(); }
+        });
+
+        expandBtn.addEventListener('click', function () {
+          var panel = wrap.closest('.book-card-panel');
+          if (!panel) return;
+          var expanded = panel.classList.toggle('is-expanded');
+          expandBtn.innerHTML = expanded ? collapseIcon() : expandIcon();
+          expandBtn.setAttribute('aria-label', expanded ? 'Свернуть читалку' : 'Развернуть читалку');
+        });
+
+        /* Load PDF.js lazily, then load the PDF */
+        function initPdf(lib) {
+          lib.GlobalWorkerOptions.workerSrc = 'assets/pdf.worker.min.js';
+          lib.getDocument(book.fragment).promise.then(function (pdf) {
+            pdfDoc = pdf;
+            scheduleRender(); /* debounced — merges with any pending ResizeObserver fire */
+          }).catch(function (e) {
+            console.error('PDF load error:', e);
+            loader.textContent = 'Ошибка загрузки PDF';
+          });
+        }
+
+        if (window.pdfjsLib) {
+          initPdf(window.pdfjsLib);
+        } else {
+          var scriptEl = document.createElement('script');
+          scriptEl.src = 'assets/pdf.min.js';
+          scriptEl.onload  = function () { initPdf(window.pdfjsLib); };
+          scriptEl.onerror = function () { loader.textContent = 'Не удалось загрузить просмотрщик'; };
+          document.head.appendChild(scriptEl);
+        }
+
+        return wrap;
+      }
+
+      function renderPanel(book) {
+        var panel = document.createElement('div');
+        panel.className = 'book-card-panel';
+
+        var header = document.createElement('div');
+        header.className = 'book-card-header';
+        header.innerHTML =
+          '<a class="btn-landing-ghost book-card-catalog-link" href="' + book.catalogHref + '">В каталог →</a>' +
+          '<button class="book-card-close" type="button" aria-label="Закрыть">×</button>';
+
+        var body = document.createElement('div');
+        body.className = 'book-card-body';
+
+        /* Reader — hidden until cover click */
+        var readerWrap = document.createElement('div');
+        readerWrap.className = 'book-card-reader-wrap';
+        readerWrap.appendChild(renderReader(book));
+
+        /* Main row: info (left) + cover column (right) */
+        var main = document.createElement('div');
+        main.className = 'book-card-main';
+
+        var info = document.createElement('div');
+        info.className = 'book-card-info';
+
+        var topicClass = 'topic-chip' + (book.topicVariant ? ' topic-chip' + book.topicVariant : '');
+        var subtitleHtml = book.subtitle
+          ? '<p class="book-card-subtitle">' + book.subtitle + '</p>'
+          : '';
+
+        info.innerHTML =
+          '<div class="book-card-meta-line">' +
+            '<span class="' + topicClass + '">' + book.topic + '</span>' +
+            '<span class="book-card-year-version">' + book.year + ' · ' + book.version + '</span>' +
+          '</div>' +
+          '<h2 class="book-card-title">' + book.title + '</h2>' +
+          subtitleHtml +
+          '<p class="book-card-authors">' + book.authors.join(', ') + '</p>' +
+          '<p class="book-card-annotation">' + book.annotation + '</p>' +
+          '<button class="book-card-annotation-toggle" type="button">Читать далее</button>' +
+          '<hr class="book-card-separator">' +
+          '<p class="book-card-notice">Полный текст доступен после регистрации</p>';
+
+        /* Cover column — right edge, click opens reader */
+        var coverCol = document.createElement('div');
+        coverCol.className = 'book-card-cover-col';
+        var coverImg = document.createElement('img');
+        coverImg.src = book.cover;
+        coverImg.alt = book.title;
+        var coverHint = document.createElement('div');
+        coverHint.className = 'book-card-cover-col-hint';
+        coverHint.setAttribute('aria-hidden', 'true');
+        coverHint.textContent = 'Смотреть фрагмент';
+        coverCol.appendChild(coverImg);
+        coverCol.appendChild(coverHint);
+        coverCol.addEventListener('click', function () {
+          panel.classList.toggle('is-reader-open');
+        });
+
+        main.appendChild(info);
+        main.appendChild(coverCol);
+
+        body.appendChild(readerWrap);
+        body.appendChild(main);
+        panel.appendChild(header);
+        panel.appendChild(body);
+
+        header.querySelector('.book-card-close').addEventListener('click', closeCard);
+
+        var toggle = info.querySelector('.book-card-annotation-toggle');
+        var annotation = info.querySelector('.book-card-annotation');
+        toggle.addEventListener('click', function () {
+          var expanded = annotation.classList.toggle('is-expanded');
+          toggle.textContent = expanded ? 'Свернуть' : 'Читать далее';
+        });
+
+        return panel;
+      }
+
+      function openCard(bookId) {
+        var book = BOOKS[bookId];
+        if (!book) return;
+        activeBookId = bookId;
+
+        splitLeft.classList.add('split-left--mini');
+        splitSection.classList.add('is-card-open');
+        bookRows.forEach(function (row) {
+          row.classList.toggle('book-row--active', row.dataset.bookId === bookId);
+        });
+
+        panelEl = renderPanel(book);
+        splitSection.insertBefore(panelEl, splitLeft.nextSibling);
+
+        requestAnimationFrame(function () {
+          splitSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+
+      function closeCard() {
+        splitLeft.classList.remove('split-left--mini');
+        splitSection.classList.remove('is-card-open');
+        bookRows.forEach(function (row) { row.classList.remove('book-row--active'); });
+        if (panelEl && panelEl.parentNode) panelEl.parentNode.removeChild(panelEl);
+        panelEl = null;
+        activeBookId = null;
+      }
+
+      function switchBook(bookId) {
+        var book = BOOKS[bookId];
+        if (!book || !panelEl) return;
+        activeBookId = bookId;
+
+        bookRows.forEach(function (row) {
+          row.classList.toggle('book-row--active', row.dataset.bookId === bookId);
+        });
+
+        var newPanel = renderPanel(book);
+        newPanel.style.animation = 'none';
+        newPanel.style.opacity = '0';
+        newPanel.style.transition = 'opacity 150ms ease';
+        splitSection.replaceChild(newPanel, panelEl);
+        panelEl = newPanel;
+        requestAnimationFrame(function () {
+          newPanel.style.opacity = '1';
+        });
+      }
+
+      bookRows.forEach(function (row) {
+        row.addEventListener('click', function () {
+          var id = row.dataset.bookId;
+          if (activeBookId === id) return;
+          if (activeBookId) switchBook(id);
+          else openCard(id);
+        });
+      });
+    })();
+  </script>
+
+  <!-- Page-exit transition: fade to paper before navigating to About -->
+  <script>
+    (function () {
+      var veil = document.getElementById("page-exit-veil");
+      var aboutLink = document.querySelector(".header-about");
+      if (!veil || !aboutLink) return;
+
+      aboutLink.addEventListener("click", function (e) {
+        var href = aboutLink.getAttribute("href");
+        if (!href || href === "#") return;
+        e.preventDefault();
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          window.location.href = href;
+          return;
+        }
+        veil.classList.add("is-active");
+        setTimeout(function () { window.location.href = href; }, 400);
+      });
+
+      // Logo click → identical behaviour to clicking "О проекте"
+      var wordmark = document.querySelector(".wordmark");
+      if (wordmark) {
+        wordmark.addEventListener("click", function (e) {
+          e.preventDefault();
+          aboutLink.click();
+        });
+      }
+    })();
+
   </script>
 </body>
 </html>
