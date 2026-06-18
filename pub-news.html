@@ -36,7 +36,6 @@
       opacity: 0.12;
       pointer-events: none;
       z-index: 0;
-      will-change: transform;
     }
 
     .container { width: 100%; max-width: var(--container-max); margin-inline: auto; padding-inline: var(--gutter); }
@@ -79,11 +78,11 @@
     .nav-link-home:hover { color: var(--noir-ink); opacity: 0.85; }
 
     .nav-strip, .nav-dot { position: absolute; pointer-events: none; }
-    .nav-strip { background: var(--accent); bottom: 20px; height: var(--hairline); border-radius: var(--radius-pill);
+    .nav-strip { background: var(--accent); bottom: 7px; height: var(--hairline); border-radius: var(--radius-pill);
       -webkit-mask: linear-gradient(90deg, #000 0, #000 calc(50% - 7px), transparent calc(50% - 7px), transparent calc(50% + 7px), #000 calc(50% + 7px), #000 100%);
       mask: linear-gradient(90deg, #000 0, #000 calc(50% - 7px), transparent calc(50% - 7px), transparent calc(50% + 7px), #000 calc(50% + 7px), #000 100%);
       transition: left 280ms var(--ease-out-quart), width 280ms var(--ease-out-quart), opacity 160ms var(--ease-out-quart); }
-    .nav-dot { background: #E04B00; bottom: 4px; width: 7px; height: 7px; border-radius: var(--radius-pill); transform: translateX(-50%); transition: left 360ms var(--ease-out-quart), bottom 360ms var(--ease-out-quart); }
+    .nav-dot { background: var(--accent); bottom: 4px; width: 7px; height: 7px; border-radius: var(--radius-pill); transform: translateX(-50%); transition: left 360ms var(--ease-out-quart), bottom 360ms var(--ease-out-quart); }
     .nav-strip:not([style]), .nav-dot:not([style]) { opacity: 0; }
     @media (prefers-reduced-motion: reduce) { .nav-strip, .nav-dot { transition: none; } }
 
@@ -91,7 +90,7 @@
 
     /* ---- Buttons ------------------------------------------------------- */
     .btn { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-medium); letter-spacing: var(--tracking-label); border-radius: var(--radius-md); cursor: pointer; transition: background var(--dur-base) var(--ease-out-quart), color var(--dur-base) var(--ease-out-quart), border-color var(--dur-base) var(--ease-out-quart), transform var(--dur-base) var(--ease-out-quart); }
-    .btn-primary { background: var(--accent); color: var(--on-accent); border: var(--hairline) solid var(--accent); padding: var(--space-2) var(--space-6); }
+    .btn-primary { background: var(--accent); color: var(--on-accent); border: var(--hairline) solid var(--accent); padding: var(--space-2) var(--space-6); min-height: 44px; }
     .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--on-accent); transform: translateY(-1px); }
     .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-md); }
     .btn-primary:focus-visible { box-shadow: 0 0 0 2px var(--surface); }
@@ -121,7 +120,7 @@
     .modal-backdrop.is-open .modal-card { opacity: 1; transform: translateY(0); }
     @media (prefers-reduced-motion: reduce) { .modal-backdrop, .modal-card { transition: none; } }
     .modal-header { position: relative; text-align: center; margin-bottom: var(--space-6); }
-    .modal-close { position: absolute; top: 0; right: 0; width: 44px; height: 44px; margin: -6px -6px 0 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--ink-faint); font-size: var(--fs-h2); line-height: 1; cursor: pointer; transition: color var(--dur-fast) var(--ease-out-quart); padding: 0; }
+    .modal-close { position: absolute; top: 0; right: 0; width: 44px; height: 44px; margin: -6px -6px 0 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: var(--radius-sm); color: var(--ink-soft); font-size: var(--fs-h2); line-height: 1; cursor: pointer; transition: color var(--dur-fast) var(--ease-out-quart); padding: 0; }
     .modal-close:hover { color: var(--ink); }
     .modal-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .modal-seal { display: inline-flex; gap: 0.04em; align-items: baseline; font-family: var(--font-serif); font-size: var(--fs-body); font-weight: var(--fw-semibold); letter-spacing: var(--tracking-display); background: var(--noir-paper); color: var(--noir-ink); padding: 3px var(--space-3) 5px; border-radius: var(--radius-md); margin-bottom: var(--space-4); line-height: 1; }
@@ -152,7 +151,7 @@
 
     /* ---- Responsive chrome -------------------------------------------- */
     @media (max-width: 760px) { .primary-nav { display: none; } .header-about { display: none; } :root { --gutter: var(--space-6); } }
-    @media (max-width: 460px) { .header-inner { gap: var(--space-3); } .header-actions { gap: var(--space-2); } }
+    @media (max-width: 460px) { .header-inner { gap: var(--space-3); } .header-actions { gap: var(--space-2); } .header-actions > .btn-landing-ghost { display: none; } }
 
     /* ===================================================================
        SHARED COMPONENTS
@@ -236,7 +235,7 @@
       font-family: var(--font-sans);
       font-size: var(--fs-caption);
       letter-spacing: var(--tracking-caption);
-      color: var(--ink-faint);
+      color: var(--ink-soft);
     }
     .news-featured-title {
       font-family: var(--font-serif);
@@ -353,14 +352,11 @@
     }
     .news-card:hover .news-card-link { text-decoration: underline; }
 
-    /* Text-only card — no image, accent left border */
+    /* Text-only card — no image */
     .news-card--text {
-      border-left: 3px solid var(--line);
       transition: transform var(--dur-base) var(--ease-out-quart),
-                  box-shadow var(--dur-base) var(--ease-out-quart),
-                  border-left-color var(--dur-base) var(--ease-out-quart);
+                  box-shadow var(--dur-base) var(--ease-out-quart);
     }
-    .news-card--text:hover { border-left-color: var(--accent); }
 
     /* ---- Section divider label --------------------------------------- */
     .news-section-label {
@@ -369,7 +365,7 @@
       font-weight: var(--fw-medium);
       letter-spacing: var(--tracking-caption);
       text-transform: uppercase;
-      color: var(--ink-faint);
+      color: var(--ink-soft);
       padding-bottom: var(--space-4);
       border-bottom: var(--hairline) solid var(--line);
       margin-bottom: var(--space-6);

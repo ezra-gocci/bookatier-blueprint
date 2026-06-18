@@ -38,7 +38,6 @@
       opacity: 0.12;
       pointer-events: none;
       z-index: 0;
-      will-change: transform;
     }
 
     .container {
@@ -156,7 +155,7 @@
 
     .nav-link-home[aria-current="page"],
     .nav-link-home:hover {
-      color: rgba(255, 255, 255, 0.92);
+      color: var(--noir-ink);
     }
     .nav-link-home[aria-current="page"] .arrow,
     .nav-link-home:hover .arrow {
@@ -183,7 +182,7 @@
                   opacity 160ms var(--ease-out-quart);
     }
     .nav-dot {
-      background: #E04B00;
+      background: var(--accent);
       bottom: 4px;
       width: 7px;
       height: 7px;
@@ -237,6 +236,7 @@
       color: var(--on-accent);
       border: var(--hairline) solid var(--accent);
       padding: var(--space-2) var(--space-6);
+      min-height: 44px;
     }
     .btn-primary:hover {
       background: var(--accent-hover);
@@ -340,7 +340,7 @@
     @media (max-width: 460px) {
       .header-inner { gap: var(--space-3); }
       .header-actions { gap: var(--space-2); }
-      .header-actions > .btn-ghost { display: none; }
+      .header-actions > .btn-ghost, .header-actions > .btn-landing-ghost { display: none; }
       .btn-ghost { padding: var(--space-2) var(--space-3); }
       .btn-primary { padding: var(--space-2) var(--space-4); }
     }
@@ -404,7 +404,7 @@
       background: transparent;
       border: none;
       border-radius: var(--radius-sm);
-      color: var(--ink-faint);
+      color: var(--ink-soft);
       font-size: var(--fs-h2);
       line-height: 1;
       cursor: pointer;

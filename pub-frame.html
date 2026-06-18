@@ -38,7 +38,6 @@
       opacity: 0.12;
       pointer-events: none;
       z-index: 0;
-      will-change: transform;
     }
 
     .container {
@@ -156,7 +155,7 @@
 
     .nav-link-home[aria-current="page"],
     .nav-link-home:hover {
-      color: rgba(255, 255, 255, 0.92);
+      color: var(--noir-ink);
     }
     .nav-link-home[aria-current="page"] .arrow,
     .nav-link-home:hover .arrow {
@@ -183,7 +182,7 @@
                   opacity 160ms var(--ease-out-quart);
     }
     .nav-dot {
-      background: #E04B00;
+      background: var(--accent);
       bottom: 4px;
       width: 7px;
       height: 7px;
@@ -205,11 +204,11 @@
       gap: var(--space-2);
       flex-shrink: 0;
     }
-    .header-actions .btn-landing-primary,
-    .header-actions .btn-landing-ghost {
+    .header-actions .btn {
       font-size: 0.6875rem;
       padding: 5px 1.25rem;
       letter-spacing: var(--tracking-label);
+      min-height: unset;
     }
     /* ---- Buttons ------------------------------------------------------- */
     .btn {
@@ -237,6 +236,7 @@
       color: var(--on-accent);
       border: var(--hairline) solid var(--accent);
       padding: var(--space-2) var(--space-6);
+      min-height: 44px;
     }
     .btn-primary:hover {
       background: var(--accent-hover);
@@ -404,7 +404,7 @@
       background: transparent;
       border: none;
       border-radius: var(--radius-sm);
-      color: var(--ink-faint);
+      color: var(--ink-soft);
       font-size: var(--fs-h2);
       line-height: 1;
       cursor: pointer;
@@ -667,8 +667,8 @@
       </nav>
 
       <div class="header-actions">
-        <a id="btn-reg" class="btn-landing-primary" href="#">Присоединиться</a>
-        <a id="btn-login" class="btn-landing-ghost" href="#">Зайти</a>
+        <a id="btn-reg" class="btn btn-primary" href="#">Присоединиться</a>
+        <a id="btn-login" class="btn btn-ghost" href="#">Зайти</a>
       </div>
     </div>
   </header>

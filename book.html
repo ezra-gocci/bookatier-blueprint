@@ -65,6 +65,7 @@
     .footer-links { display:inline-flex; align-items:baseline; gap:var(--space-4); flex-wrap:wrap; }
     .footer-link { font-family:var(--font-sans); font-size:var(--fs-caption); letter-spacing:var(--tracking-caption); color:var(--ink-soft); text-decoration:none; transition:color var(--dur-fast) var(--ease-out-quart); }
     .footer-link:hover { color:var(--accent); }
+    .footer-right { display:inline-flex; align-items:baseline; gap:var(--space-4); flex-wrap:wrap; }
 
     /* ================================================================
        BOOK PAGE
@@ -74,8 +75,8 @@
 
     /* Breadcrumb */
     .breadcrumb { padding-block:var(--space-4) 0; }
-    .breadcrumb-inner { display:flex; align-items:center; gap:var(--space-2); font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
-    .breadcrumb-link { color:var(--ink-faint); transition:color var(--dur-fast); }
+    .breadcrumb-inner { display:flex; align-items:center; gap:var(--space-2); font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); }
+    .breadcrumb-link { color:var(--ink-soft); transition:color var(--dur-fast); }
     .breadcrumb-link:hover { color:var(--accent); }
     .breadcrumb-sep { color:var(--line); }
 
@@ -93,7 +94,7 @@
     .progress-row { display:flex; align-items:center; gap:var(--space-2); padding:var(--space-2) var(--space-3); background:var(--surface-sunk); border-radius:var(--radius-md); }
     .progress-bar-wrap { flex:1; height:4px; background:var(--line); border-radius:var(--radius-pill); overflow:hidden; }
     .progress-bar-fill { height:100%; background:var(--accent); border-radius:var(--radius-pill); width:34%; }
-    .progress-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); white-space:nowrap; }
+    .progress-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); white-space:nowrap; }
 
     /* Book meta col */
     .book-meta-col { min-width:0; }
@@ -107,7 +108,7 @@
     .book-authors { font-family:var(--font-sans); font-size:var(--fs-body); color:var(--ink-soft); margin:0 0 var(--space-4); }
     .book-meta-row { display:flex; align-items:center; gap:var(--space-5); flex-wrap:wrap; margin-bottom:var(--space-4); }
     .meta-item { display:flex; flex-direction:column; gap:2px; }
-    .meta-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); letter-spacing:var(--tracking-caption); text-transform:uppercase; }
+    .meta-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); letter-spacing:var(--tracking-caption); text-transform:uppercase; }
     .meta-value { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); color:var(--ink); }
     .meta-sep { width:var(--hairline); height:32px; background:var(--line); align-self:center; }
 
@@ -118,18 +119,18 @@
     .star.f { color:var(--amber); }
     .star.e { color:var(--line); }
     .rating-num { font-family:var(--font-sans); font-size:var(--fs-body); font-weight:var(--fw-semibold); color:var(--ink); font-variant-numeric:tabular-nums; }
-    .rating-count { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-faint); }
+    .rating-count { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-soft); }
     .rep-badge { display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:var(--radius-pill); font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); border:var(--hairline) solid; }
     .rep-badge--maitre { color:var(--accent); border-color:var(--accent); }
     .rep-badge--expert { color:var(--slate); border-color:var(--slate); }
     .rep-badge--practik { color:var(--amber); border-color:var(--amber); }
-    .rep-badge--novice { color:var(--ink-faint); border-color:var(--line); }
+    .rep-badge--novice { color:var(--ink-soft); border-color:var(--line); }
 
     .book-annotation { font-family:var(--font-serif); font-size:var(--fs-body); color:var(--ink-soft); line-height:var(--lh-body); margin-bottom:var(--space-5); max-width:640px; }
 
     /* Version picker */
     .version-row { display:flex; align-items:center; gap:var(--space-3); flex-wrap:wrap; }
-    .version-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+    .version-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); }
     .version-select { padding:4px var(--space-3); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink); outline:none; cursor:pointer; transition:border-color var(--dur-fast); }
     .version-select:focus { border-color:var(--accent); }
     .version-history-link { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--accent); cursor:pointer; }
@@ -151,7 +152,7 @@
     .tab-aside { display:flex; flex-direction:column; gap:var(--space-6); position:sticky; top:calc(var(--header-height) + 60px); }
 
     /* Section scaffold */
-    .sec-eyebrow { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); letter-spacing:var(--tracking-caption); text-transform:uppercase; color:var(--ink-faint); margin-bottom:var(--space-1); }
+    .sec-eyebrow { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); letter-spacing:var(--tracking-caption); text-transform:uppercase; color:var(--ink-soft); margin-bottom:var(--space-1); }
     .sec-title { font-family:var(--font-serif); font-size:var(--fs-h2); font-weight:var(--fw-semibold); color:var(--ink); margin:0 0 var(--space-5); }
     .sec-title-sm { font-family:var(--font-serif); font-size:var(--fs-h3); font-weight:var(--fw-semibold); color:var(--ink); margin:0 0 var(--space-4); }
 
@@ -160,9 +161,9 @@
     .toc-item { display:flex; align-items:baseline; gap:var(--space-3); padding:var(--space-3) var(--space-4); background:var(--surface); border-bottom:var(--hairline) solid var(--line); transition:background var(--dur-fast); }
     .toc-item:last-child { border-bottom:none; }
     .toc-item:hover { background:var(--accent-tint); }
-    .toc-num { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); font-variant-numeric:tabular-nums; min-width:20px; }
+    .toc-num { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); font-variant-numeric:tabular-nums; min-width:20px; }
     .toc-text { font-family:var(--font-serif); font-size:var(--fs-small); color:var(--ink); flex:1; line-height:1.35; }
-    .toc-page { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); font-variant-numeric:tabular-nums; }
+    .toc-page { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); font-variant-numeric:tabular-nums; }
     .toc-more { display:block; padding:var(--space-3) var(--space-4); text-align:center; font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--accent); background:var(--surface-sunk); }
     .toc-more:hover { color:var(--accent-hover); }
     .toc-item--h2 .toc-text { padding-left:var(--space-4); font-size:var(--fs-caption); color:var(--ink-soft); }
@@ -171,10 +172,10 @@
     .version-history { display:flex; flex-direction:column; gap:var(--space-3); }
     .version-card { padding:var(--space-4); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); cursor:pointer; transition:border-color var(--dur-fast); }
     .version-card:hover { border-color:var(--accent); }
-    .version-card.is-current { border-left:3px solid var(--accent); }
+    .version-card.is-current { border-color:var(--accent); }
     .vc-head { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-3); margin-bottom:var(--space-1); }
     .vc-label { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-semibold); color:var(--ink); }
-    .vc-date { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); white-space:nowrap; }
+    .vc-date { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); white-space:nowrap; }
     .vc-badges { display:flex; gap:var(--space-2); flex-wrap:wrap; margin-bottom:var(--space-2); }
     .vc-badge { display:inline-flex; padding:1px 8px; border-radius:var(--radius-pill); font-family:var(--font-sans); font-size:10px; font-weight:var(--fw-semibold); border:var(--hairline) solid; }
     .vc-badge--full { color:var(--sage); border-color:var(--sage); }
@@ -189,11 +190,11 @@
     .comment-card { padding:var(--space-4); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); }
     .comment-header { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-3); margin-bottom:var(--space-3); }
     .comment-author { display:flex; align-items:center; gap:var(--space-3); }
-    .u-av { display:inline-flex; align-items:center; justify-content:center; border-radius:var(--radius-pill); font-family:var(--font-sans); font-weight:var(--fw-semibold); letter-spacing:0; color:#ECE3D6; flex-shrink:0; }
+    .u-av { display:inline-flex; align-items:center; justify-content:center; border-radius:var(--radius-pill); font-family:var(--font-sans); font-weight:var(--fw-semibold); letter-spacing:0; color:var(--noir-ink); flex-shrink:0; }
     .u-av--sm { width:32px; height:32px; font-size:var(--fs-caption); }
     .comment-author-info { display:flex; flex-direction:column; gap:2px; }
     .comment-author-name { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-semibold); color:var(--ink); }
-    .comment-date { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+    .comment-date { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); }
     .comment-text { font-family:var(--font-serif); font-size:var(--fs-body); color:var(--ink-soft); line-height:var(--lh-body); margin-bottom:var(--space-3); }
     .comment-footer { display:flex; align-items:center; gap:var(--space-4); }
     .vote-ctrl { display:inline-flex; align-items:center; gap:var(--space-2); }
@@ -202,11 +203,11 @@
     .vote-btn.is-up.is-active { background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
     .vote-btn.is-down.is-active { background:var(--surface-sunk); border-color:var(--ink-faint); color:var(--ink-faint); }
     .vote-total { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:var(--radius-pill); font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-semibold); background:var(--surface-sunk); color:var(--ink-soft); border:var(--hairline) solid var(--line); font-variant-numeric:tabular-nums; }
-    .btn-reply { background:none; border:none; font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); cursor:pointer; padding:0; transition:color var(--dur-fast); }
+    .btn-reply { background:none; border:none; font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); cursor:pointer; padding:0; transition:color var(--dur-fast); }
     .btn-reply:hover { color:var(--accent); }
     .replies-list { margin-top:var(--space-3); padding-left:var(--space-8); border-left:2px solid var(--line); display:flex; flex-direction:column; gap:var(--space-3); }
     .reply-card { padding:var(--space-3); background:var(--surface-sunk); border-radius:var(--radius-md); }
-    .reply-to { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); margin-bottom:var(--space-1); }
+    .reply-to { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); margin-bottom:var(--space-1); }
     .reply-text { font-family:var(--font-serif); font-size:var(--fs-small); color:var(--ink-soft); line-height:1.5; }
 
     /* Add comment box */
@@ -214,7 +215,7 @@
     .add-comment-label { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); color:var(--ink); margin-bottom:var(--space-3); display:block; }
     .comment-textarea { width:100%; min-height:88px; padding:var(--space-3); background:var(--surface-sunk); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); font-family:var(--font-serif); font-size:var(--fs-small); color:var(--ink); resize:vertical; outline:none; box-sizing:border-box; transition:border-color var(--dur-fast); }
     .comment-textarea:focus { border-color:var(--accent); }
-    .comment-textarea::placeholder { color:var(--ink-faint); }
+    .comment-textarea::placeholder { color:var(--ink-soft); }
     .add-comment-footer { display:flex; justify-content:flex-end; margin-top:var(--space-3); }
     .btn-submit-comment { padding:var(--space-2) var(--space-5); background:var(--accent); color:var(--on-accent); border:none; border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); cursor:pointer; transition:background var(--dur-fast); }
     .btn-submit-comment:hover { background:var(--accent-hover); }
@@ -227,11 +228,11 @@
     .review-author-info { display:flex; flex-direction:column; gap:var(--space-1); }
     .review-author-name { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-semibold); color:var(--ink); }
     .review-author-badges { display:flex; align-items:center; gap:var(--space-2); flex-wrap:wrap; }
-    .review-date { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); white-space:nowrap; }
+    .review-date { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); white-space:nowrap; }
     .review-stars { display:flex; align-items:center; gap:2px; margin-bottom:var(--space-3); }
     .review-text { font-family:var(--font-serif); font-size:var(--fs-body); color:var(--ink-soft); line-height:var(--lh-body); font-style:italic; margin-bottom:var(--space-4); }
     .review-footer { display:flex; align-items:center; justify-content:space-between; gap:var(--space-3); flex-wrap:wrap; }
-    .review-weight-note { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+    .review-weight-note { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); }
     .review-weight-note span { color:var(--amber); font-weight:var(--fw-semibold); }
     .pro-mark { display:inline-flex; align-items:center; gap:3px; padding:2px 7px; border-radius:var(--radius-pill); font-family:var(--font-sans); font-size:10px; font-weight:var(--fw-semibold); background:color-mix(in srgb,var(--sage) 12%,var(--surface-sunk)); color:var(--sage); }
 
@@ -239,7 +240,7 @@
     .pro-gate { padding:var(--space-5); background:color-mix(in srgb,var(--accent) 6%,var(--surface)); border:var(--hairline) solid color-mix(in srgb,var(--accent) 20%,var(--line)); border-radius:var(--radius-md); text-align:center; }
     .pro-gate-icon { font-size:28px; margin-bottom:var(--space-2); }
     .pro-gate-title { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-semibold); color:var(--ink); margin-bottom:var(--space-1); }
-    .pro-gate-desc { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-faint); }
+    .pro-gate-desc { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-soft); }
 
     /* Review editor (Professional) */
     .review-editor { padding:var(--space-5); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); margin-bottom:var(--space-5); }
@@ -250,7 +251,7 @@
     .star-pick:hover { color:var(--amber); }
     .review-textarea { width:100%; min-height:100px; padding:var(--space-3); background:var(--surface-sunk); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); font-family:var(--font-serif); font-size:var(--fs-small); color:var(--ink); resize:vertical; outline:none; box-sizing:border-box; transition:border-color var(--dur-fast); }
     .review-textarea:focus { border-color:var(--accent); }
-    .review-textarea::placeholder { color:var(--ink-faint); }
+    .review-textarea::placeholder { color:var(--ink-soft); }
     .review-editor-footer { display:flex; justify-content:flex-end; margin-top:var(--space-3); }
     .btn-submit-review { padding:var(--space-2) var(--space-5); background:var(--accent); color:var(--on-accent); border:none; border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); cursor:pointer; transition:background var(--dur-fast); }
     .btn-submit-review:hover { background:var(--accent-hover); }
@@ -262,15 +263,15 @@
     .req-table { width:100%; border-collapse:collapse; }
     .req-table tr { border-bottom:var(--hairline) solid var(--line); }
     .req-table tr:last-child { border-bottom:none; }
-    .req-table th { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); color:var(--ink-faint); text-transform:uppercase; letter-spacing:var(--tracking-caption); text-align:left; padding:var(--space-3) var(--space-4) var(--space-3) 0; width:140px; vertical-align:top; }
+    .req-table th { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); color:var(--ink-soft); text-transform:uppercase; letter-spacing:var(--tracking-caption); text-align:left; padding:var(--space-3) var(--space-4) var(--space-3) 0; width:140px; vertical-align:top; }
     .req-table td { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink); padding:var(--space-3) 0; }
 
     /* Citation block */
     .citation-block { padding:var(--space-5); background:var(--surface-sunk); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); margin-bottom:var(--space-6); }
-    .citation-label { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); letter-spacing:var(--tracking-caption); text-transform:uppercase; color:var(--ink-faint); margin-bottom:var(--space-3); }
+    .citation-label { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); letter-spacing:var(--tracking-caption); text-transform:uppercase; color:var(--ink-soft); margin-bottom:var(--space-3); }
     .citation-string { font-family:var(--font-serif); font-size:var(--fs-small); color:var(--ink); line-height:1.6; margin-bottom:var(--space-3); }
     .citation-deeplink { display:flex; align-items:center; gap:var(--space-2); padding:var(--space-2) var(--space-3); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); margin-bottom:var(--space-3); }
-    .citation-url { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .citation-url { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .btn-copy { padding:var(--space-1) var(--space-3); background:var(--accent); color:var(--on-accent); border:none; border-radius:var(--radius-sm); font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); cursor:pointer; transition:background var(--dur-fast); white-space:nowrap; }
     .btn-copy:hover { background:var(--accent-hover); }
 
@@ -281,18 +282,18 @@
     .toc-aside-item { display:flex; align-items:baseline; gap:var(--space-3); padding:var(--space-2) 0; border-bottom:var(--hairline) solid var(--line); cursor:pointer; }
     .toc-aside-item:last-child { border-bottom:none; }
     .toc-aside-item:hover .toc-aside-text { color:var(--accent); }
-    .toc-aside-num { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); min-width:18px; }
+    .toc-aside-num { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); min-width:18px; }
     .toc-aside-text { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-soft); flex:1; }
-    .toc-aside-pg { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+    .toc-aside-pg { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); }
     .toc-aside-more { display:block; padding-top:var(--space-2); font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--accent); }
     .toc-aside-more:hover { color:var(--accent-hover); }
 
     .community-aside-item { display:flex; align-items:center; gap:var(--space-3); padding:var(--space-2) 0; border-bottom:var(--hairline) solid var(--line); }
     .community-aside-item:last-child { border-bottom:none; }
-    .community-av { width:28px; height:28px; border-radius:var(--radius-pill); display:inline-flex; align-items:center; justify-content:center; font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-semibold); color:#ECE3D6; flex-shrink:0; }
+    .community-av { width:28px; height:28px; border-radius:var(--radius-pill); display:inline-flex; align-items:center; justify-content:center; font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-semibold); color:var(--noir-ink); flex-shrink:0; }
     .community-aside-info { flex:1; min-width:0; }
     .community-aside-name { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); color:var(--ink); }
-    .community-aside-action { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+    .community-aside-action { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); }
 
     /* ---- Responsive ---- */
     @media (max-width:900px) { .book-hero-layout { grid-template-columns:140px 1fr; gap:var(--space-6); } .book-cover { width:140px; height:196px; } .tab-layout { grid-template-columns:1fr; } .tab-aside { position:static; } }
@@ -440,8 +441,8 @@
       <div class="tabs-inner container">
         <button class="tab-btn is-active" data-tab="overview">Обзор</button>
         <button class="tab-btn" data-tab="rate">Оценить</button>
-        <button class="tab-btn" data-tab="comments">Комментарии <span style="font-weight:400;color:var(--ink-faint);margin-left:2px;">(14)</span></button>
-        <button class="tab-btn" data-tab="reviews">Рецензии <span style="font-weight:400;color:var(--ink-faint);margin-left:2px;">(7)</span></button>
+        <button class="tab-btn" data-tab="comments">Комментарии <span style="font-weight:400;color:var(--ink-soft);margin-left:2px;">(14)</span></button>
+        <button class="tab-btn" data-tab="reviews">Рецензии <span style="font-weight:400;color:var(--ink-soft);margin-left:2px;">(7)</span></button>
         <button class="tab-btn" data-tab="requisites" id="tab-btn-req">Реквизиты</button>
       </div>
     </div>
@@ -454,7 +455,6 @@
         <div class="tab-panel is-active" id="panel-overview">
           <div class="tab-layout">
             <div class="tab-main">
-              <p class="sec-eyebrow">Содержание</p>
               <h2 class="sec-title">Оглавление</h2>
               <div class="toc-list" role="list">
                 <a class="toc-item" href="reader.html" role="listitem">
@@ -535,7 +535,7 @@
                     </div>
                   </div>
                   <div class="community-aside-item">
-                    <span class="community-av" style="background:#7A4A3A;">ДО</span>
+                    <span class="community-av" style="background:var(--amber);">ДО</span>
                     <div class="community-aside-info">
                       <p class="community-aside-name">Дмитрий Орлов</p>
                       <p class="community-aside-action">завершил · вчера</p>
@@ -586,13 +586,13 @@
               <div class="aside-card">
                 <p class="aside-title">Рейтинг книги</p>
                 <div style="text-align:center;padding:var(--space-4) 0;">
-                  <div style="font-family:var(--font-serif);font-size:48px;font-weight:var(--fw-semibold);color:var(--accent);line-height:1;">4.8</div>
+                  <div style="font-family:var(--font-sans);font-size:var(--fs-h2);font-weight:var(--fw-semibold);color:var(--ink);line-height:1;">4.8</div>
                   <div class="stars" style="justify-content:center;margin:var(--space-2) 0;">
                     <span class="star f">★</span><span class="star f">★</span><span class="star f">★</span><span class="star f">★</span><span class="star f">★</span>
                   </div>
-                  <div style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);">7 рецензий · вес: взвешенный</div>
+                  <div style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);">7 рецензий · вес: взвешенный</div>
                 </div>
-                <div style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);padding-top:var(--space-3);border-top:var(--hairline) solid var(--line);">Рейтинг = α·профрецензии + (1−α)·голоса участников. Голос Мэтра весит ×5.</div>
+                <div style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);padding-top:var(--space-3);border-top:var(--hairline) solid var(--line);">Рейтинг = α·профрецензии + (1−α)·голоса участников. Голос Мэтра весит ×5.</div>
               </div>
             </aside>
           </div>
@@ -633,7 +633,7 @@
                       <p class="reply-to">↳ в ответ Марии Соколовой</p>
                       <p class="reply-text" style="font-family:var(--font-serif);font-size:var(--fs-small);color:var(--ink-soft);">Согласна с этим. Именно неопределённость понятия даёт ему клиническую жизнь. Если его «зафиксировать» — оно превращается в инструмент, а не в опыт.</p>
                       <div style="margin-top:var(--space-2);display:flex;align-items:center;gap:var(--space-3);">
-                        <span style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);">Наталья Кузнецова · <span class="rep-badge rep-badge--expert" style="font-size:10px;padding:0 5px;">Эксперт 234</span></span>
+                        <span style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);">Наталья Кузнецова · <span class="rep-badge rep-badge--expert" style="font-size:10px;padding:0 5px;">Эксперт 234</span></span>
                       </div>
                     </div>
                   </div>
@@ -644,7 +644,7 @@
                   <div class="comment-card">
                     <div class="comment-header">
                       <div class="comment-author">
-                        <span class="u-av u-av--sm" style="background:#5A6E7A;">АП</span>
+                        <span class="u-av u-av--sm" style="background:var(--slate);">АП</span>
                         <div class="comment-author-info">
                           <span class="comment-author-name">Алексей Петров</span>
                           <span class="comment-date">8 июня 2026 · <span class="rep-badge rep-badge--practik" style="font-size:10px;padding:0 6px;">Практик 118</span></span>
@@ -701,7 +701,7 @@
             <aside class="tab-aside">
               <div class="aside-card">
                 <p class="aside-title">О голосовании</p>
-                <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);line-height:1.5;">Голоса взвешены по репутации. Мэтр (×5) влияет на репутацию автора сильнее, чем Новичок (×1). Профессиональный множитель добавляет ×2.</p>
+                <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);line-height:1.5;">Голоса взвешены по репутации. Мэтр (×5) влияет на репутацию автора сильнее, чем Новичок (×1). Профессиональный множитель добавляет ×2.</p>
               </div>
               <div class="aside-card">
                 <p class="aside-title">Активные участники</p>
@@ -711,7 +711,7 @@
                     <div class="community-aside-info"><p class="community-aside-name">Мария Соколова</p><p class="community-aside-action">3 комментария</p></div>
                   </div>
                   <div class="community-aside-item">
-                    <span class="community-av" style="background:#7A4A3A;">ДО</span>
+                    <span class="community-av" style="background:var(--amber);">ДО</span>
                     <div class="community-aside-info"><p class="community-aside-name">Дмитрий Орлов</p><p class="community-aside-action">2 комментария</p></div>
                   </div>
                 </div>
@@ -759,7 +759,7 @@
                 <div class="review-card">
                   <div class="review-header">
                     <div class="review-author">
-                      <span class="u-av u-av--sm" style="background:#7A4A3A;">ДО</span>
+                      <span class="u-av u-av--sm" style="background:var(--amber);">ДО</span>
                       <div class="review-author-info">
                         <span class="review-author-name">Дмитрий Орлов</span>
                         <div class="review-author-badges">
@@ -788,11 +788,11 @@
             </div>
             <aside class="tab-aside">
               <div class="aside-card" style="text-align:center;padding:var(--space-5);">
-                <div style="font-family:var(--font-serif);font-size:48px;font-weight:var(--fw-semibold);color:var(--accent);line-height:1;">4.8</div>
+                <div style="font-family:var(--font-sans);font-size:var(--fs-h2);font-weight:var(--fw-semibold);color:var(--ink);line-height:1;">4.8</div>
                 <div class="stars" style="justify-content:center;margin:var(--space-2) 0;">
                   <span class="star f">★</span><span class="star f">★</span><span class="star f">★</span><span class="star f">★</span><span class="star f">★</span>
                 </div>
-                <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);">7 рецензий профессионалов</p>
+                <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);">7 рецензий профессионалов</p>
               </div>
               <div class="aside-card">
                 <div class="pro-gate">
@@ -834,11 +834,10 @@
                   <span class="citation-url">beta2alpha.academy/book/bion-naucheniye/read?v=1.0&amp;p=1</span>
                   <button class="btn-copy" id="btn-copy-cite" type="button">Скопировать</button>
                 </div>
-                <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);">Для ссылки на конкретную страницу — откройте читалку и используйте кнопку «Цитировать» на нужной странице.</p>
+                <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);">Для ссылки на конкретную страницу — откройте читалку и используйте кнопку «Цитировать» на нужной странице.</p>
               </div>
 
               <!-- Version history -->
-              <p class="sec-eyebrow">История версий</p>
               <h2 class="sec-title" id="tab-requisites">Версии издания</h2>
               <div class="version-history">
                 <div class="version-card is-current">
@@ -909,11 +908,13 @@
           <span class="text-mark" aria-hidden="true">β<span class="arrow">→</span>α</span>
           <span class="footer-tagline">© 2026 beta→alpha. Для профессионального сообщества.</span>
         </div>
-        <nav class="footer-links" aria-label="Служебные ссылки">
-          <a class="footer-link" href="pub-about.html">О проекте</a>
-          <a class="footer-link" href="#" id="footer-console-link">Консоль</a>
+        <div class="footer-right">
+          <nav class="footer-links" aria-label="Служебные ссылки">
+            <a class="footer-link" href="pub-about.html">О проекте</a>
+            <a class="footer-link" href="#" id="footer-console-link">Консоль</a>
+          </nav>
           <span class="build-tag">v0.2.0-primer · book</span>
-        </nav>
+        </div>
       </div>
     </div>
   </footer>

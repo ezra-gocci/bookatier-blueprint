@@ -38,7 +38,6 @@
       opacity: 0.12;
       pointer-events: none;
       z-index: 0;
-      will-change: transform;
     }
 
     .container {
@@ -157,7 +156,7 @@
 
     .nav-link-home[aria-current="page"],
     .nav-link-home:hover {
-      color: rgba(255, 255, 255, 0.92);
+      color: var(--noir-ink);
     }
     .nav-link-home[aria-current="page"] .arrow,
     .nav-link-home:hover .arrow {
@@ -168,7 +167,7 @@
     .nav-dot { position: absolute; pointer-events: none; }
     .nav-strip {
       background: var(--accent);
-      bottom: 20px;
+      bottom: 7px;
       height: var(--hairline);
       border-radius: var(--radius-pill);
       -webkit-mask: linear-gradient(90deg,
@@ -184,7 +183,7 @@
                   opacity 160ms var(--ease-out-quart);
     }
     .nav-dot {
-      background: #E04B00;
+      background: var(--accent);
       bottom: 4px;
       width: 7px;
       height: 7px;
@@ -238,6 +237,7 @@
       color: var(--on-accent);
       border: var(--hairline) solid var(--accent);
       padding: var(--space-2) var(--space-6);
+      min-height: 44px;
     }
     .btn-primary:hover {
       background: var(--accent-hover);
@@ -341,7 +341,8 @@
     @media (max-width: 460px) {
       .header-inner { gap: var(--space-3); }
       .header-actions { gap: var(--space-2); }
-      .header-actions > .btn-ghost { display: none; }
+      .header-actions > .btn-ghost,
+      .header-actions > .btn-landing-ghost { display: none; }
       .btn-ghost { padding: var(--space-2) var(--space-3); }
       .btn-primary { padding: var(--space-2) var(--space-4); }
     }
@@ -405,7 +406,7 @@
       background: transparent;
       border: none;
       border-radius: var(--radius-sm);
-      color: var(--ink-faint);
+      color: var(--ink-soft);
       font-size: var(--fs-h2);
       line-height: 1;
       cursor: pointer;
@@ -549,7 +550,6 @@
     }
     .split-right .section-eyebrow {
       background: color-mix(in srgb, var(--surface) 45%, transparent);
-      border-left: 4px solid #D45C2A;
       padding-left: var(--space-3);
       padding-right: var(--space-4);
       padding-block: var(--space-1);
@@ -1016,7 +1016,7 @@
     .split-divider {
       width: 48px;
       flex-shrink: 0;
-      background: #D45C2A;
+      background: var(--noir-accent);
       align-self: stretch;
       display: flex;
       flex-direction: column;
@@ -1039,7 +1039,7 @@
     .split-left {
       flex: 0 0 40%;
       padding-inline: var(--gutter);
-      background: #381D11;
+      background: var(--noir-paper);
       padding-bottom: var(--space-8);
     }
     .split-left .book-list { margin-top: var(--space-8); }
@@ -1054,7 +1054,6 @@
     .split-left .section-eyebrow {
       color: var(--noir-accent);
       background: color-mix(in srgb, var(--noir-ink) 12%, transparent);
-      border-left: 4px solid #D45C2A;
       padding-left: var(--space-3);
       padding-right: var(--space-4);
       padding-block: var(--space-1);
@@ -1125,7 +1124,7 @@
     .book-short-desc {
       font-family: var(--font-sans);
       font-size: var(--fs-small);
-      color: var(--ink-faint);
+      color: var(--ink-soft);
       line-height: 1.5;
       margin: var(--space-1) 0 0;
     }
@@ -1362,7 +1361,7 @@
       padding-block-start: 0;
       padding-block-end: var(--space-16);
       text-align: center;
-      background: #F7F1E6;
+      background: var(--paper);
     }
 
     .closing-heading {
@@ -1388,7 +1387,7 @@
       .split-divider--reviews { display: none; }
       .split-carousel {
         flex: 0 0 100%;
-        border-top: 4px solid #D45C2A;
+        border-top: 4px solid var(--noir-accent);
         padding-block: var(--space-12);
         justify-content: flex-start;
       }
@@ -1590,7 +1589,7 @@
       background: transparent;
       border: var(--hairline) solid var(--line);
       border-radius: var(--radius-pill);
-      color: var(--ink-faint);
+      color: var(--ink-soft);
       font-family: var(--font-sans);
       font-size: var(--fs-small);
       padding: var(--space-1) var(--space-4);
@@ -2272,7 +2271,6 @@
       <div class="split-right">
 
 
-        <span class="section-eyebrow">Почему beta→alpha</span>
         <h2 class="section-heading" id="value-heading">Подход, который отличает нас</h2>
 
         <!-- B4 mobile list (shown below 760px, hidden on desktop) -->

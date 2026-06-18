@@ -56,17 +56,17 @@
     .cabinet-main { flex:1; position:relative; z-index:1; }
     .cabinet-hero { padding-block:var(--space-8); border-bottom:var(--hairline) solid var(--line); }
     .cabinet-hero-inner { display:flex; align-items:center; gap:var(--space-6); }
-    .cab-avatar { width:72px; height:72px; border-radius:var(--radius-pill); display:flex; align-items:center; justify-content:center; font-family:var(--font-serif); font-size:24px; font-weight:var(--fw-semibold); color:#ECE3D6; flex-shrink:0; }
+    .cab-avatar { width:72px; height:72px; border-radius:var(--radius-pill); display:flex; align-items:center; justify-content:center; font-family:var(--font-serif); font-size:24px; font-weight:var(--fw-semibold); color:var(--on-accent); flex-shrink:0; }
     .cab-info { flex:1; }
     .cab-name { font-family:var(--font-serif); font-size:var(--fs-h2); font-weight:var(--fw-semibold); color:var(--ink); margin:0 0 4px; }
-    .cab-role { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-faint); }
+    .cab-role { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-soft); }
     .cab-rep-pill { display:inline-flex; align-items:center; gap:5px; padding:3px 12px; border-radius:var(--radius-pill); font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); border:var(--hairline) solid var(--amber); color:var(--amber); background:color-mix(in srgb,var(--amber) 8%,var(--surface)); margin-top:var(--space-2); }
 
     /* Two-column layout */
     .cabinet-layout { display:grid; grid-template-columns:240px 1fr; gap:0; align-items:start; padding-block:var(--space-8) var(--space-16); }
     .cabinet-nav { border-right:var(--hairline) solid var(--line); padding-right:var(--space-6); position:sticky; top:calc(var(--header-height) + var(--space-6)); }
     .cab-nav-section { margin-bottom:var(--space-5); }
-    .cab-nav-label { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); letter-spacing:var(--tracking-caption); text-transform:uppercase; color:var(--ink-faint); padding:0 var(--space-3) var(--space-2); }
+    .cab-nav-label { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); letter-spacing:var(--tracking-caption); text-transform:uppercase; color:var(--ink-soft); padding:0 var(--space-3) var(--space-2); }
     .cab-nav-item { display:flex; align-items:center; gap:var(--space-3); padding:var(--space-2) var(--space-3); border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-soft); cursor:pointer; transition:all var(--dur-fast); text-decoration:none; }
     .cab-nav-item:hover { background:var(--surface-sunk); color:var(--ink); }
     .cab-nav-item.is-active { background:color-mix(in srgb,var(--accent) 8%,transparent); color:var(--accent); font-weight:var(--fw-medium); }
@@ -87,9 +87,9 @@
     .form-label { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); color:var(--ink); }
     .form-input { padding:var(--space-3) var(--space-4); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink); outline:none; transition:border-color var(--dur-fast); }
     .form-input:focus { border-color:var(--accent); }
-    .form-input::placeholder { color:var(--ink-faint); }
+    .form-input::placeholder { color:var(--ink-soft); }
     .form-textarea { min-height:80px; resize:vertical; }
-    .form-hint { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+    .form-hint { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); }
     .form-row { display:flex; align-items:center; justify-content:space-between; gap:var(--space-4); margin-bottom:var(--space-6); flex-wrap:wrap; }
     .btn-save { padding:var(--space-3) var(--space-6); background:var(--accent); color:var(--on-accent); border:none; border-radius:var(--radius-md); font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-semibold); cursor:pointer; transition:background var(--dur-fast); }
     .btn-save:hover { background:var(--accent-hover); }
@@ -102,39 +102,39 @@
     .info-card { padding:var(--space-5); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); margin-bottom:var(--space-6); }
     .info-row { display:flex; align-items:baseline; justify-content:space-between; padding-block:var(--space-3); border-bottom:var(--hairline) solid var(--line); gap:var(--space-4); }
     .info-row:last-child { border-bottom:none; }
-    .info-label { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-faint); }
+    .info-label { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink-soft); }
     .info-val { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink); font-weight:var(--fw-medium); }
     .info-val a { color:var(--accent); }
 
     /* Stat grid */
     .stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--space-4); margin-bottom:var(--space-6); }
     .stat-card { padding:var(--space-5); background:var(--surface); border:var(--hairline) solid var(--line); border-radius:var(--radius-md); text-align:center; }
-    .stat-val { font-family:var(--font-serif); font-size:var(--fs-h1); font-weight:var(--fw-semibold); color:var(--accent); line-height:1; font-variant-numeric:tabular-nums; margin-bottom:4px; }
-    .stat-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); }
+    .stat-val { font-family:var(--font-serif); font-size:var(--fs-h2); font-weight:var(--fw-semibold); color:var(--ink); line-height:1; font-variant-numeric:tabular-nums; margin-bottom:4px; }
+    .stat-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); }
 
     /* Reputation tiers table */
     .tiers-table { width:100%; border-collapse:collapse; margin-bottom:var(--space-6); }
-    .tiers-table th { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); color:var(--ink-faint); text-transform:uppercase; letter-spacing:var(--tracking-caption); text-align:left; padding:var(--space-2) var(--space-4) var(--space-2) 0; border-bottom:var(--hairline) solid var(--line); }
+    .tiers-table th { font-family:var(--font-sans); font-size:var(--fs-caption); font-weight:var(--fw-medium); color:var(--ink-soft); text-transform:uppercase; letter-spacing:var(--tracking-caption); text-align:left; padding:var(--space-2) var(--space-4) var(--space-2) 0; border-bottom:var(--hairline) solid var(--line); }
     .tiers-table td { font-family:var(--font-sans); font-size:var(--fs-small); color:var(--ink); padding:var(--space-3) var(--space-4) var(--space-3) 0; border-bottom:var(--hairline) solid var(--line); }
     .tiers-table tr:last-child td { border-bottom:none; }
     .tiers-table tr.is-current td { background:color-mix(in srgb,var(--accent) 5%,transparent); }
-    .tiers-table tr.is-current td:first-child { border-left:3px solid var(--accent); padding-left:calc(var(--space-4) - 3px); }
+    .tiers-table tr.is-current td:first-child { padding-left:var(--space-4); }
     .tier-pill { display:inline-flex; padding:1px 8px; border-radius:var(--radius-pill); font-size:var(--fs-caption); font-weight:var(--fw-medium); border:var(--hairline) solid; }
     .tier-pill--maitre { color:var(--accent); border-color:var(--accent); }
     .tier-pill--expert { color:var(--slate); border-color:var(--slate); }
     .tier-pill--practik { color:var(--amber); border-color:var(--amber); }
-    .tier-pill--novice { color:var(--ink-faint); border-color:var(--line); }
+    .tier-pill--novice { color:var(--ink-soft); border-color:var(--line); }
 
     /* Toggle switch */
     .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:var(--space-3) 0; border-bottom:var(--hairline) solid var(--line); }
     .toggle-row:last-child { border-bottom:none; }
     .toggle-info { flex:1; }
     .toggle-title { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); color:var(--ink); }
-    .toggle-desc { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); margin-top:2px; }
+    .toggle-desc { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); margin-top:2px; }
     .toggle { position:relative; width:44px; height:24px; flex-shrink:0; }
     .toggle input { opacity:0; width:0; height:0; position:absolute; }
     .toggle-slider { position:absolute; inset:0; background:var(--line); border-radius:var(--radius-pill); cursor:pointer; transition:background var(--dur-fast); }
-    .toggle-slider::before { content:""; position:absolute; height:18px; width:18px; left:3px; bottom:3px; background:#fff; border-radius:var(--radius-pill); transition:transform var(--dur-fast); }
+    .toggle-slider::before { content:""; position:absolute; height:18px; width:18px; left:3px; bottom:3px; background:var(--paper); border-radius:var(--radius-pill); transition:transform var(--dur-fast); }
     .toggle input:checked ~ .toggle-slider { background:var(--accent); }
     .toggle input:checked ~ .toggle-slider::before { transform:translateX(20px); }
 
@@ -144,12 +144,13 @@
     .history-cover { width:40px; height:54px; object-fit:cover; border-radius:var(--radius-sm); border:var(--hairline) solid var(--line); flex-shrink:0; }
     .history-info { flex:1; min-width:0; }
     .history-title { font-family:var(--font-sans); font-size:var(--fs-small); font-weight:var(--fw-medium); color:var(--ink); }
-    .history-meta { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); margin-top:2px; }
+    .history-meta { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); margin-top:2px; }
     .history-progress { display:flex; align-items:center; gap:var(--space-3); flex-shrink:0; }
     .h-prog-bar { width:60px; height:4px; background:var(--line); border-radius:var(--radius-pill); overflow:hidden; }
     .h-prog-fill { height:100%; background:var(--accent); border-radius:var(--radius-pill); }
-    .h-prog-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-faint); font-variant-numeric:tabular-nums; }
+    .h-prog-label { font-family:var(--font-sans); font-size:var(--fs-caption); color:var(--ink-soft); font-variant-numeric:tabular-nums; }
 
+    .footer-right { display:inline-flex; align-items:baseline; gap:var(--space-4); flex-wrap:wrap; }
     @media (max-width:900px) { .cabinet-layout { grid-template-columns:1fr; } .cabinet-nav { position:static; border-right:none; border-bottom:var(--hairline) solid var(--line); padding-right:0; padding-bottom:var(--space-6); display:flex; flex-wrap:wrap; gap:var(--space-1); } .cabinet-content { padding-left:0; padding-top:var(--space-6); } .cab-nav-label { display:none; } .cab-nav-section { display:flex; flex-wrap:wrap; gap:var(--space-1); margin-bottom:0; } .form-grid { grid-template-columns:1fr; } .stat-grid { grid-template-columns:repeat(2,1fr); } }
     @media (max-width:760px) { .primary-nav { display:none; } }
   </style>
@@ -172,7 +173,7 @@
       <div class="header-actions">
         <button class="icon-btn" type="button" aria-label="Поиск"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></button>
         <button class="icon-btn" type="button" aria-label="Пульс"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></button>
-        <button class="icon-btn" type="button" aria-label="Уведомления"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="notif-count">3</span></button>
+        <button class="icon-btn" type="button" aria-label="Уведомления (3 непрочитанных)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="notif-count" aria-hidden="true">3</span></button>
         <button class="avatar-rep" type="button" aria-label="Аккаунт" style="border:var(--hairline) solid var(--accent);">
           <span class="avatar-rep__face" style="background:var(--accent);" aria-hidden="true">АИ</span>
           <span class="avatar-rep__score" aria-hidden="true"><svg viewBox="0 0 24 24" width="11" height="11" fill="var(--amber)" aria-hidden="true"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 18l-5.9 3.2 1.2-6.6L2.5 9l6.6-.9z"/></svg><span class="avatar-rep__num">142</span></span>
@@ -325,7 +326,7 @@
               <div class="info-row"><span class="info-label">Следующий платёж</span><span class="info-val">1 июля 2026</span></div>
               <div class="info-row"><span class="info-label">Статус</span><span class="info-val" style="color:var(--sage);">✓ Активна</span></div>
             </div>
-            <p style="font-family:var(--font-sans);font-size:var(--fs-small);color:var(--ink-faint);margin-bottom:var(--space-5);">Управление оплатой будет доступно в Launching. Сейчас подписка назначается через debug-консоль.</p>
+            <p style="font-family:var(--font-sans);font-size:var(--fs-small);color:var(--ink-soft);margin-bottom:var(--space-5);">Управление оплатой будет доступно в Launching. Сейчас подписка назначается через debug-консоль.</p>
             <button class="btn-secondary" type="button" data-stub>Управление подпиской</button>
           </div>
 
@@ -442,47 +443,47 @@
                 <img src="assets/covers/bion-nauchenie-na-opyte-cover.png" alt="" style="width:36px;height:50px;object-fit:cover;border-radius:2px;border:var(--hairline) solid var(--line);flex-shrink:0;" />
                 <div style="flex:1;min-width:0;">
                   <p style="font-family:var(--font-serif);font-size:var(--fs-small);font-weight:600;color:var(--ink);">Научение на опыте. Итальянские семинары</p>
-                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);margin-top:2px;">Автоматически · читаю</p>
+                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);margin-top:2px;">Автоматически · читаю</p>
                 </div>
                 <span style="font-family:var(--font-sans);font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--accent);color:var(--accent);">Сильная</span>
-                <button style="background:none;border:none;font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);cursor:pointer;padding:var(--space-1) var(--space-2);border-radius:var(--radius-md);" data-stub>Убрать</button>
+                <button style="background:none;border:none;font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);cursor:pointer;padding:var(--space-1) var(--space-2);border-radius:var(--radius-md);" data-stub>Убрать</button>
               </div>
               <div style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-3) var(--space-4);background:var(--surface);border:var(--hairline) solid var(--line);border-radius:var(--radius-md);">
                 <img src="assets/covers/ferro-emotsiy-izbeganie-prozhivaniye-cover.png" alt="" style="width:36px;height:50px;object-fit:cover;border-radius:2px;border:var(--hairline) solid var(--line);flex-shrink:0;" />
                 <div style="flex:1;min-width:0;">
                   <p style="font-family:var(--font-serif);font-size:var(--fs-small);font-weight:600;color:var(--ink);">Избегание эмоций, проживание эмоций</p>
-                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);margin-top:2px;">Автоматически · добавлена на полку</p>
+                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);margin-top:2px;">Автоматически · добавлена на полку</p>
                 </div>
-                <span style="font-family:var(--font-sans);font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--ink-faint);">Слабая</span>
-                <button style="background:none;border:none;font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);cursor:pointer;padding:var(--space-1) var(--space-2);border-radius:var(--radius-md);" data-stub>Убрать</button>
+                <span style="font-family:var(--font-sans);font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--ink-soft);">Слабая</span>
+                <button style="background:none;border:none;font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);cursor:pointer;padding:var(--space-1) var(--space-2);border-radius:var(--radius-md);" data-stub>Убрать</button>
               </div>
               <div style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-3) var(--space-4);background:var(--surface);border:var(--hairline) solid var(--line);border-radius:var(--radius-md);">
                 <img src="assets/covers/nikoli-goret-vmeste-cover.png" alt="" style="width:36px;height:50px;object-fit:cover;border-radius:2px;border:var(--hairline) solid var(--line);flex-shrink:0;" />
                 <div style="flex:1;min-width:0;">
                   <p style="font-family:var(--font-serif);font-size:var(--fs-small);font-weight:600;color:var(--ink);">Гореть вместе</p>
-                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);margin-top:2px;">Явное · прочитана</p>
+                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);margin-top:2px;">Явное · прочитана</p>
                 </div>
                 <span style="font-family:var(--font-sans);font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--accent);color:var(--accent);">Сильная</span>
-                <button style="background:none;border:none;font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);cursor:pointer;padding:var(--space-1) var(--space-2);border-radius:var(--radius-md);" data-stub>Убрать</button>
+                <button style="background:none;border:none;font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);cursor:pointer;padding:var(--space-1) var(--space-2);border-radius:var(--radius-md);" data-stub>Убрать</button>
               </div>
             </div>
 
             <h3 class="sec-title-sm">Авторы и участники</h3>
             <div style="display:flex;flex-direction:column;gap:var(--space-3);">
               <div style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-3) var(--space-4);background:var(--surface);border:var(--hairline) solid var(--line);border-radius:var(--radius-md);">
-                <span style="width:36px;height:36px;border-radius:50%;background:#7A4A3A;display:flex;align-items:center;justify-content:center;font-family:var(--font-sans);font-size:12px;font-weight:700;color:#ECE3D6;flex-shrink:0;">ДО</span>
+                <span style="width:36px;height:36px;border-radius:50%;background:#7A4A3A;display:flex;align-items:center;justify-content:center;font-family:var(--font-sans);font-size:12px;font-weight:700;color:var(--noir-ink);flex-shrink:0;">ДО</span>
                 <div style="flex:1;min-width:0;">
                   <p style="font-family:var(--font-sans);font-size:var(--fs-small);font-weight:600;color:var(--ink);">Дмитрий Орлов</p>
-                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);margin-top:2px;">Явное · Мэтр · 412 реп.</p>
+                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);margin-top:2px;">Явное · Мэтр · 412 реп.</p>
                 </div>
                 <span style="font-family:var(--font-sans);font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--accent);color:var(--accent);">Сильная</span>
                 <a href="profile.html" style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--accent);text-decoration:none;padding:var(--space-1) var(--space-2);">Профиль</a>
               </div>
               <div style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-3) var(--space-4);background:var(--surface);border:var(--hairline) solid var(--line);border-radius:var(--radius-md);">
-                <span style="width:36px;height:36px;border-radius:50%;background:var(--slate,#5A6E7A);display:flex;align-items:center;justify-content:center;font-family:var(--font-sans);font-size:12px;font-weight:700;color:#ECE3D6;flex-shrink:0;">МС</span>
+                <span style="width:36px;height:36px;border-radius:50%;background:var(--slate,#5A6E7A);display:flex;align-items:center;justify-content:center;font-family:var(--font-sans);font-size:12px;font-weight:700;color:var(--noir-ink);flex-shrink:0;">МС</span>
                 <div style="flex:1;min-width:0;">
                   <p style="font-family:var(--font-sans);font-size:var(--fs-small);font-weight:600;color:var(--ink);">Мария Соколова</p>
-                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-faint);margin-top:2px;">Явное · Эксперт · 287 реп.</p>
+                  <p style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--ink-soft);margin-top:2px;">Явное · Эксперт · 287 реп.</p>
                 </div>
                 <span style="font-family:var(--font-sans);font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--accent);color:var(--accent);">Сильная</span>
                 <a href="profile.html" style="font-family:var(--font-sans);font-size:var(--fs-caption);color:var(--accent);text-decoration:none;padding:var(--space-1) var(--space-2);">Профиль</a>
@@ -502,11 +503,13 @@
           <span class="text-mark" aria-hidden="true">β<span class="arrow">→</span>α</span>
           <span class="footer-tagline">© 2026 beta→alpha</span>
         </div>
-        <nav class="footer-links">
-          <a class="footer-link" href="pub-about.html">О проекте</a>
-          <a class="footer-link" href="#" id="footer-console-link">Консоль</a>
+        <div class="footer-right">
+          <nav class="footer-links">
+            <a class="footer-link" href="pub-about.html">О проекте</a>
+            <a class="footer-link" href="#" id="footer-console-link">Консоль</a>
+          </nav>
           <span class="build-tag">v0.2.0-primer · cabinet</span>
-        </nav>
+        </div>
       </div>
     </div>
   </footer>
