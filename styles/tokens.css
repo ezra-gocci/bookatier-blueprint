@@ -21,9 +21,9 @@
   --ink-soft:     #5C5249;  /* secondary text */
   --ink-faint:    #8B8073;  /* tertiary / captions */
   --line:         #E4D9C6;  /* hairline borders, rules */
-  --accent:       #B85138;  /* terracotta — primary actions, links */
-  --accent-hover: #9E4530;  /* hover / pressed */
-  --accent-tint:  #F0DCD2;  /* accent backgrounds, selection */
+  --accent:       #C1654B;  /* terracotta — primary actions, links */
+  --accent-hover: #9E4B28;  /* sienna — hover / pressed */
+  --accent-tint:  #F2DDD7;  /* accent backgrounds, selection */
   --amber:        #C98A3C;  /* category chip / "new edition" */
   --slate:        #3E5C73;  /* category chip / scholarly */
   --sage:         #4C6B5E;  /* category chip / restful */
@@ -108,6 +108,132 @@
   color-scheme: light;
 }
 
+/* ---- Light-clear ----------------------------------------------------- */
+html[data-theme="light-clear"] {
+  --paper:        #F8F9FA;  /* near-white, very slight cool tint */
+  --surface:      #FFFFFF;  /* pure white cards */
+  --surface-sunk: #EEF1F5;  /* light gray-blue wells, inputs */
+  --ink:          #1C2128;  /* near-black shifted to gray (no warm tint) */
+  --ink-soft:     #4B5563;  /* medium gray */
+  --ink-faint:    #9CA3AF;  /* light gray */
+  --line:         #E2E8F0;  /* light gray borders */
+  --accent:       #C1654B;  /* same terracotta brand */
+  --accent-hover: #9E4B28;
+  --accent-tint:  #FFF1EE;  /* cool-tinted light red for selections */
+  --amber:        #B07820;  /* shifted darker for ≥4.5:1 on white */
+  --slate:        #3A5870;
+  --sage:         #4A6858;
+  --success:      #4A6B42;
+  --warning:      #B07820;
+  --danger:       #A8412E;
+  --on-accent:    #FFFFFF;
+
+  /* Component-level noir vars (used by landing dividers, modal dark pills, etc.) */
+  --noir-paper:  #1E2329;
+  --noir-ink:    #E6EDF3;
+  --noir-accent: #DB7B5D;
+
+  --wash-image: url("../assets/backgrounds/hero-bg-01-light.webp");
+  --wash-opacity: 0.07;
+  --grain-opacity: 0.022;
+
+  --shadow-soft:  0 1px 2px rgba(30,40,55,0.06), 0 8px 24px rgba(30,40,55,0.06);
+  --shadow-raise: 0 2px 4px rgba(30,40,55,0.08), 0 12px 32px rgba(30,40,55,0.10);
+
+  color-scheme: light;
+}
+
+/* Noir bands in light-clear use cool dark gray (not warm near-black) */
+html[data-theme="light-clear"] [data-band="noir"] {
+  --paper:        #1E2329;
+  --surface:      #252D38;
+  --surface-sunk: #161B22;
+  --ink:          #E6EDF3;
+  --ink-soft:     #8B949E;
+  --ink-faint:    #6E7681;
+  --line:         #30363D;
+  --accent:       #DB7B5D;
+  --accent-hover: #C16D52;
+  --accent-tint:  #2D1B15;
+  --on-accent:    #1E2329;
+  --amber:        #D4994A;
+  --slate:        #5A7A91;
+  --sage:         #6A907F;
+  --success:      #7A9A6F;
+  --warning:      #D4A04A;
+  --danger:       #C85F4A;
+
+  --wash-image: url("../assets/backgrounds/hero-bg-01-dark.webp");
+  --wash-opacity: 0.22;
+  --grain-opacity: 0.035;
+  --shadow-soft:  0 1px 2px rgba(0,0,0,0.30), 0 8px 24px rgba(0,0,0,0.36);
+  --shadow-raise: 0 2px 4px rgba(0,0,0,0.36), 0 12px 32px rgba(0,0,0,0.44);
+
+  background-color: var(--paper);
+  color: var(--ink);
+  color-scheme: dark;
+}
+
+/* ---- Night ----------------------------------------------------------- */
+html[data-theme="night"] {
+  --paper:        #1A1F28;  /* cool dark blue-gray base */
+  --surface:      #22272E;  /* slightly lighter panels */
+  --surface-sunk: #13171E;  /* dark wells, inputs */
+  --ink:          #E2E8F0;  /* cool near-white text */
+  --ink-soft:     #94A3B8;  /* medium cool gray */
+  --ink-faint:    #64748B;  /* muted tertiary */
+  --line:         #2D3748;  /* dark cool border */
+  --accent:       #E07B5D;  /* terracotta brightened for dark ground */
+  --accent-hover: #CC6A4D;
+  --accent-tint:  #2D1A14;
+  --amber:        #D4A44A;
+  --slate:        #5A7A91;
+  --sage:         #6A907F;
+  --success:      #7A9A6F;
+  --warning:      #D4A44A;
+  --danger:       #C85F4A;
+  --on-accent:    #13171E;
+
+  /* Component-level noir vars */
+  --noir-paper:  #0D1117;
+  --noir-ink:    #E6EDF3;
+  --noir-accent: #E07B5D;
+
+  --wash-image: url("../assets/backgrounds/hero-bg-01-dark.webp");
+  --wash-opacity: 0.20;
+  --grain-opacity: 0.030;
+
+  --shadow-soft:  0 1px 2px rgba(0,0,0,0.32), 0 8px 24px rgba(0,0,0,0.38);
+  --shadow-raise: 0 2px 4px rgba(0,0,0,0.38), 0 12px 32px rgba(0,0,0,0.46);
+
+  color-scheme: dark;
+}
+
+/* Noir bands in night mode go ultra-dark */
+html[data-theme="night"] [data-band="noir"] {
+  --paper:        #0D1117;
+  --surface:      #161B22;
+  --surface-sunk: #090D14;
+  --ink:          #E6EDF3;
+  --ink-soft:     #8B949E;
+  --ink-faint:    #6E7681;
+  --line:         #21262D;
+  --accent:       #E07B5D;
+  --accent-hover: #CC6A4D;
+  --accent-tint:  #2D1A14;
+  --on-accent:    #0D1117;
+
+  --wash-image: url("../assets/backgrounds/hero-bg-01-dark.webp");
+  --wash-opacity: 0.24;
+  --grain-opacity: 0.025;
+  --shadow-soft:  0 1px 2px rgba(0,0,0,0.40), 0 8px 24px rgba(0,0,0,0.50);
+  --shadow-raise: 0 2px 4px rgba(0,0,0,0.46), 0 12px 32px rgba(0,0,0,0.56);
+
+  background-color: var(--paper);
+  color: var(--ink);
+  color-scheme: dark;
+}
+
 /* ---- Sepia (reading) ------------------------------------------------- */
 html[data-theme="sepia"] {
   --paper:        #ECE0C8;
@@ -117,8 +243,8 @@ html[data-theme="sepia"] {
   --ink-soft:     #6A5A45;
   --ink-faint:    #8A7B65;
   --line:         #D8C8A8;
-  --accent:       #A8482F;
-  --accent-hover: #8F3D27;
+  --accent:       #B15C42;
+  --accent-hover: #9E4B28;
   --accent-tint:  #E0C8BC;
   --on-accent:    #F3E9D4;
 
@@ -139,8 +265,8 @@ html[data-theme="dark"] {
   --ink-soft:     #B4A899;
   --ink-faint:    #7A6E62;
   --line:         #3A332D;
-  --accent:       #D2674A;
-  --accent-hover: #B8593F;
+  --accent:       #DB7B5D;
+  --accent-hover: #C16D52;
   --accent-tint:  #3A271F;
   --amber:        #D4994A;
   --slate:        #5A7A91;
@@ -175,10 +301,9 @@ html[data-theme="sepia-contrast"] {
   --ink-soft:     #6A5A45;
   --ink-faint:    #8A7B65;
   --line:         #D8C8A8;
-  /* deepened from sepia #A8482F (4.42:1) for ≥4.5:1 text contrast on --paper */
-  --accent:       #8F3D27;
-  --accent-hover: #7A3220;
-  --accent-tint:  #E0C8BC;
+  --accent:       #C1654B;
+  --accent-hover: #9E4B28;
+  --accent-tint:  #F2DDD7;
   --on-accent:    #F3E9D4;
   /* darkened from root values for ≥4.5:1 text contrast on --paper */
   --amber:        #795220;  /* 4.80:1; root #C98A3C was 2.24:1 */
@@ -188,7 +313,7 @@ html[data-theme="sepia-contrast"] {
      ground on a sepia page without a full data-band="noir" wrapper */
   --noir-paper:  #3D2218;
   --noir-ink:    #ECE3D6;
-  --noir-accent: #D2674A;
+  --noir-accent: #DB7B5D;
 
   --wash-image: url("../assets/backgrounds/hero-bg-01-light.webp");
   --wash-opacity: 0.09;
@@ -208,8 +333,8 @@ html[data-theme="sepia-contrast"] [data-band="noir"] {
   --ink-soft:     #B4A899;
   --ink-faint:    #7A6E62;
   --line:         #3A332D;
-  --accent:       #D2674A;  /* terracotta brightened for the dark ground */
-  --accent-hover: #B8593F;
+  --accent:       #DB7B5D;  /* terracotta brightened for the dark ground */
+  --accent-hover: #C16D52;
   --accent-tint:  #3A271F;
   --on-accent:    #1F1B18;
   /* jewel tones follow the dark theme so chips/states inside a band stay true */

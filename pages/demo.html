@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Компоненты — β→α академия</title>
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/chrome.css">
+  <style>
+    .demo-page { padding: calc(var(--header-height) + var(--space-10)) 0 var(--space-16); }
+    .demo-section { margin-bottom: var(--space-12); }
+    .demo-section-title {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--ink);
+      margin: 0 0 var(--space-6);
+    }
+    .demo-section-sub {
+      font-size: 14px;
+      color: var(--ink-faint);
+      margin: 0 0 var(--space-6);
+    }
+
+    /* Mode pill */
+    .demo-mode-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: var(--space-4);
+    }
+    .demo-mode-pill.mode-public {
+      background: var(--surface-sunk, rgba(26,20,16,.06));
+      color: var(--ink-faint);
+    }
+    .demo-mode-pill.mode-private {
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      color: var(--accent);
+    }
+    .demo-mode-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .mode-public .demo-mode-dot  { background: var(--ink-faint); }
+    .mode-private .demo-mode-dot { background: var(--accent); }
+
+    /* Component grid */
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: var(--space-3);
+    }
+    .demo-trigger-btn {
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      border: var(--hairline) solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 14px;
+      font-family: var(--font-sans, inherit);
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 150ms, box-shadow 150ms;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .demo-trigger-btn:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+    .demo-trigger-btn.is-locked {
+      opacity: 0.45;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .demo-trigger-icon { font-size: 16px; }
+
+    /* Session dump */
+    .demo-session-dump {
+      background: var(--surface-sunk, rgba(26,20,16,.05));
+      border-radius: var(--radius-md);
+      padding: var(--space-4) var(--space-5);
+      font-family: monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--ink);
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    /* Debug hint */
+    .demo-debug-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px dashed var(--line);
+      font-size: 13px;
+      color: var(--ink-faint);
+      cursor: pointer;
+      background: none;
+      transition: border-color 150ms, color 150ms;
+    }
+    .demo-debug-hint:hover { border-color: var(--accent); color: var(--accent); }
+  </style>
+</head>
+<body>
+  <!-- frame.js injects header here -->
+  <main id="main-content" data-page-body class="demo-page">
+    <div class="container" style="max-width: 760px;">
+
+      <!-- ── Section 1: Auth mode ── -->
+      <section id="demo-mode-section" class="demo-section">
+        <h1 class="demo-section-title">Режим доступа</h1>
+        <div id="demo-mode-pill" class="demo-mode-pill mode-public" role="status" aria-live="polite">
+          <span class="demo-mode-dot"></span>
+          <span id="demo-mode-label">Публичный</span>
+        </div>
+        <p id="demo-mode-user" style="font-size:13px;color:var(--ink-faint);margin:0 0 var(--space-4);display:none"></p>
+
+        <p class="demo-section-sub">
+          Переключайтесь между публичным и приватным режимом через консоль разработчика.
+          В приватном режиме разблокируются все компоненты.
+        </p>
+
+        <button class="demo-debug-hint" type="button" id="open-debug-btn">
+          <span>⚙</span>
+          <span>Открыть консоль разработчика</span>
+        </button>
+      </section>
+
+      <!-- ── Section 2: Components ── -->
+      <section id="demo-components-section" class="demo-section">
+        <h2 class="demo-section-title">Компоненты платформы</h2>
+        <p class="demo-section-sub">
+          Каждая кнопка открывает соответствующий компонент. Серые кнопки требуют авторизации.
+        </p>
+
+        <div class="demo-grid" id="demo-grid">
+          <!-- Populated by JS after session load -->
+        </div>
+      </section>
+
+      <!-- ── Section 3: Session JSON ── -->
+      <section id="demo-session-section" class="demo-section">
+        <h2 class="demo-section-title">Текущая сессия</h2>
+        <p class="demo-section-sub">Живой дамп <code>sessionStorage.ba_session</code> — обновляется при смене пользователя.</p>
+        <pre class="demo-session-dump" id="demo-session-dump">null</pre>
+      </section>
+
+    </div>
+  </main>
+  <!-- frame.js injects footer here -->
+
+  <!-- Load components in dependency order -->
+  <script src="../components/session.js"></script>
+  <script src="../components/frame.js"></script>
+  <script src="../components/notifications.js"></script>
+  <script src="../components/search.js"></script>
+  <script src="../components/pulse.js"></script>
+  <script src="../components/debug.js"></script>
+  <script src="../components/book-card.js"></script>
+  <script src="../components/member-card.js"></script>
+  <script src="../components/author-card.js"></script>
+  <script src="../components/remark-card.js"></script>
+  <script src="../components/logging.js"></script>
+  <script src="../components/demo.js"></script>
+  <script src="../components/registration.js"></script>
+
+  <script>
+    /* ── Trigger definitions ── */
+    var TRIGGERS = [
+      {
+        icon: '📖', label: 'Карта книги',
+        requiresAuth: false,
+        action: function() { BA.bookCard.open('bion'); }
+      },
+      {
+        icon: '👤', label: 'Карта участника',
+        requiresAuth: false,
+        action: function() { BA.memberCard.open('u2'); }
+      },
+      {
+        icon: '✍️', label: 'Карта автора',
+        requiresAuth: false,
+        action: function() { BA.authorCard.open('author-bion'); }
+      },
+      {
+        icon: '📝', label: 'Заметка',
+        requiresAuth: true,
+        action: function() { BA.remarkCard.open(); }
+      },
+      {
+        icon: '🔔', label: 'Уведомления',
+        requiresAuth: true,
+        action: function() { BA.notifications.open(); }
+      },
+      {
+        icon: '🔍', label: 'Поиск',
+        requiresAuth: true,
+        action: function() { BA.search.open(); }
+      },
+      {
+        icon: '📈', label: 'Пульс',
+        requiresAuth: true,
+        action: function() { BA.pulse.open(); }
+      },
+      {
+        icon: '🎯', label: 'Демо-тур',
+        requiresAuth: false,
+        action: function() { BA.demo.start(); }
+      },
+      {
+        icon: '📡', label: 'Журнал событий',
+        requiresAuth: false,
+        action: function() { BA.logging.open(); }
+      },
+      {
+        icon: '✉️', label: 'Регистрация',
+        requiresAuth: false,
+        action: function() { BA.registration.open(); }
+      },
+      {
+        icon: '🔑', label: 'Вход',
+        requiresAuth: false,
+        action: function() { BA.frame.openLogin(); }
+      },
+      {
+        icon: '⚙', label: 'Отладка',
+        requiresAuth: false,
+        action: function() { BA.debug.open(); }
+      },
+    ];
+
+    function renderGrid() {
+      var priv = BA.session.isPrivate();
+      var grid = document.getElementById('demo-grid');
+      grid.innerHTML = '';
+
+      TRIGGERS.forEach(function(t) {
+        var locked = t.requiresAuth && !priv;
+        var btn = document.createElement('button');
+        btn.className = 'demo-trigger-btn' + (locked ? ' is-locked' : '');
+        btn.type = 'button';
+        if (locked) btn.title = 'Только для авторизованных участников';
+        btn.innerHTML = '<span class="demo-trigger-icon">' + t.icon + '</span>' +
+                        '<span>' + t.label + '</span>';
+        if (!locked) btn.addEventListener('click', t.action);
+        grid.appendChild(btn);
+      });
+    }
+
+    function updateMode() {
+      var session = BA.session.get();
+      var pill = document.getElementById('demo-mode-pill');
+      var label = document.getElementById('demo-mode-label');
+      var userLine = document.getElementById('demo-mode-user');
+      var dump = document.getElementById('demo-session-dump');
+
+      if (session) {
+        pill.className = 'demo-mode-pill mode-private';
+        label.textContent = 'Авторизован';
+        userLine.textContent = session.name + ' · ' + session.role + ' · ★ ' + session.rep;
+        userLine.style.display = '';
+      } else {
+        pill.className = 'demo-mode-pill mode-public';
+        label.textContent = 'Публичный';
+        userLine.style.display = 'none';
+      }
+
+      dump.textContent = session ? JSON.stringify(session, null, 2) : 'null';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      /* Init frame (injects header, footer, FAB, login modal) */
+      BA.frame.init({ page: 'demo' });
+
+      /* Init UI */
+      updateMode();
+      renderGrid();
+
+      /* Update on session change */
+      document.addEventListener('ba:session-change', function() {
+        updateMode();
+        renderGrid();
+      });
+
+      /* Debug console shortcut button */
+      document.getElementById('open-debug-btn').addEventListener('click', function() {
+        BA.debug.open();
+      });
+
+      /* Restore theme from localStorage */
+      try {
+        var saved = localStorage.getItem('ba-theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+      } catch(e) {}
+    });
+  </script>
+</body>
+</html>

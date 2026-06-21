@@ -1,0 +1,91 @@
+/* =====================================================================
+   chrome.css — shared header/footer chrome rules (blueprint-rebuild-v2 §2/§3)
+   Canonical rules for the combined logo+About block, the private right
+   action cluster (Search/Notifications/Avatar+Rep), the far-right Pulse,
+   and the link-free footer. Linked on every page so the chrome renders
+   identically; pages may still carry their own (identical) inline copies.
+   All colour/type/spacing from styles/tokens.css.
+   ===================================================================== */
+
+/* ---- Header-left: combined logo + About block ---------------------- */
+.header-left {
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding-bottom: 10px;
+}
+.header-about { white-space: nowrap; }
+
+/* ---- Private right cluster: Search · Notifications · Avatar+Rep ----- */
+.icon-btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; background: transparent; color: var(--ink-soft);
+  border: var(--hairline) solid transparent; border-radius: var(--radius-md); cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-out-quart), border-color var(--dur-fast) var(--ease-out-quart);
+}
+.icon-btn:hover { color: var(--ink); border-color: var(--line); }
+.icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.notif-count {
+  position: absolute; top: 4px; right: 4px; min-width: 16px; height: 16px; padding-inline: 4px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-sans); font-size: 10px; font-weight: var(--fw-semibold); line-height: 1;
+  color: var(--on-accent); background: var(--accent); border-radius: var(--radius-pill);
+}
+.avatar-rep {
+  display: inline-flex; align-items: center; gap: var(--space-2); padding: 3px 8px 3px 3px;
+  border: var(--hairline) solid var(--line); border-radius: var(--radius-pill); background: var(--surface);
+  text-decoration: none;
+  transition: border-color var(--dur-fast) var(--ease-out-quart), background var(--dur-fast) var(--ease-out-quart);
+}
+.avatar-rep:hover { border-color: var(--accent); background: var(--surface-sunk); }
+.avatar-rep:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.avatar-rep__face {
+  display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px;
+  border-radius: var(--radius-pill); background: var(--accent); color: var(--on-accent);
+  font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-semibold);
+}
+.avatar-rep__score { display: inline-flex; align-items: center; gap: 3px; color: var(--amber); }
+.avatar-rep__num {
+  font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-semibold);
+  color: var(--ink); font-variant-numeric: tabular-nums;
+}
+
+/* ---- Pulse pinned to the far-right corner -------------------------- */
+.pulse-sep {
+  display: inline-block; width: var(--hairline); height: 18px;
+  background: var(--line); margin-inline: var(--space-2); flex-shrink: 0;
+}
+
+/* ---- Nav indicator (blueprint-rebuild-v2 amendment) ----------------
+   At rest only the dot is visible; the hairline strip appears ONLY on a
+   selection change (fades in, then fades out). The strip keeps its inline
+   left/width (set per-page); we only govern opacity + the unified dot colour. */
+/* Strip hidden at rest (beats any per-page inline opacity); nav-indicator.js
+   adds .nav-flash on a selection change — a more specific !important rule that
+   wins, and the strip's own opacity transition makes it fade in/out.
+   Dot is the same bright terracotta orange on every header (public + private). */
+.nav-strip { opacity: 0 !important; }
+.nav-strip.nav-flash { opacity: 1 !important; }
+.nav-dot { background: #C1654B !important; }
+
+/* ---- Footer — one canonical black (noir) footer on every page -------
+   Overrides each page's inline footer styling so the footer is identical
+   everywhere: near-black band, cream brand mark, muted cream meta. */
+.site-footer {
+  background: #1F1B18 !important;
+  border-top: var(--hairline) solid rgba(236, 227, 214, 0.12) !important;
+  color: #ECE3D6 !important;
+}
+.site-footer .text-mark { color: #ECE3D6 !important; }
+.site-footer .text-mark .arrow { color: #C1654B !important; }
+.site-footer .footer-tagline,
+.site-footer .build-tag { color: rgba(236, 227, 214, 0.55) !important; }
+
+/* ---- Hero stats — one shared style (matches the Community hero stats) ---
+   Big serif value over a small caption label, vertical separators between. */
+.hero-stats { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+.hero-stat { text-align: right; }
+.hero-stat-val { display: block; font-family: var(--font-serif); font-size: var(--fs-h3); font-weight: var(--fw-semibold); color: var(--ink); line-height: 1; }
+.hero-stat-label { display: block; font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-soft); margin-top: 2px; }
+.hero-stat-sep { width: var(--hairline); height: 32px; background: var(--line); align-self: center; flex-shrink: 0; }
