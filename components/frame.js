@@ -146,6 +146,9 @@
      State
      ============================================================ */
   var _opts = {};
+  /* 404.html sits at the blueprint root, same level as pages/ and assets/.
+     All other pages live inside pages/ and use ../  to reach siblings. */
+  function _pp() { return _opts.page === 'error' ? './' : '../'; }
   var _defaultUser = {
     id: 'u1', name: 'Александра Иванова',
     role: 'Member', rep: 142, avatar: null
@@ -192,15 +195,15 @@
       '<a class="skip-link" href="#main-content">Перейти к содержимому</a>',
       '<div class="header-inner container">',
         '<div class="header-left">',
-          '<a class="wordmark" href="../pages/pub-landing.html" aria-label="β→α академия">',
-            '<img class="wordmark-img" src="../assets/decor/b2a-academy.svg" alt="β→α" width="100" height="28">',
+          '<a class="wordmark" href="' + _pp() + 'pages/pub-landing.html" aria-label="β→α академия">',
+            '<img class="wordmark-img" src="' + _pp() + 'assets/decor/b2a-academy.svg" alt="β→α" width="100" height="28">',
           '</a>',
-          '<a class="nav-link header-about" href="../pages/pub-about.html">О проекте</a>',
+          '<a class="nav-link header-about" href="' + _pp() + 'pages/pub-about.html">О проекте</a>',
         '</div>',
         '<nav class="primary-nav" aria-label="Основная навигация">',
-          '<a class="nav-link" href="../pages/pub-library.html">Библиотека</a>',
-          '<a class="nav-link nav-link-home" href="../pages/pub-landing.html">β<span class="arrow">→</span>α</a>',
-          '<a class="nav-link" href="../pages/pub-news.html">Сообщество</a>',
+          '<a class="nav-link" href="' + _pp() + 'pages/pub-library.html">Библиотека</a>',
+          '<a class="nav-link nav-link-home" href="' + _pp() + 'pages/pub-landing.html">β<span class="arrow">→</span>α</a>',
+          '<a class="nav-link" href="' + _pp() + 'pages/pub-news.html">Сообщество</a>',
           '<span class="nav-strip" aria-hidden="true"></span>',
           '<span class="nav-dot" aria-hidden="true"></span>',
         '</nav>',
@@ -222,15 +225,15 @@
       '<a class="skip-link" href="#main-content">Перейти к содержимому</a>',
       '<div class="header-inner container">',
         '<div class="header-left">',
-          '<a class="wordmark" href="../pages/home.html" aria-label="β→α академия">',
-            '<img class="wordmark-img" src="../assets/decor/b2a-academy.svg" alt="β→α" width="100" height="28">',
+          '<a class="wordmark" href="' + _pp() + 'pages/home.html" aria-label="β→α академия">',
+            '<img class="wordmark-img" src="' + _pp() + 'assets/decor/b2a-academy.svg" alt="β→α" width="100" height="28">',
           '</a>',
-          '<a class="nav-link header-about" href="../pages/about.html">О проекте</a>',
+          '<a class="nav-link header-about" href="' + _pp() + 'pages/about.html">О проекте</a>',
         '</div>',
         '<nav class="primary-nav" aria-label="Основная навигация">',
-          '<a class="nav-link" href="../pages/library.html">Библиотека</a>',
-          '<a class="nav-link nav-link-home" href="../pages/home.html">β<span class="arrow">→</span>α</a>',
-          '<a class="nav-link" href="../pages/community.html">Сообщество</a>',
+          '<a class="nav-link" href="' + _pp() + 'pages/library.html">Библиотека</a>',
+          '<a class="nav-link nav-link-home" href="' + _pp() + 'pages/home.html">β<span class="arrow">→</span>α</a>',
+          '<a class="nav-link" href="' + _pp() + 'pages/community.html">Сообщество</a>',
           '<span class="nav-strip" aria-hidden="true"></span>',
           '<span class="nav-dot" aria-hidden="true"></span>',
         '</nav>',
