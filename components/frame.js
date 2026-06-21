@@ -249,42 +249,13 @@
                 '<span class="avatar-rep__num">' + _esc(String(session.rep)) + '</span>',
               '</span>',
             '</button>',
-            '<div class="ba-avatar-menu ov-dropdown ov-avatar-menu" role="menu" aria-label="Меню аккаунта">',
-              _buildAvatarMenuHTML(session),
-            '</div>',
+            '<div class="ba-avatar-menu" role="menu" aria-label="Меню аккаунта"></div>',
           '</div>',
           '<button class="icon-btn ba-pulse-btn" type="button" aria-label="Пульс платформы" title="Пульс">' + _SVG_PULSE + '</button>',
         '</div>',
       '</div>',
     ].join('');
     return el;
-  }
-
-  function _buildAvatarMenuHTML(session) {
-    var initials = _initials(session.name);
-    return [
-      '<div class="ov-avatar-hero">',
-        '<div class="ov-avatar-face" style="background:var(--accent)" aria-hidden="true">' + _esc(initials) + '</div>',
-        '<div class="ov-avatar-info">',
-          '<p class="ov-avatar-name">' + _esc(session.name) + '</p>',
-          '<p class="ov-avatar-rep">★ ' + _esc(String(session.rep)) + ' · ' + _esc(session.role) + '</p>',
-        '</div>',
-      '</div>',
-      '<div class="ov-theme-row">',
-        '<span class="ov-theme-label">Тема</span>',
-        '<div class="ov-theme-swatches">',
-          '<button class="ov-theme-swatch ov-theme-swatch--light" type="button" title="Светлая" aria-label="Тема: светлая"></button>',
-          '<button class="ov-theme-swatch ov-theme-swatch--sepia" type="button" title="Сепия" aria-label="Тема: сепия"></button>',
-          '<button class="ov-theme-swatch ov-theme-swatch--night" type="button" title="Ночная" aria-label="Тема: ночная"></button>',
-        '</div>',
-      '</div>',
-      '<div class="ov-menu-sep"></div>',
-      '<a class="ov-menu-item" href="../pages/profile.html" role="menuitem"><span class="ov-menu-icon">👤</span>Профиль</a>',
-      '<div class="ov-menu-sep"></div>',
-      '<button class="ov-menu-item ov-menu-item--danger ba-logout-btn" type="button" role="menuitem">',
-        '<span class="ov-menu-icon">↩</span>Выйти',
-      '</button>',
-    ].join('');
   }
 
   /* ============================================================
@@ -357,46 +328,16 @@
   }
 
   function _wirePrivateHeader(header) {
-    // Avatar menu
-    var avatarBtn = header.querySelector('.ba-avatar-btn');
-    var menu = header.querySelector('.ba-avatar-menu');
-    if (avatarBtn && menu) {
-      avatarBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        var open = menu.classList.toggle('is-open');
-        avatarBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      });
-
-      // Theme swatches
-      menu.querySelectorAll('.ov-theme-swatch').forEach(function (btn) {
-        btn.addEventListener('click', function (e) {
-          e.stopPropagation();
-          var theme = btn.classList.contains('ov-theme-swatch--light') ? 'light-clear'
-                    : btn.classList.contains('ov-theme-swatch--sepia') ? 'sepia-contrast'
-                    : 'night';
-          document.documentElement.setAttribute('data-theme', theme);
-          try { localStorage.setItem('ba-theme', theme); } catch (e2) {}
-        });
-      });
-
-      // Logout
-      var logoutBtn = menu.querySelector('.ba-logout-btn');
-      if (logoutBtn) logoutBtn.addEventListener('click', function () {
-        menu.classList.remove('is-open');
-        BA.session.clear();
-        _showToast('Вы вышли из аккаунта');
-      });
-
-      // Close on outside click
-      document.addEventListener('click', function outsideClick() {
-        menu.classList.remove('is-open');
-        avatarBtn.setAttribute('aria-expanded', 'false');
-      });
-      menu.addEventListener('click', function (e) { e.stopPropagation(); });
-    }
-
     // Sub-components — defer to allow their scripts to load
     setTimeout(function () {
+      var session = window.BA && BA.session ? BA.session.get() : null;
+
+      var avatarBtn = header.querySelector('.ba-avatar-btn');
+      var menuEl    = header.querySelector('.ba-avatar-menu');
+      if (avatarBtn && menuEl && window.BA && BA.avatarMenu && session) {
+        BA.avatarMenu.init(avatarBtn, menuEl, session);
+      }
+
       var searchBtn = header.querySelector('.ba-search-btn');
       if (searchBtn && window.BA && BA.search) BA.search.init(searchBtn);
 

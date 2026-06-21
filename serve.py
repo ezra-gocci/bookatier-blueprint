@@ -13,6 +13,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=ROOT, **kwargs)
 
+    def end_headers(self):
+        # Prevent stale JS/CSS from persisting across file edits
+        if self.path.endswith(('.js', '.css')):
+            self.send_header('Cache-Control', 'no-store')
+        super().end_headers()
+
     def send_error(self, code, message=None, explain=None):
         if code == 404:
             try:

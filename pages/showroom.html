@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Компоненты — β→α академия</title>
+  <title>Витрина компонентов — β→α академия</title>
   <link rel="stylesheet" href="../styles/tokens.css">
   <link rel="stylesheet" href="../styles/chrome.css">
   <style>
@@ -41,9 +41,7 @@
       background: color-mix(in srgb, var(--accent) 12%, transparent);
       color: var(--accent);
     }
-    .demo-mode-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-    }
+    .demo-mode-dot { width: 8px; height: 8px; border-radius: 50%; }
     .mode-public .demo-mode-dot  { background: var(--ink-faint); }
     .mode-private .demo-mode-dot { background: var(--accent); }
 
@@ -56,7 +54,7 @@
     .demo-trigger-btn {
       padding: var(--space-3) var(--space-4);
       border-radius: var(--radius-md);
-      border: var(--hairline) solid var(--line);
+      border: 1px solid var(--line);
       background: var(--paper);
       color: var(--ink);
       font-size: 14px;
@@ -160,6 +158,7 @@
   <!-- Load components in dependency order -->
   <script src="../components/session.js"></script>
   <script src="../components/frame.js"></script>
+  <script src="../components/avatar-menu.js"></script>
   <script src="../components/notifications.js"></script>
   <script src="../components/search.js"></script>
   <script src="../components/pulse.js"></script>
@@ -173,7 +172,6 @@
   <script src="../components/registration.js"></script>
 
   <script>
-    /* ── Trigger definitions ── */
     var TRIGGERS = [
       {
         icon: '📖', label: 'Карта книги',
@@ -211,6 +209,11 @@
         action: function() { BA.pulse.open(); }
       },
       {
+        icon: '🧩', label: 'Меню аккаунта',
+        requiresAuth: true,
+        action: function() { BA.avatarMenu.open(); }
+      },
+      {
         icon: '🎯', label: 'Демо-тур',
         requiresAuth: false,
         action: function() { BA.demo.start(); }
@@ -241,16 +244,14 @@
       var priv = BA.session.isPrivate();
       var grid = document.getElementById('demo-grid');
       grid.innerHTML = '';
-
       TRIGGERS.forEach(function(t) {
         var locked = t.requiresAuth && !priv;
         var btn = document.createElement('button');
         btn.className = 'demo-trigger-btn' + (locked ? ' is-locked' : '');
         btn.type = 'button';
         if (locked) btn.title = 'Только для авторизованных участников';
-        btn.innerHTML = '<span class="demo-trigger-icon">' + t.icon + '</span>' +
-                        '<span>' + t.label + '</span>';
-        if (!locked) btn.addEventListener('click', t.action);
+        btn.innerHTML = '<span class="demo-trigger-icon">' + t.icon + '</span><span>' + t.label + '</span>';
+        if (!locked) btn.addEventListener('click', function (e) { e.stopPropagation(); t.action(); });
         grid.appendChild(btn);
       });
     }
@@ -261,7 +262,6 @@
       var label = document.getElementById('demo-mode-label');
       var userLine = document.getElementById('demo-mode-user');
       var dump = document.getElementById('demo-session-dump');
-
       if (session) {
         pill.className = 'demo-mode-pill mode-private';
         label.textContent = 'Авторизован';
@@ -272,30 +272,23 @@
         label.textContent = 'Публичный';
         userLine.style.display = 'none';
       }
-
       dump.textContent = session ? JSON.stringify(session, null, 2) : 'null';
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-      /* Init frame (injects header, footer, FAB, login modal) */
-      BA.frame.init({ page: 'demo' });
-
-      /* Init UI */
+      BA.frame.init({ page: 'showroom' });
       updateMode();
       renderGrid();
 
-      /* Update on session change */
       document.addEventListener('ba:session-change', function() {
         updateMode();
         renderGrid();
       });
 
-      /* Debug console shortcut button */
       document.getElementById('open-debug-btn').addEventListener('click', function() {
         BA.debug.open();
       });
 
-      /* Restore theme from localStorage */
       try {
         var saved = localStorage.getItem('ba-theme');
         if (saved) document.documentElement.setAttribute('data-theme', saved);
