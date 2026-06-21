@@ -32,7 +32,13 @@
       font-size: 14px;
       font-weight: 600;
       margin-bottom: var(--space-4);
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-sans, inherit);
+      transition: opacity 120ms, transform 80ms;
     }
+    .demo-mode-pill:hover { opacity: 0.8; }
+    .demo-mode-pill:active { transform: scale(0.97); }
     .demo-mode-pill.mode-public {
       background: var(--surface-sunk, rgba(26,20,16,.06));
       color: var(--ink-faint);
@@ -41,7 +47,7 @@
       background: color-mix(in srgb, var(--accent) 12%, transparent);
       color: var(--accent);
     }
-    .demo-mode-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .demo-mode-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .mode-public .demo-mode-dot  { background: var(--ink-faint); }
     .mode-private .demo-mode-dot { background: var(--accent); }
 
@@ -115,10 +121,10 @@
       <!-- ── Section 1: Auth mode ── -->
       <section id="demo-mode-section" class="demo-section">
         <h1 class="demo-section-title">Режим доступа</h1>
-        <div id="demo-mode-pill" class="demo-mode-pill mode-public" role="status" aria-live="polite">
+        <button id="demo-mode-pill" type="button" class="demo-mode-pill mode-public" title="Нажмите, чтобы войти / выйти">
           <span class="demo-mode-dot"></span>
           <span id="demo-mode-label">Публичный</span>
-        </div>
+        </button>
         <p id="demo-mode-user" style="font-size:13px;color:var(--ink-faint);margin:0 0 var(--space-4);display:none"></p>
 
         <p class="demo-section-sub">
@@ -287,6 +293,16 @@
 
       document.getElementById('open-debug-btn').addEventListener('click', function() {
         BA.debug.open();
+      });
+
+      /* Mode pill toggles session: public → preset member, member → logout */
+      var DEMO_USER = { id: 'u1', name: 'Александра Иванова', role: 'Member', rep: 142, avatar: null };
+      document.getElementById('demo-mode-pill').addEventListener('click', function () {
+        if (BA.session.get()) {
+          BA.session.clear();
+        } else {
+          BA.session.set(DEMO_USER);
+        }
       });
 
       try {
