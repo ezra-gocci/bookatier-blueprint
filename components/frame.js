@@ -200,7 +200,7 @@
         '<nav class="primary-nav" aria-label="Основная навигация">',
           '<a class="nav-link" href="../pages/pub-library.html">Библиотека</a>',
           '<a class="nav-link nav-link-home" href="../pages/pub-landing.html">β<span class="arrow">→</span>α</a>',
-          '<a class="nav-link" href="../pages/pub-news.html">Новости</a>',
+          '<a class="nav-link" href="../pages/pub-news.html">Сообщество</a>',
           '<span class="nav-strip" aria-hidden="true"></span>',
           '<span class="nav-dot" aria-hidden="true"></span>',
         '</nav>',
