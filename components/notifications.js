@@ -25,6 +25,7 @@
   ];
 
   var CSS = [
+    '.ba-notif-anchor{right:24px;}',
     '.notif-panel{position:absolute;top:calc(100% + 8px);right:0;z-index:var(--z-dropdown,700);',
     'width:340px;background:var(--paper,#F5EFE4);',
     'border:1px solid var(--line,rgba(26,20,16,.12));border-radius:12px;',
@@ -77,7 +78,7 @@
 
     var itemsHtml = _items.map(function (n, i) {
       return [
-        '<div class="notif-item' + (n.read ? '' : ' is-unread') + '" data-notif-idx="' + i + '">',
+        '<div class="notif-item' + (n.read ? '' : ' is-unread') + '" data-notif-idx="' + i + '" data-group="' + (n.group || '') + '">',
           '<div class="notif-icon">' + n.icon + '</div>',
           '<div style="flex:1;min-width:0;">',
             '<p class="notif-text">' + n.text + '</p>',
@@ -125,7 +126,54 @@
         }
       }
     });
+
+    _applyFilter(); // honour the Pulse filter's per-group notif flags
   }
+
+  /* Interconnection with Pulse: a group is shown in notifications only when its
+     bell toggle (in the Pulse filter) is on. */
+  function _notifAllowed(group) {
+    var groups = (window.BA && BA.pulse && BA.pulse.groups) ? BA.pulse.groups() : null;
+    if (!groups || !group) return true;
+    for (var i = 0; i < groups.length; i++) {
+      if (groups[i].id === group) return !!groups[i].notif;
+    }
+    return true;
+  }
+
+  function _applyFilter() {
+    if (!_panel) return;
+    _panel.querySelectorAll('.notif-item[data-group]').forEach(function (el) {
+      el.style.display = _notifAllowed(el.getAttribute('data-group')) ? '' : 'none';
+    });
+    _updateCount();
+  }
+
+  function _updateCount() {
+    if (!_panel) return;
+    var count = 0;
+    _panel.querySelectorAll('.notif-item').forEach(function (el) {
+      if (el.style.display !== 'none') count++;
+    });
+    if (_anchor) {
+      var badge = _anchor.querySelector('.notif-count');
+      if (badge) {
+        badge.textContent = count;
+        badge.style.display = count > 0 ? '' : 'none';
+      }
+    }
+    // Avatar badge — visible only in narrow mode (CSS gates on .has-notifs).
+    var avBadge = document.querySelector('.ba-avatar-notif');
+    if (avBadge) {
+      avBadge.textContent = count;
+      avBadge.classList.toggle('has-notifs', count > 0);
+    }
+    var title = _panel.querySelector('.notif-head-title');
+    if (title) title.textContent = count > 0 ? 'Уведомления · ' + count : 'Уведомления';
+  }
+
+  // Re-filter live when the Pulse filter's bell toggles change
+  document.addEventListener('ba:pulse-filter-change', function () { _applyFilter(); });
 
   window.BA.notifications = {
     init: function (bellEl) {
@@ -141,11 +189,13 @@
       if (!_panel) {
         // Standalone open without bell anchor (demo page usage)
         var anchor = document.createElement('div');
-        anchor.style.cssText = 'position:fixed;top:60px;right:24px;z-index:800;';
+        anchor.className = 'ba-notif-anchor';
+        anchor.style.cssText = 'position:fixed;top:60px;z-index:800;';
         document.body.appendChild(anchor);
         _build(anchor);
         _anchor = anchor;
       }
+      _applyFilter();
       _panel.classList.add('is-open');
       if (_anchor) _anchor.setAttribute('aria-expanded', 'true');
     },

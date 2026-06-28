@@ -1,0 +1,68 @@
+{
+  "slug": "ferro-emotions",
+  "title": "Избегание эмоций, проживание эмоций",
+  "subtitle": null,
+  "author_display": "Антонино Ферро",
+  "ai_content_ready": true,
+  "source_file": "Антонино Ферро - Избегание эмоций, проживание эмоций (2023, Beta 2 Alpha) - libgen.li.pdf",
+  "total_pages": 323,
+  "known": {
+    "author": "Антонино Ферро",
+    "year": 2023,
+    "publisher": "Beta 2 Alpha"
+  },
+  "covers": {
+    "small": "covers/cover-small.jpg",
+    "medium": "covers/cover-medium.jpg",
+    "large": "covers/cover-large.jpg"
+  },
+  "free_edition": {
+    "start_page": 21,
+    "end_page": 37,
+    "page_count": 17,
+    "pdf_path": "editions/free/ferro-emotions-free.pdf"
+  },
+  "editions": [
+    {
+      "version": "v1",
+      "start_page": 1,
+      "end_page": 161,
+      "page_count": 161,
+      "pdf_path": "editions/v1/ferro-emotions-v1.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v2",
+      "start_page": 1,
+      "end_page": 201,
+      "page_count": 201,
+      "pdf_path": "editions/v2/ferro-emotions-v2.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v3",
+      "start_page": 1,
+      "end_page": 241,
+      "page_count": 241,
+      "pdf_path": "editions/v3/ferro-emotions-v3.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v4",
+      "start_page": 1,
+      "end_page": 281,
+      "page_count": 281,
+      "pdf_path": "editions/v4/ferro-emotions-v4.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v5",
+      "start_page": 1,
+      "end_page": 323,
+      "page_count": 323,
+      "pdf_path": "editions/v5/ferro-emotions-v5.pdf",
+      "is_complete": true
+    }
+  ],
+  "toc_entry_count": 1
+}

@@ -1,0 +1,60 @@
+{
+  "slug": "nicoli-burning",
+  "title": "Гореть вместе",
+  "subtitle": "Близость, истина и уязвимость в современном итальянском психоанализе",
+  "author_display": "Под редакцией Луки Николи",
+  "ai_content_ready": true,
+  "source_file": "Гореть_вместе_ред_Луки_Николи.pdf",
+  "total_pages": 260,
+  "known": {
+    "author": "Ред. Лука Николи",
+    "year": 2023,
+    "publisher": "Beta 2 Alpha"
+  },
+  "covers": {
+    "small": "covers/cover-small.jpg",
+    "medium": "covers/cover-medium.jpg",
+    "large": "covers/cover-large.jpg"
+  },
+  "free_edition": {
+    "start_page": 21,
+    "end_page": 37,
+    "page_count": 17,
+    "pdf_path": "editions/free/nicoli-burning-free.pdf"
+  },
+  "editions": [
+    {
+      "version": "v1",
+      "start_page": 1,
+      "end_page": 130,
+      "page_count": 130,
+      "pdf_path": "editions/v1/nicoli-burning-v1.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v2",
+      "start_page": 1,
+      "end_page": 173,
+      "page_count": 173,
+      "pdf_path": "editions/v2/nicoli-burning-v2.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v3",
+      "start_page": 1,
+      "end_page": 216,
+      "page_count": 216,
+      "pdf_path": "editions/v3/nicoli-burning-v3.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v4",
+      "start_page": 1,
+      "end_page": 260,
+      "page_count": 260,
+      "pdf_path": "editions/v4/nicoli-burning-v4.pdf",
+      "is_complete": true
+    }
+  ],
+  "toc_entry_count": 84
+}

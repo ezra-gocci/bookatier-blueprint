@@ -1,0 +1,44 @@
+{
+  "slug": "nicoli-patients",
+  "source_file": "Будьте_с_пациентами_Лука_Николи_Предисловие_Введение.pdf",
+  "total_pages": 40,
+  "known": {
+    "author": "Лука Николи",
+    "year": 2024,
+    "publisher": "Beta 2 Alpha"
+  },
+  "covers": {
+    "small": "covers/cover-small.jpg",
+    "medium": "covers/cover-medium.jpg",
+    "large": "covers/cover-large.jpg"
+  },
+  "free_edition": {
+    "start_page": 21,
+    "end_page": 37,
+    "page_count": 17,
+    "pdf_path": "editions/free/nicoli-patients-free.pdf"
+  },
+  "editions": [
+    {
+      "version": "v1",
+      "start_page": 1,
+      "end_page": 20,
+      "page_count": 20,
+      "pdf_path": "editions/v1/nicoli-patients-v1.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v2",
+      "start_page": 1,
+      "end_page": 40,
+      "page_count": 40,
+      "pdf_path": "editions/v2/nicoli-patients-v2.pdf",
+      "is_complete": true
+    }
+  ],
+  "toc_entry_count": 0,
+  "title": "Будьте с пациентами там, где они есть",
+  "subtitle": null,
+  "author_display": "Лука Николи",
+  "ai_content_ready": true
+}

@@ -15,6 +15,13 @@
     'transition:all 240ms var(--ease-out-quart,cubic-bezier(.25,.46,.45,.94));}',
     '.demo-tip-arrow{position:absolute;width:12px;height:12px;background:var(--paper,#F5EFE4);',
     'transform:rotate(45deg);}',
+    /* Orange quarter-circle corner brackets — arc (r=14, matches the tip) + 15px arms */
+    '.demo-tip-corner{position:absolute;width:29px;height:29px;box-sizing:border-box;',
+    'pointer-events:none;border:0 solid var(--accent,#C1654B);}',
+    '.demo-tip-corner--tl{top:0;left:0;border-top-width:3px;border-left-width:3px;border-top-left-radius:14px;}',
+    '.demo-tip-corner--tr{top:0;right:0;border-top-width:3px;border-right-width:3px;border-top-right-radius:14px;}',
+    '.demo-tip-corner--bl{bottom:0;left:0;border-bottom-width:3px;border-left-width:3px;border-bottom-left-radius:14px;}',
+    '.demo-tip-corner--br{bottom:0;right:0;border-bottom-width:3px;border-right-width:3px;border-bottom-right-radius:14px;}',
     '.demo-tip-step{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;',
     'color:var(--accent,#C1654B);margin:0 0 6px;}',
     '.demo-tip-title{font-family:var(--font-serif);font-size:17px;font-weight:600;margin:0 0 8px;color:var(--ink);}',
@@ -135,6 +142,10 @@
     }).join('');
 
     _tip.innerHTML = [
+      '<span class="demo-tip-corner demo-tip-corner--tl"></span>',
+      '<span class="demo-tip-corner demo-tip-corner--tr"></span>',
+      '<span class="demo-tip-corner demo-tip-corner--bl"></span>',
+      '<span class="demo-tip-corner demo-tip-corner--br"></span>',
       '<p class="demo-tip-step">Шаг ' + (_step + 1) + ' из ' + STEPS.length + '</p>',
       '<h3 class="demo-tip-title">' + s.title + '</h3>',
       '<p class="demo-tip-body">' + s.body + '</p>',

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Читалка — β→α академия</title>
+  <!-- Reader = Delve mode: the full reading surface (system-model §4.3). One engine,
+       two modes — Browse (in-card overlay) + Delve (here), both on reader-engine.js.
+       Dynamic by ?book=<slug>&v=<version>&p=<page>&f=<fragment>.
+       Feature area: Web PDF Reader · Citation. Spec refs: specs.md §1.11 (citation/
+       deep-link), §1.14 (ReaderState/Progress/Mark), §1.15+§2 (events), §1.8 CON-01.
+       Emits book.opened / page.viewed / session.ended. Tokens-only. -->
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body { font-family: var(--font-sans, system-ui); background: var(--paper); color: var(--ink); overflow: hidden; }
+    .rd { display: flex; flex-direction: column; height: 100vh; }
+    /* Topbar */
+    .rd-top { display: flex; align-items: center; gap: var(--space-3, 12px); height: 52px; flex-shrink: 0;
+      padding: 0 var(--space-4, 16px); background: color-mix(in srgb, var(--paper) 90%, var(--ink) 4%);
+      border-bottom: var(--hairline) solid var(--line); }
+    .rd-top-l, .rd-top-r { display: flex; align-items: center; gap: var(--space-2, 8px); }
+    .rd-top-c { flex: 1; min-width: 0; text-align: center; display: flex; align-items: center; justify-content: center; gap: var(--space-2); }
+    .rd-title { font-family: var(--font-serif); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 46ch; }
+    .rd-vchip { font-family: var(--font-sans); font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: var(--radius-pill, 999px);
+      background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); cursor: pointer; white-space: nowrap; }
+    .rd-btn { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;
+      border: var(--hairline) solid transparent; border-radius: var(--radius-sm, 6px); background: none; color: var(--ink-soft);
+      cursor: pointer; font-size: 15px; transition: background 120ms, color 120ms, border-color 120ms; }
+    .rd-btn:hover { background: var(--surface-sunk); color: var(--ink); }
+    .rd-btn.is-on { color: var(--accent); border-color: var(--accent); }
+    .rd-back { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); text-decoration: none; padding: 0 6px; }
+    .rd-back:hover { color: var(--accent); }
+    .rd-sep { width: 1px; height: 22px; background: var(--line); }
+    .rd-pagenav { display: flex; align-items: center; gap: 4px; }
+    .rd-page-input { width: 48px; text-align: center; font-family: var(--font-sans); font-size: var(--fs-small, 14px);
+      padding: 5px 4px; border: var(--hairline) solid var(--line); border-radius: var(--radius-sm, 6px); background: var(--surface); color: var(--ink); }
+    .rd-page-total { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-faint); }
+    /* Body */
+    .rd-body { flex: 1; display: flex; min-height: 0; }
+    .rd-side { width: 260px; flex-shrink: 0; border-right: var(--hairline) solid var(--line); background: var(--surface);
+      display: flex; flex-direction: column; transition: width 180ms, opacity 180ms; }
+    .rd.side-hidden .rd-side { width: 0; opacity: 0; overflow: hidden; border-right: none; }
+    .rd-side-tabs { display: flex; border-bottom: var(--hairline) solid var(--line); }
+    .rd-side-tab { flex: 1; font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; padding: 10px 4px;
+      background: none; border: none; border-bottom: 2px solid transparent; color: var(--ink-faint); cursor: pointer; }
+    .rd-side-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
+    .rd-side-body { flex: 1; overflow-y: auto; padding: var(--space-3, 12px); }
+    /* side rows are real <button>s (keyboard-focusable) — reset native chrome */
+    .stoc-item { display: flex; width: 100%; gap: 8px; align-items: baseline; padding: 8px 8px; border-radius: var(--radius-sm, 6px);
+      cursor: pointer; text-align: left; background: none; border: none; color: inherit; font: inherit; }
+    .stoc-item:hover:not(:disabled) { background: var(--surface-sunk); }
+    .stoc-item.is-current { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+    .stoc-item:focus-visible, .rd-search-hit:focus-visible, .bm-go:focus-visible, .note-go:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+    .stoc-item.is-out, .stoc-item:disabled { opacity: 0.5; cursor: default; }
+    .stoc-item.is-out .stoc-pg { color: var(--ink-faint); }
+    .stoc-n { font-family: var(--font-sans); font-size: 11px; font-weight: 700; color: var(--accent); min-width: 20px; }
+    .stoc-t { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink); flex: 1; line-height: 1.35; }
+    .stoc-sub { padding-left: 18px; } .stoc-sub .stoc-t { font-size: var(--fs-caption, 12px); color: var(--ink-soft); }
+    .stoc-pg { font-family: var(--font-sans); font-size: 11px; color: var(--ink-faint); }
+    .bm-item, .note-item { padding: 10px; border: var(--hairline) solid var(--line); border-radius: var(--radius-sm, 6px); margin-bottom: 8px; }
+    .bm-item:hover, .note-item:hover { border-color: var(--accent); }
+    .bm-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .bm-go, .note-go { flex: 1; min-width: 0; text-align: left; background: none; border: none; color: inherit; font: inherit; cursor: pointer; padding: 0; }
+    .rd-search-hit { width: 100%; text-align: left; background: none; border: none; color: inherit; font: inherit; }
+    .bm-pg { font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink); }
+    .bm-del { background: none; border: none; color: var(--ink-faint); cursor: pointer; font-size: 14px; }
+    .bm-del:hover { color: var(--accent); }
+    .note-anchor { font-family: var(--font-serif); font-style: italic; font-size: var(--fs-caption, 12px); color: var(--ink-soft); }
+    .note-text { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink); margin-top: 4px; }
+    .side-empty { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-faint); font-style: italic; padding: var(--space-4); text-align: center; }
+    .side-add { width: 100%; font-family: var(--font-sans); font-size: var(--fs-small, 14px); padding: 8px; margin-top: 8px;
+      border: var(--hairline) dashed var(--line); border-radius: var(--radius-sm, 6px); background: none; color: var(--ink-soft); cursor: pointer; }
+    .side-add:hover { border-color: var(--accent); color: var(--accent); }
+    /* Canvas — the reading surface mirrors the Browse mini-reader (book card):
+       large pages over the cream β→α monogram, a gutter gap + soft drop shadow,
+       a frosted "ghost" for a lone facing page, click-halves to turn, and the
+       round page-mode toggle straddling the page bottom. Overrides are scoped to
+       #rd-canvas so the shared reader-engine defaults (and book.html's preview)
+       stay untouched. */
+    .rd-canvas { flex: 1; min-width: 0; position: relative; overflow: auto; display: flex; align-items: center; justify-content: center;
+      background: url(../assets/backgrounds/monogram-cream.png) center / cover no-repeat;
+      background-color: var(--paper); padding: var(--space-6, 24px); }
+    html[data-theme="sepia"] .rd-canvas { background-blend-mode: multiply; background-color: var(--paper); }
+    html[data-theme="night"] .rd-canvas { background: color-mix(in srgb, var(--ink) 14%, #000); }
+    .rd-stage { width: 100%; height: 100%; zoom: var(--rd-zoom, 1); }
+    /* Browse-matched page presentation (engine renders .re-* into #rd-stage).
+       Equal-flex left/right slots so the pages hug the centre gutter and a lone
+       page's empty half reserves space for the ghost — exactly like the card. */
+    #rd-canvas .re-spread { position: relative; gap: var(--space-4, 16px); }
+    #rd-canvas .re-spread.is-single { gap: 0; }
+    #rd-canvas .re-slot--left, #rd-canvas .re-slot--right { flex: 1 1 0; min-width: 0; }
+    #rd-canvas .re-slot--left  { justify-content: flex-end;   cursor: w-resize; }
+    #rd-canvas .re-slot--right { justify-content: flex-start; cursor: e-resize; }
+    #rd-canvas .re-slot--single { cursor: pointer; }
+    #rd-canvas .re-stage.re-mode-delve .re-slot canvas { max-height: 100%; border-radius: var(--radius-sm, 6px);
+      box-shadow: 0 8px 40px rgba(20, 16, 12, 0.34); background: var(--surface); }
+    /* ghost size is set inline (px) to the facing page; here just the look */
+    #rd-canvas .re-page-ghost { align-self: center; box-sizing: border-box; pointer-events: none; aspect-ratio: auto;
+      border: 1px solid color-mix(in srgb, var(--ink) 24%, transparent);
+      border-radius: var(--radius-sm, 6px); background: color-mix(in srgb, var(--surface) 52%, transparent);
+      backdrop-filter: blur(2px); opacity: 1; }
+    /* round one/two-page toggle straddling the page bottom edge (the Browse signature) */
+    .rd-pagemode { position: absolute; left: 50%; bottom: var(--space-4, 16px); transform: translateX(-50%);
+      width: 44px; height: 44px; border-radius: var(--radius-pill, 999px); display: flex; align-items: center; justify-content: center;
+      background: var(--surface); color: #4a8cd8; border: var(--hairline) solid var(--line); box-shadow: var(--shadow-raise);
+      cursor: pointer; z-index: 6; transition: background 140ms, color 140ms, transform 140ms, border-color 140ms; }
+    .rd-pagemode:hover { background: var(--surface-sunk); color: var(--ink); border-color: var(--ink-faint); transform: translateX(-50%) scale(1.06); }
+    .rd-pagemode:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    /* Progress */
+    .rd-prog { display: flex; align-items: center; gap: var(--space-4, 16px); height: 40px; flex-shrink: 0;
+      padding: 0 var(--space-5, 20px); background: color-mix(in srgb, var(--paper) 95%, var(--ink) 3%); border-top: var(--hairline) solid var(--line); }
+    .rd-prog-label { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); white-space: nowrap; }
+    .rd-prog-track { flex: 1; height: 4px; border-radius: 999px; background: var(--surface-sunk); position: relative; cursor: pointer; }
+    .rd-prog-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: var(--accent); }
+    /* Panels */
+    .rd-pop { position: absolute; z-index: 40; background: var(--surface); border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-md, 10px); box-shadow: var(--shadow-raise); padding: var(--space-4, 16px); display: none; }
+    .rd-pop.is-open { display: block; }
+    .rd-pop-title { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--ink-faint); margin: 0 0 var(--space-3, 12px); }
+    #rd-settings { top: 56px; right: 120px; width: 240px; }
+    #rd-cite { top: 56px; right: 60px; width: 340px; }
+    #rd-search { top: 56px; right: 200px; width: 320px; }
+    .rd-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: var(--space-3, 12px); }
+    .rd-step { display: flex; gap: 4px; }
+    .rd-step button, .rd-theme button { font-family: var(--font-sans); padding: 6px 10px; border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-sm, 6px); background: var(--surface); color: var(--ink); cursor: pointer; font-size: var(--fs-small, 14px); }
+    .rd-theme { display: flex; gap: 6px; }
+    .rd-theme button.is-on { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+    .rd-cite-str { font-family: var(--font-serif); font-size: var(--fs-small, 14px); line-height: 1.5; color: var(--ink); margin: 0 0 var(--space-3); }
+    .rd-cite-url { font-family: monospace; font-size: 12px; color: var(--ink-soft); background: var(--surface-sunk); padding: 6px 8px;
+      border-radius: var(--radius-sm, 6px); word-break: break-all; display: block; margin-bottom: var(--space-3); }
+    .rd-copy { font-family: var(--font-sans); font-size: var(--fs-small, 14px); padding: 6px 12px; border-radius: var(--radius-sm, 6px);
+      background: var(--ink); color: var(--paper); border: none; cursor: pointer; }
+    .rd-search-input { width: 100%; padding: 8px 10px; border: var(--hairline) solid var(--line); border-radius: var(--radius-sm, 6px);
+      background: var(--surface); color: var(--ink); font-family: var(--font-sans); font-size: var(--fs-small, 14px); }
+    .rd-search-res { margin-top: var(--space-3); max-height: 240px; overflow-y: auto; }
+    .rd-search-hit { padding: 8px; border-radius: var(--radius-sm, 6px); cursor: pointer; font-size: var(--fs-small, 14px); }
+    .rd-search-hit:hover { background: var(--surface-sunk); }
+    .rd-search-hit b { color: var(--accent); }
+    /* Gate */
+    .rd-gate { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 50;
+      background: color-mix(in srgb, var(--ink) 6%, var(--paper)); }
+    .rd-gate-card { max-width: 420px; text-align: center; background: var(--surface); border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-md, 10px); padding: var(--space-8, 32px); box-shadow: var(--shadow-soft); }
+    .rd-gate-card h2 { font-family: var(--font-serif); color: var(--ink); margin: var(--space-2) 0; }
+    .rd-gate-card p { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); }
+    .rd-gate-btns { display: flex; gap: var(--space-2); justify-content: center; margin-top: var(--space-4); }
+    .rd-gate-btn { font-family: var(--font-sans); font-weight: 600; padding: 10px 18px; border-radius: var(--radius-sm, 6px);
+      text-decoration: none; cursor: pointer; border: none; }
+    .rd-gate-btn--p { background: var(--accent); color: var(--on-accent, #fff); }
+    .rd-gate-btn--g { background: var(--surface); border: var(--hairline) solid var(--line); color: var(--ink-soft); }
+    @media (max-width: 760px){ .rd-side { position: absolute; z-index: 30; top: 52px; bottom: 40px; box-shadow: var(--shadow-raise); }
+      .rd.side-hidden .rd-side { box-shadow: none; } .rd-title { max-width: 22ch; } }
+  </style>
+</head>
+<body>
+  <div class="rd" id="rd">
+    <div class="rd-top">
+      <div class="rd-top-l">
+        <a class="rd-back" id="rd-back" href="#">‹ Карточка</a>
+        <button class="rd-btn" id="rd-side-toggle" title="Боковая панель" aria-label="Боковая панель">☰</button>
+      </div>
+      <div class="rd-top-c">
+        <span class="rd-title" id="rd-title">…</span>
+        <span class="rd-vchip" id="rd-vchip" title="Версия издания">—</span>
+      </div>
+      <div class="rd-top-r">
+        <div class="rd-pagenav">
+          <button class="rd-btn" id="rd-prev" aria-label="Назад">‹</button>
+          <input class="rd-page-input" id="rd-page" type="number" min="1" value="1">
+          <span class="rd-page-total" id="rd-total">/ —</span>
+          <button class="rd-btn" id="rd-next" aria-label="Вперёд">›</button>
+        </div>
+        <span class="rd-sep"></span>
+        <button class="rd-btn" id="rd-search-btn" title="Поиск по книге" aria-label="Поиск">⌕</button>
+        <button class="rd-btn" id="rd-settings-btn" title="Настройки" aria-label="Настройки">Аа</button>
+        <button class="rd-btn" id="rd-cite-btn" title="Цитировать" aria-label="Цитировать">❝</button>
+        <button class="rd-btn" id="rd-fs-btn" title="На весь экран" aria-label="Полный экран">⛶</button>
+      </div>
+    </div>
+
+    <div class="rd-body">
+      <aside class="rd-side" id="rd-side">
+        <div class="rd-side-tabs">
+          <button class="rd-side-tab is-active" data-stab="toc">Содержание</button>
+          <button class="rd-side-tab" data-stab="bm">Закладки</button>
+          <button class="rd-side-tab" data-stab="notes">Заметки</button>
+        </div>
+        <div class="rd-side-body" id="rd-side-body"></div>
+      </aside>
+      <div class="rd-canvas" id="rd-canvas">
+        <div class="rd-stage" id="rd-stage"></div>
+      </div>
+    </div>
+
+    <div class="rd-prog">
+      <span class="rd-prog-label" id="rd-prog-label">с. — / —</span>
+      <div class="rd-prog-track" id="rd-prog-track"><div class="rd-prog-fill" id="rd-prog-fill" style="width:0"></div></div>
+      <span class="rd-prog-label" id="rd-prog-pct">0%</span>
+    </div>
+
+    <!-- popovers -->
+    <div class="rd-pop" id="rd-settings">
+      <p class="rd-pop-title">Чтение</p>
+      <div class="rd-row"><span style="font-size:var(--fs-small,14px)">Масштаб</span>
+        <div class="rd-step"><button data-act="zoom-out">A−</button><button data-act="zoom-in">A+</button></div></div>
+      <div class="rd-row"><span style="font-size:var(--fs-small,14px)">Тема</span>
+        <div class="rd-theme" id="rd-theme">
+          <button data-theme-set="light">Светлая</button>
+          <button data-theme-set="sepia">Сепия</button>
+          <button data-theme-set="dark">Тёмная</button>
+        </div></div>
+    </div>
+    <div class="rd-pop" id="rd-cite">
+      <p class="rd-pop-title">Академическая ссылка</p>
+      <p class="rd-cite-str" id="rd-cite-str"></p>
+      <code class="rd-cite-url" id="rd-cite-url"></code>
+      <button class="rd-copy" data-act="copy-cite">Копировать ссылку</button>
+      <button class="rd-copy" data-act="copy-url" style="background:var(--surface);color:var(--ink-soft);border:var(--hairline) solid var(--line)">Копировать URL</button>
+    </div>
+    <div class="rd-pop" id="rd-search">
+      <p class="rd-pop-title">Поиск по книге</p>
+      <input class="rd-search-input" id="rd-search-input" type="search" placeholder="Слово или фраза…">
+      <div class="rd-search-res" id="rd-search-res"></div>
+    </div>
+  </div>
+
+  <script src="../components/session.js"></script>
+  <script src="../components/frame.js"></script>
+  <script src="../components/book-data.js"></script>
+  <script src="../components/author-data.js"></script>
+  <script src="../components/reader-engine.js"></script>
+
+  <script>
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+    var P = new URLSearchParams(location.search);
+    var slug = P.get('book') || 'bion-learning';
+    var reqV = P.get('v');
+    var startP = parseInt(P.get('p') || '0', 10) || 0;
+    var fragParam = P.get('f') || '';
+
+    var THEME_MAP = { light: 'light-clear', sepia: 'sepia', dark: 'night' };
+    var book = null, ed = null, eng = null, numPages = 0, curPage = 1;
+    var sideTab = 'toc';
+    var sessionStart = Date.now();
+    var lastEmittedPage = '';
+
+    function isPriv(){ return !!(window.BA && BA.session && BA.session.isPrivate()); }
+    function K(k){ return 'reader:' + slug + ':' + k; }
+    function getLS(k, d){ try { var v = BA.store.get(K(k)); return v==null?d:JSON.parse(v); } catch(e){ return d; } }
+    function setLS(k, v){ try { BA.store.set(K(k), JSON.stringify(v)); } catch(e){} }
+
+    /* ---- events (CLAUDE.md §4 core reading envelope) ---- */
+    function emit(evt){
+      try { var log = JSON.parse(BA.store.get('ba_events')||'[]'); log.push(evt); BA.store.set('ba_events', JSON.stringify(log.slice(-200))); } catch(e){}
+      try { console.info('[event] '+evt.type, evt); } catch(e){}
+    }
+    function emitOpened(){ emit({ type:'book.opened', book_id:slug, book_version_id: ed?ed.v:null, publisher_id:'beta-alpha', timestamp:new Date().toISOString() }); }
+    /* Emit page.viewed for EVERY visible page — in two-page mode that is BOTH the
+       recto and the verso of the spread, not just the right page (W-6.4). Pages
+       are rendered-edition page numbers (the edition is on book_version_id). */
+    function emitPages(){
+      if (!eng) return;
+      var st = eng.state(), pages;
+      if (st.twoPage){ var sp = BA.bookData.spreadPages(book, st.spread, st.numPages); pages = [sp.left, sp.right].filter(Boolean); }
+      else pages = [st.page];
+      var key = pages.join(',');
+      if (key===lastEmittedPage) return;
+      lastEmittedPage = key;
+      pages.forEach(function(p){ emit({ type:'page.viewed', book_id:slug, book_version_id: ed?ed.v:null, page:p, publisher_id:'beta-alpha', timestamp:new Date().toISOString() }); });
+    }
+    function emitEnded(){ emit({ type:'session.ended', book_id:slug, duration_seconds: Math.round((Date.now()-sessionStart)/1000), publisher_id:'beta-alpha', timestamp:new Date().toISOString() }); }
+
+    function applyTheme(t){
+      var dt = THEME_MAP[t] || 'light-clear';
+      document.documentElement.setAttribute('data-theme', dt);
+      try { BA.store.set('reader-theme', t); } catch(e){}
+      document.querySelectorAll('#rd-theme button').forEach(function(b){ b.classList.toggle('is-on', b.getAttribute('data-theme-set')===t); });
+    }
+    function applyZoom(z){ document.getElementById('rd').style.setProperty('--rd-zoom', z); setLS('zoom', z); }
+
+    function chapters(){ return (book.chapters && book.chapters.length) ? book.chapters : []; }
+    /* curPage is the RENDERED edition page; chapter pages + citations reason in
+       BOOK pages — map between the two so TOC/deep-links/citations are correct
+       on the free fragment and on prefix editions alike (W-6.2). */
+    function curBookPage(){ return BA.bookData.editionToBookPage(book, ed, curPage); }
+    function currentChapterIdx(){
+      var chs = chapters(), bp = curBookPage(), idx = -1;
+      for (var i=0;i<chs.length;i++){ if (chs[i].page!=null && chs[i].page<=bp) idx=i; }
+      return idx;
+    }
+
+    function renderSide(){
+      var host = document.getElementById('rd-side-body');
+      if (sideTab==='toc'){
+        var chs = chapters(), cur = currentChapterIdx();
+        host.innerHTML = chs.length ? chs.map(function(c,i){
+          /* chapter pages are full-BOOK pages → map to the rendered edition page;
+             a chapter outside this edition's range is shown but disabled (W-6.2). */
+          var rp = (c.page!=null) ? BA.bookData.bookPageToEdition(book, ed, c.page) : null;
+          var inRange = rp != null;
+          return '<button type="button" class="stoc-item'+(i===cur?' is-current':'')+(c.level>1?' stoc-sub':'')+(inRange?'':' is-out')+'"'+
+              (inRange?(' data-page="'+rp+'"'):' disabled title="Доступно в полном издании"')+'>' +
+            '<span class="stoc-n">'+esc(c.n!=null&&c.n!=='—'?c.n:'•')+'</span>' +
+            '<span class="stoc-t">'+esc(c.title)+'</span>' +
+            (c.page?'<span class="stoc-pg">с. '+c.page+'</span>':'') +
+          '</button>';
+        }).join('') : '<p class="side-empty">Оглавление недоступно для этого фрагмента.</p>';
+      } else if (sideTab==='bm'){
+        var bms = getLS('bookmarks', []);
+        host.innerHTML = (bms.length ? bms.map(function(p){
+          return '<div class="bm-item"><div class="bm-row">' +
+            '<button type="button" class="bm-go" data-page="'+p+'"><span class="bm-pg">Страница '+p+'</span></button>' +
+            '<button class="bm-del" data-del-bm="'+p+'" title="Удалить">✕</button></div></div>';
+        }).join('') : '<p class="side-empty">Нет закладок.</p>') +
+          (isPriv()?'<button class="side-add" data-act="add-bm">+ Заложить с. '+curPage+'</button>':'');
+      } else {
+        var notes = getLS('notes', []);
+        host.innerHTML = (notes.length ? notes.map(function(n,i){
+          return '<div class="note-item"><div class="bm-row">' +
+            '<button type="button" class="note-go" data-page="'+n.page+'"><span class="bm-pg">с. '+n.page+'</span></button>' +
+            '<button class="bm-del" data-del-note="'+i+'">✕</button></div>' +
+            '<div class="note-text">'+esc(n.text)+'</div></div>';
+        }).join('') : '<p class="side-empty">Нет заметок.</p>') +
+          (isPriv()?'<button class="side-add" data-act="add-note">+ Заметка к с. '+curPage+'</button>':'');
+      }
+    }
+
+    function updateProgress(){
+      document.getElementById('rd-page').value = curPage;
+      document.getElementById('rd-total').textContent = '/ ' + numPages;
+      var pct = numPages ? Math.round(curPage/numPages*100) : 0;
+      document.getElementById('rd-prog-label').textContent = 'с. ' + curPage + ' из ' + numPages;
+      document.getElementById('rd-prog-pct').textContent = pct + '%';
+      document.getElementById('rd-prog-fill').style.width = pct + '%';
+      setLS('page', curPage);
+      if (sideTab==='toc') renderSide();
+    }
+
+    function updateCite(){
+      var bp = curBookPage();
+      var cs = BA.bookData.citation(book, ed.v, bp);
+      var url = BA.bookData.deepLink(book, ed.v, bp, fragParam||undefined);
+      document.getElementById('rd-cite-str').textContent = cs;
+      document.getElementById('rd-cite-url').textContent = url;
+    }
+
+    /* frosted "ghost" outline for a lone page's empty facing slot (Browse parity).
+       Done here so it's reliable regardless of engine render ordering. */
+    function decorateGhost(){
+      var stage = document.getElementById('rd-stage');
+      var sp = stage && stage.querySelector('.re-spread'); if (!sp) return;
+      var twoP = eng && eng.isTwoPage();
+      var canvas = sp.querySelector('canvas');
+      ['.re-slot--left', '.re-slot--right'].forEach(function(sel){
+        var slot = sp.querySelector(sel); if (!slot) return;
+        var old = slot.querySelector('.re-page-ghost'); if (old) old.remove();
+        if (twoP && canvas && !slot.querySelector('canvas')){
+          var g = document.createElement('div'); g.className = 're-page-ghost';
+          /* size to the real facing page (the empty slot has no height of its own) */
+          g.style.width = (canvas.clientWidth || canvas.width) + 'px';
+          g.style.height = (canvas.clientHeight || canvas.height) + 'px';
+          slot.appendChild(g);
+        }
+      });
+    }
+
+    var _ghostT = null;
+    function onRender(st){
+      curPage = st.page; numPages = st.numPages;
+      /* schedule the lone-page ghost FIRST, deferred past the engine's render
+         cycle (the spread handed mid-render is transient) so it runs no matter
+         what the UI updates below do. */
+      clearTimeout(_ghostT); _ghostT = setTimeout(decorateGhost, 60);
+      try { updateProgress(); } catch (e) {}
+      try { updateCite(); } catch (e) {}
+      try { emitPages(); } catch (e) {}
+    }
+
+    /* one/two-page glyph — hints the OTHER mode (what a click switches TO),
+       mirroring the Browse mini-reader's page-mode icon. */
+    function pagemodeIcon(isTwo){
+      return isTwo
+        ? '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="7" y="4" width="10" height="16" rx="1"/></svg>'
+        : '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/></svg>';
+    }
+    /* re-attach the round page-mode toggle after every shell rebuild (it lives
+       inside the engine-owned spread, like Browse). data-no-turn keeps the
+       click-halves page turn from firing on it. */
+    function onShell(stage){
+      var spread = stage.querySelector('.re-spread'); if (!spread) return;
+      if (!spread.querySelector('.rd-pagemode')){
+        var b = document.createElement('button');
+        b.className = 'rd-pagemode'; b.type = 'button';
+        b.setAttribute('data-no-turn',''); b.setAttribute('aria-label','Одна / две страницы'); b.title = 'Одна / две страницы';
+        b.innerHTML = pagemodeIcon(eng ? eng.isTwoPage() : true);
+        spread.appendChild(b);
+      }
+    }
+
+    function mount(){
+      var stage = document.getElementById('rd-stage');
+      var two = getLS('twoPage', window.innerWidth > 900);
+      eng = BA.readerEngine.create({
+        stage: stage, url: ed.pdf || book.fragmentPdf, book: book, twoPage: two, mode: 'delve',
+        clickToTurn: true,   /* turn by clicking the page halves (Browse parity) */
+        onShell: onShell,
+        onLoad: function(n){ numPages = n; document.getElementById('rd-total').textContent='/ '+n;
+          /* ?p= is a BOOK page (citations cite book pages) → map into the rendered
+             edition; a saved position is already a rendered page (W-6.2). */
+          var target;
+          if (startP){ target = BA.bookData.bookPageToEdition(book, ed, startP) || 1; }
+          else target = getLS('page', 1);
+          if (target>1) eng.goToPage(target);
+          emitOpened();
+        },
+        onRender: onRender
+      });
+      eng.load();
+    }
+
+    function showGate(){
+      var g = document.createElement('div'); g.className='rd-gate';
+      g.innerHTML = '<div class="rd-gate-card"><div style="font-size:30px">🔒</div>' +
+        '<h2>Это издание доступно подписчикам</h2>' +
+        '<p>Полные издания открываются после входа (CON-01). Свободный фрагмент доступен всем.</p>' +
+        '<div class="rd-gate-btns">' +
+          '<button class="rd-gate-btn rd-gate-btn--p" data-act="login">Войти</button>' +
+          '<a class="rd-gate-btn rd-gate-btn--g" href="reader.html?book='+slug+'&v=free">Открыть фрагмент</a>' +
+        '</div></div>';
+      document.getElementById('rd').appendChild(g);
+    }
+
+    function togglePop(id){
+      var el = document.getElementById(id), open = el.classList.contains('is-open');
+      document.querySelectorAll('.rd-pop').forEach(function(p){ p.classList.remove('is-open'); });
+      if (!open) el.classList.add('is-open');
+    }
+    function copy(text, btn){ try { navigator.clipboard.writeText(text); var o=btn.textContent; btn.textContent='Скопировано ✓'; setTimeout(function(){btn.textContent=o;},1200);}catch(e){} }
+
+    function searchViaText(q){
+      var res = document.getElementById('rd-search-res');
+      var url = ed.pdf || book.fragmentPdf, ql = q.toLowerCase();
+      BA.readerEngine.ensurePdfjs().then(function(lib){ return lib.getDocument(url).promise; }).then(function(doc){
+        var n = doc.numPages, hits = [], done = 0;
+        function fin(){ if (++done<n) return; render(); }
+        function render(){
+          res.innerHTML = hits.length ? hits.slice(0,30).map(function(h){
+            return '<button type="button" class="rd-search-hit" data-page="'+h.page+'">с. '+h.page+' — '+h.snippet+'</button>';
+          }).join('') : '<p class="side-empty">Ничего не найдено.</p>';
+        }
+        for (var p=1;p<=n;p++){ (function(pg){
+          doc.getPage(pg).then(function(page){ return page.getTextContent(); }).then(function(tc){
+            var t = tc.items.map(function(i){return i.str;}).join(' ');
+            var idx = t.toLowerCase().indexOf(ql);
+            if (idx!==-1){ var s=Math.max(0,idx-20); hits.push({ page:pg, snippet: esc('…'+t.slice(s,idx))+'<b>'+esc(t.substr(idx,q.length))+'</b>'+esc(t.substr(idx+q.length,20)+'…') }); }
+            fin();
+          }).catch(fin);
+        })(p); }
+      }).catch(function(){ res.innerHTML='<p class="side-empty">Поиск недоступен.</p>'; });
+    }
+
+    function build(){
+      book = BA.bookData.get(slug);
+      if (!book){ document.body.innerHTML = '<p style="padding:2rem;font-family:system-ui">Книга не найдена. <a href="library.html">В библиотеку</a></p>'; return; }
+      document.title = book.title + ' — Читалка';
+      document.getElementById('rd-back').href = 'book.html?book=' + slug;
+      document.getElementById('rd-title').textContent = book.title;
+
+      /* resolve edition + gate (CON-01) */
+      ed = reqV ? BA.bookData.editionByVersion(book, reqV) : BA.bookData.defaultEdition(book, isPriv());
+      if (!ed) ed = BA.bookData.editionByVersion(book, 'free');
+      ed.pdf = ed.pdf || book.fragmentPdf;
+      document.getElementById('rd-vchip').textContent = ed.badgeLabel + ' · ' + book.year;
+
+      if (ed.access !== 'free' && !isPriv()){ showGate(); document.getElementById('rd-vchip').textContent = 'Фрагмент'; ed = BA.bookData.editionByVersion(book,'free'); }
+
+      applyTheme((function(){ try { return BA.store.get('reader-theme'); } catch(e){ return null; } })() || 'light');
+      applyZoom(getLS('zoom', 1));
+      mount();
+      renderSide();
+      updateCite();
+
+      /* load chapters for TOC/search */
+      BA.bookData.load(slug).then(function(full){ book.chapters = full.chapters; if (sideTab==='toc') renderSide(); }).catch(function(){});
+    }
+
+    /* ---- wiring ---- */
+    document.addEventListener('DOMContentLoaded', function(){
+      build();
+      var rd = document.getElementById('rd');
+      document.getElementById('rd-side-toggle').addEventListener('click', function(){ rd.classList.toggle('side-hidden'); });
+      document.getElementById('rd-prev').addEventListener('click', function(){ if (eng) eng.prev(); });
+      document.getElementById('rd-next').addEventListener('click', function(){ if (eng) eng.next(); });
+      document.getElementById('rd-page').addEventListener('change', function(e){ if (eng) eng.goToPage(parseInt(e.target.value,10)||1); });
+      document.getElementById('rd-settings-btn').addEventListener('click', function(){ togglePop('rd-settings'); });
+      document.getElementById('rd-cite-btn').addEventListener('click', function(){ updateCite(); togglePop('rd-cite'); });
+      document.getElementById('rd-search-btn').addEventListener('click', function(){ togglePop('rd-search'); var i=document.getElementById('rd-search-input'); setTimeout(function(){i.focus();},50); });
+      document.getElementById('rd-fs-btn').addEventListener('click', function(){
+        if (!document.fullscreenElement){ rd.requestFullscreen && rd.requestFullscreen(); }
+        else { document.exitFullscreen && document.exitFullscreen(); }
+      });
+      /* keep the fullscreen toggle in sync when the user exits via Esc / browser UI (W-6.7) */
+      document.addEventListener('fullscreenchange', function(){
+        document.getElementById('rd-fs-btn').classList.toggle('is-on', !!document.fullscreenElement);
+      });
+      document.getElementById('rd-search-input').addEventListener('input', function(e){
+        clearTimeout(window._rdSearchT); window._rdSearchT = setTimeout(function(){ searchViaText(e.target.value.trim()); }, 350);
+      });
+
+      /* side tabs */
+      document.querySelector('.rd-side-tabs').addEventListener('click', function(e){
+        var t = e.target.closest('.rd-side-tab'); if (!t) return;
+        sideTab = t.getAttribute('data-stab');
+        document.querySelectorAll('.rd-side-tab').forEach(function(b){ b.classList.toggle('is-active', b===t); });
+        renderSide();
+      });
+
+      /* delegated clicks across reader */
+      rd.addEventListener('click', function(e){
+        /* round page-mode toggle (in the spread) — turn it off the click-to-turn path */
+        if (e.target.closest('.rd-pagemode')){ if (eng){ var tp=!eng.isTwoPage(); eng.setTwoPage(tp); setLS('twoPage', tp); } return; }
+        var a = e.target.closest('[data-act]'); var pg = e.target.closest('[data-page]');
+        var delbm = e.target.closest('[data-del-bm]'); var delnote = e.target.closest('[data-del-note]');
+        if (delbm){ e.stopPropagation(); var p=+delbm.getAttribute('data-del-bm'); setLS('bookmarks', getLS('bookmarks',[]).filter(function(x){return x!==p;})); renderSide(); return; }
+        if (delnote){ e.stopPropagation(); var i=+delnote.getAttribute('data-del-note'); var ns=getLS('notes',[]); ns.splice(i,1); setLS('notes',ns); renderSide(); return; }
+        if (a){
+          var act = a.getAttribute('data-act');
+          if (act==='zoom-in') applyZoom(Math.min(2, (getLS('zoom',1))+0.1));
+          else if (act==='zoom-out') applyZoom(Math.max(0.6, (getLS('zoom',1))-0.1));
+          else if (act==='copy-cite') copy(BA.bookData.citation(book, ed.v, curBookPage()), a);
+          else if (act==='copy-url') copy(BA.bookData.deepLink(book, ed.v, curBookPage(), fragParam||undefined), a);
+          else if (act==='add-bm'){ var bs=getLS('bookmarks',[]); if (bs.indexOf(curPage)===-1){ bs.push(curPage); bs.sort(function(x,y){return x-y;}); setLS('bookmarks',bs);} renderSide(); }
+          else if (act==='add-note'){ var txt=prompt('Заметка к с. '+curPage+':'); if (txt){ var ns=getLS('notes',[]); ns.push({page:curPage,text:txt}); setLS('notes',ns); renderSide(); } }
+          else if (act==='login'){ if (BA.frame && BA.frame.openLogin) BA.frame.openLogin(); }
+          return;
+        }
+        if (pg && eng){ var n=+pg.getAttribute('data-page'); if (n) eng.goToPage(n); }
+      });
+      document.getElementById('rd-theme').addEventListener('click', function(e){ var b=e.target.closest('[data-theme-set]'); if (b) applyTheme(b.getAttribute('data-theme-set')); });
+      document.getElementById('rd-prog-track').addEventListener('click', function(e){
+        if (!eng||!numPages) return; var r=this.getBoundingClientRect(); var f=(e.clientX-r.left)/r.width; eng.goToPage(Math.max(1,Math.round(f*numPages)));
+      });
+      /* close any open popover (settings / cite / search) — W-6.7 */
+      function closePops(){ document.querySelectorAll('.rd-pop.is-open').forEach(function(p){ p.classList.remove('is-open'); }); }
+      document.addEventListener('keydown', function(e){
+        if (e.key==='Escape'){ if (document.querySelector('.rd-pop.is-open')){ closePops(); e.stopPropagation(); } return; }
+        if (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+        if (e.key==='ArrowLeft'||e.key==='PageUp'){ if (eng) eng.prev(); }
+        else if (e.key==='ArrowRight'||e.key==='PageDown'){ if (eng) eng.next(); }
+      });
+      /* outside-click closes popovers (clicks on a trigger or inside a popover don't) */
+      document.addEventListener('click', function(e){
+        if (e.target.closest('.rd-pop')) return;
+        if (e.target.closest('#rd-settings-btn,#rd-cite-btn,#rd-search-btn')) return;
+        if (document.querySelector('.rd-pop.is-open')) closePops();
+      });
+      window.addEventListener('pagehide', emitEnded);
+      window.addEventListener('beforeunload', emitEnded);
+    });
+  </script>
+</body>
+</html>

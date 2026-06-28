@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Книга — β→α академия</title>
+  <!-- Book page = the FULL view of the same entity the Book card shows (the page
+       is the superset; system-model §4.3). Dynamic by ?book=<slug>.
+       Feature areas: Book card · Reader · Citation · Rate & Reviews · Discussion.
+       Spec refs: specs.md §1.6 (Publication/Edition/Book), §1.11/§1.18 (citation),
+       §1.8/§4.4 CON-01 (free editions public; full gated). Tokens-only. -->
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/chrome.css">
+  <link rel="stylesheet" href="../styles/book-card.css">
+  <style>
+    /* No padding-top: the sticky .site-header already reserves its height (B1). */
+    .bk-main { min-height: 100vh; }
+    .bk-wrap { max-width: var(--container-max, 1200px); margin: 0 auto; padding: 0 var(--gutter, 40px); }
+    @media (max-width: 700px){ .bk-wrap { padding: 0 var(--space-4, 16px); } }
+    /* Hero */
+    .bk-hero { display: grid; grid-template-columns: 220px 1fr; gap: var(--space-8, 32px);
+      padding: var(--space-8, 32px) 0; }
+    @media (max-width: 760px){ .bk-hero { grid-template-columns: 1fr; } }
+    .bk-cover-col { display: flex; flex-direction: column; gap: var(--space-4, 16px); }
+    .bk-cover { width: 220px; max-width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: var(--radius-md, 10px);
+      box-shadow: var(--shadow-raise); background: var(--surface-sunk); cursor: zoom-in; }
+    @media (max-width: 760px){ .bk-cover { width: 160px; } }
+    .bk-actions { display: flex; flex-direction: column; gap: var(--space-2, 8px); }
+    .bk-btn { font-family: var(--font-sans); font-size: var(--fs-body, 16px); font-weight: 600; text-align: center;
+      padding: 11px 16px; border-radius: var(--radius-sm, 6px); text-decoration: none; cursor: pointer; border: none;
+      transition: background 140ms, border-color 140ms, color 140ms; }
+    .bk-btn--primary { background: var(--accent); color: var(--on-accent, #fff); }
+    .bk-btn--primary:hover { background: var(--accent-hover); }
+    .bk-btn--ghost { background: var(--surface); border: var(--hairline) solid var(--line); color: var(--ink-soft); }
+    .bk-btn--ghost:hover { border-color: var(--accent); color: var(--accent); }
+    .bk-meta-col { min-width: 0; }
+    .bk-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: var(--space-3, 12px); }
+    .bk-chip { font-family: var(--font-sans); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: var(--radius-pill, 999px); }
+    .bk-chip--psycho { background: color-mix(in srgb, var(--slate) 14%, transparent); color: var(--slate); }
+    .bk-chip--theory { background: color-mix(in srgb, var(--amber) 16%, transparent); color: var(--amber); }
+    .bk-chip--clinical { background: color-mix(in srgb, var(--sage) 16%, transparent); color: var(--sage); }
+    .bk-chip--therapy { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); }
+    .bk-title { font-family: var(--font-serif); font-size: 2rem; font-weight: 600; line-height: 1.15; color: var(--ink); margin: 0; letter-spacing: -0.01em; }
+    .bk-subtitle { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-style: italic; color: var(--ink-soft); margin: var(--space-2) 0 0; }
+    .bk-author { font-family: var(--font-sans); font-size: var(--fs-body, 16px); margin: var(--space-3, 12px) 0 0; }
+    .bk-author a { color: var(--accent); text-decoration: none; font-weight: 500; }
+    .bk-author a:hover { text-decoration: underline; }
+    .bk-metarow { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4, 16px); margin: var(--space-4, 16px) 0;
+      padding: var(--space-3, 12px) 0; border-top: var(--hairline) solid var(--line); border-bottom: var(--hairline) solid var(--line); }
+    .bk-mi { display: flex; flex-direction: column; gap: 2px; }
+    .bk-mi-l { font-family: var(--font-sans); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint); }
+    .bk-mi-v { font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink); }
+    .bk-edsel { display: flex; align-items: center; gap: var(--space-3, 12px); flex-wrap: wrap; margin-top: var(--space-2); }
+    .bk-edsel select { font-family: var(--font-sans); font-size: var(--fs-small, 14px); padding: 7px 10px; border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-sm, 6px); background: var(--surface); color: var(--ink); }
+    .bk-shortdesc { font-family: var(--font-serif); font-size: var(--fs-body, 16px); line-height: 1.6; color: var(--ink-soft); margin: var(--space-4, 16px) 0 0; }
+    /* Tabs */
+    .bk-tabs { position: sticky; top: var(--header-height, 64px); z-index: 70; background: color-mix(in srgb, var(--paper) 92%, transparent);
+      backdrop-filter: blur(8px); border-bottom: var(--hairline) solid var(--line); border-top: var(--hairline) solid var(--line); }
+    .bk-tabs-inner { display: flex; gap: var(--space-1); overflow-x: auto; max-width: var(--container-max, 1200px); margin: 0 auto; padding: 0 var(--gutter, 40px); }
+    @media (max-width: 700px){ .bk-tabs-inner { padding: 0 var(--space-4, 16px); } }
+    .bk-tab { font-family: var(--font-sans); font-size: var(--fs-body, 16px); font-weight: 500; color: var(--ink-soft); background: none;
+      border: none; border-bottom: 2px solid transparent; padding: var(--space-4, 16px) var(--space-3, 12px); cursor: pointer; white-space: nowrap; transition: color 140ms, border-color 140ms; }
+    .bk-tab:hover { color: var(--ink); }
+    .bk-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
+    /* Panels */
+    .bk-panel { display: none; padding: var(--space-8, 32px) 0 var(--space-16, 64px); }
+    .bk-panel.is-active { display: block; }
+    .bk-layout { display: grid; grid-template-columns: 1fr 300px; gap: var(--space-8, 32px); }
+    @media (max-width: 900px){ .bk-layout { grid-template-columns: 1fr; } }
+    .bk-sec-title { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--ink-faint); margin: 0 0 var(--space-3, 12px); }
+    .bk-prose { font-family: var(--font-serif); font-size: var(--fs-body, 16px); line-height: 1.7; color: var(--ink); max-width: 68ch; }
+    .bk-aside { position: sticky; top: calc(var(--header-height, 64px) + 70px); align-self: start; }
+    .bk-card { background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); padding: var(--space-5, 20px); }
+    /* TOC */
+    .bk-toc { list-style: none; margin: var(--space-6, 24px) 0 0; padding: 0; }
+    .bk-toc-item { padding: var(--space-3, 12px) 0; border-top: var(--hairline) solid var(--line); }
+    .bk-toc-head { display: flex; gap: var(--space-3, 12px); align-items: baseline; cursor: pointer; }
+    .bk-toc-n { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 700; color: var(--accent); min-width: 28px; }
+    .bk-toc-t { font-family: var(--font-serif); font-size: var(--fs-body, 16px); font-weight: 600; color: var(--ink); flex: 1; }
+    .bk-toc-p { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); }
+    .bk-toc-d { font-family: var(--font-sans); font-size: var(--fs-small, 14px); line-height: 1.5; color: var(--ink-soft); margin: var(--space-2, 8px) 0 0 40px; }
+    .bk-toc-lvl2 .bk-toc-t { font-weight: 500; font-size: var(--fs-small, 14px); }
+    .bk-toc-lvl2 { padding-left: var(--space-4, 16px); }
+    /* in-fragment chapters are real <button>s that drive the free-fragment preview;
+       chapters outside the free fragment are non-interactive (W-6.2) */
+    button.bk-toc-head { width: 100%; background: none; border: none; font: inherit; color: inherit; }
+    .bk-toc-item:not(.is-frag) .bk-toc-head { cursor: default; }
+    .bk-toc-item.is-frag button.bk-toc-head:hover .bk-toc-t { color: var(--accent); }
+    button.bk-toc-head:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-sm, 6px); }
+    .bk-toc-item:not(.is-frag) .bk-toc-t { color: var(--ink-soft); }
+    .bk-toc-frag-tag { font-family: var(--font-sans); font-size: 10px; font-weight: 600; color: var(--accent);
+      text-transform: uppercase; letter-spacing: 0.04em; margin-left: 6px; }
+    /* fragment reader */
+    .bk-frag { margin-top: var(--space-6, 24px); }
+    .bk-frag-stage { height: 460px; background: var(--surface-sunk); border: var(--hairline) solid var(--line);
+      border-radius: var(--radius-md, 10px); overflow: hidden; padding: var(--space-4, 16px); }
+    .bk-frag-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-3, 12px); flex-wrap: wrap; }
+    .bk-frag-nav { display: flex; align-items: center; gap: var(--space-2, 8px); }
+    .bk-icon-btn { width: 34px; height: 34px; border-radius: var(--radius-sm, 6px); border: var(--hairline) solid var(--line);
+      background: var(--surface); color: var(--ink-soft); cursor: pointer; font-size: 16px; }
+    .bk-icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+    /* requisites + citation */
+    .bk-req { width: 100%; border-collapse: collapse; font-family: var(--font-sans); font-size: var(--fs-small, 14px); }
+    .bk-req td { padding: var(--space-3, 12px) var(--space-2, 8px); border-bottom: var(--hairline) solid var(--line); vertical-align: top; }
+    .bk-req td:first-child { color: var(--ink-faint); width: 36%; }
+    .bk-req td:last-child { color: var(--ink); }
+    .bk-cite { margin-top: var(--space-6, 24px); background: var(--surface-sunk); border-radius: var(--radius-md, 10px); padding: var(--space-5, 20px); }
+    .bk-cite-str { font-family: var(--font-serif); font-size: var(--fs-body, 16px); line-height: 1.6; color: var(--ink); margin: var(--space-2) 0; }
+    .bk-cite-link { display: flex; align-items: center; gap: var(--space-2, 8px); margin-top: var(--space-3, 12px); flex-wrap: wrap; }
+    .bk-cite-url { font-family: monospace; font-size: var(--fs-small, 13px); color: var(--ink-soft); background: var(--surface);
+      padding: 6px 10px; border-radius: var(--radius-sm, 6px); border: var(--hairline) solid var(--line); overflow-x: auto; }
+    .bk-copy { font-family: var(--font-sans); font-size: var(--fs-small, 14px); padding: 6px 12px; border-radius: var(--radius-sm, 6px);
+      background: var(--ink); color: var(--paper); border: none; cursor: pointer; }
+    .bk-copy:hover { background: var(--accent); }
+    /* versions */
+    .bk-ver { border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); padding: var(--space-4, 16px); margin-bottom: var(--space-3, 12px); }
+    .bk-ver.is-current { border-color: var(--accent); }
+    .bk-ver-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+    .bk-ver-label { font-family: var(--font-sans); font-weight: 600; color: var(--ink); }
+    .bk-vbadge { font-family: var(--font-sans); font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: var(--radius-pill, 999px); }
+    .bk-vbadge--full { background: color-mix(in srgb, var(--sage) 18%, transparent); color: var(--sage); }
+    .bk-vbadge--early { background: color-mix(in srgb, var(--amber) 18%, transparent); color: var(--amber); }
+    .bk-vbadge--free { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
+    .bk-ver-note { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); margin: var(--space-2, 8px) 0 0; }
+    .bk-ver-read { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--accent); text-decoration: none; }
+    /* gates / empty */
+    .bk-gate { background: var(--surface-sunk); border: var(--hairline) dashed var(--line); border-radius: var(--radius-md, 10px);
+      padding: var(--space-6, 24px); text-align: center; }
+    .bk-gate-ic { font-size: 28px; }
+    .bk-gate h3 { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); color: var(--ink); margin: var(--space-2) 0; }
+    .bk-gate p { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); margin: 0; }
+    .bk-empty { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-faint); font-style: italic; padding: var(--space-6, 24px) 0; }
+    .bk-loading { font-family: var(--font-sans); color: var(--ink-faint); padding: var(--space-16, 64px); text-align: center; }
+  </style>
+</head>
+<body>
+  <main id="main-content" data-page-body class="bk-main">
+    <div id="bk-root"><div class="bk-loading">Загрузка книги…</div></div>
+  </main>
+
+  <script src="../components/session.js"></script>
+  <script src="../components/frame.js"></script>
+  <script src="../components/avatar-menu.js"></script>
+  <script src="../components/notifications.js"></script>
+  <script src="../components/search.js"></script>
+  <script src="../components/pulse.js"></script>
+  <script src="../components/debug.js"></script>
+  <script src="../components/book-data.js"></script>
+  <script src="../components/author-data.js"></script>
+  <script src="../components/reader-engine.js"></script>
+  <script src="../components/book-card.js"></script>
+  <script src="../components/member-card.js"></script>
+  <script src="../components/author-card.js"></script>
+
+  <script>
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+    var slug = new URLSearchParams(location.search).get('book') || 'bion-learning';
+    var book = null, curEd = null, frag = null;
+
+    function isPriv(){ return !!(window.BA && BA.session && BA.session.isPrivate()); }
+
+    function heroHTML(b){
+      var priv = isPriv();
+      var chips = b.chips.map(function(c){ return '<span class="bk-chip bk-chip--'+c.kind+'">'+esc(c.label)+'</span>'; }).join('');
+      var readHref = priv ? ('reader.html?book='+b.slug+'&v='+curEd.v) : ('reader.html?book='+b.slug+'&v=free');
+      var readLabel = priv ? 'Читать' : 'Читать фрагмент';
+      return '<section class="bk-hero">' +
+        '<div class="bk-cover-col">' +
+          '<img class="bk-cover" id="bk-cover" src="'+esc(b.covers.large)+'" alt="Обложка: '+esc(b.title)+'">' +
+          '<div class="bk-actions">' +
+            '<a class="bk-btn bk-btn--primary" href="'+readHref+'">'+readLabel+'</a>' +
+            '<button class="bk-btn bk-btn--ghost" type="button" data-act="browse">Быстрый просмотр</button>' +
+            (priv ? '' : '<button class="bk-btn bk-btn--ghost" type="button" data-act="login">Войти, чтобы читать полностью</button>') +
+          '</div>' +
+        '</div>' +
+        '<div class="bk-meta-col">' +
+          '<div class="bk-chips">'+chips+'</div>' +
+          '<h1 class="bk-title">'+esc(b.title)+'</h1>' +
+          (b.subtitle ? '<p class="bk-subtitle">'+esc(b.subtitle)+'</p>' : '') +
+          '<p class="bk-author">'+(b.editor?'Под ред. ':'')+'<a href="author.html?author='+esc(b.authorId)+'">'+esc(b.editor||b.author)+'</a></p>' +
+          '<div class="bk-metarow">' +
+            mi('Год', b.year) + mi('Страниц', b.pages) + mi('ISBN', b.isbn) + mi('Язык', b.language==='ru'?'Русский':b.language) +
+            '<div class="bk-mi"><span class="bk-mi-l">Издание</span><span class="bk-mi-v"><span id="bk-ver-chip">'+esc(curEd.badgeLabel)+'</span></span></div>' +
+          '</div>' +
+          '<div class="bk-edsel">' +
+            '<span class="bk-mi-l">Версия:</span>' +
+            '<select id="bk-edsel" aria-label="Выбрать издание">'+edOptions(b)+'</select>' +
+            '<span style="font-family:var(--font-sans);font-size:var(--fs-caption,12px);color:var(--ink-faint)" id="bk-ed-pages"></span>' +
+          '</div>' +
+          '<p class="bk-shortdesc">'+esc(b.shortDescription)+'</p>' +
+        '</div>' +
+      '</section>';
+    }
+    function mi(l,v){ return '<div class="bk-mi"><span class="bk-mi-l">'+esc(l)+'</span><span class="bk-mi-v">'+esc(v)+'</span></div>'; }
+    function edOptions(b){
+      var eds = isPriv() ? b.editions : b.editions.filter(function(e){ return e.access==='free'; });
+      return eds.map(function(e){ return '<option value="'+esc(e.v)+'"'+(e.v===curEd.v?' selected':'')+'>'+esc(e.label)+'</option>'; }).join('');
+    }
+
+    var TABS = [
+      { key:'overview', label:'Обзор' },
+      { key:'rate', label:'Оценки и рецензии' },
+      { key:'discussion', label:'Обсуждение' },
+      { key:'requisites', label:'Реквизиты и цитирование' },
+      { key:'versions', label:'Версии' }
+    ];
+    function tabsHTML(active){
+      return '<nav class="bk-tabs"><div class="bk-tabs-inner">' +
+        TABS.map(function(t){ return '<button class="bk-tab'+(t.key===active?' is-active':'')+'" data-tab="'+t.key+'">'+t.label+'</button>'; }).join('') +
+      '</div></nav>';
+    }
+
+    function tocHTML(){
+      var chs = (book.chapters && book.chapters.length) ? book.chapters : null;
+      if (!chs) return '<p class="bk-empty">Оглавление загружается…</p>';
+      /* chapter pages are full-BOOK pages; the preview renders the free fragment.
+         Chapters inside the fragment open it at the mapped page; the rest are
+         shown for structure but not interactive (W-6.2). */
+      var freeEd = BA.bookData.editionByVersion(book, 'free');
+      return '<ol class="bk-toc">' + chs.map(function(c){
+        var rp = (c.page!=null) ? BA.bookData.bookPageToEdition(book, freeEd, c.page) : null;
+        var inFrag = rp != null;
+        var head =
+          '<span class="bk-toc-n">'+esc(c.n!=null&&c.n!=='—'?c.n:'•')+'</span>' +
+          '<span class="bk-toc-t">'+esc(c.title)+(inFrag?'<span class="bk-toc-frag-tag">фрагмент</span>':'')+'</span>' +
+          (c.page?'<span class="bk-toc-p">с. '+c.page+'</span>':'');
+        return '<li class="bk-toc-item'+(c.level>1?' bk-toc-lvl2':'')+(inFrag?' is-frag':'')+'">' +
+          (inFrag
+            ? '<button type="button" class="bk-toc-head" data-frag-page="'+rp+'" title="Открыть это место в свободном фрагменте">'+head+'</button>'
+            : '<div class="bk-toc-head">'+head+'</div>') +
+          (c.desc?'<p class="bk-toc-d">'+esc(c.desc)+'</p>':'') +
+        '</li>';
+      }).join('') + '</ol>';
+    }
+
+    function panelOverview(){
+      return '<div class="bk-layout">' +
+        '<div>' +
+          '<p class="bk-sec-title">Аннотация</p>' +
+          '<div class="bk-prose">'+esc(book.description)+'</div>' +
+          '<div class="bk-frag">' +
+            '<p class="bk-sec-title" style="margin-top:var(--space-8,32px)">Свободный фрагмент</p>' +
+            '<div class="bk-frag-stage" id="bk-frag-stage"></div>' +
+            '<div class="bk-frag-foot">' +
+              '<div class="bk-frag-nav">' +
+                '<button class="bk-icon-btn" data-act="frag-prev" aria-label="Назад">‹</button>' +
+                '<span id="bk-frag-pos" style="font-family:var(--font-sans);font-size:var(--fs-small,14px);color:var(--ink-soft)"></span>' +
+                '<button class="bk-icon-btn" data-act="frag-next" aria-label="Вперёд">›</button>' +
+              '</div>' +
+              '<a class="bk-btn bk-btn--ghost" style="padding:8px 14px" href="reader.html?book='+book.slug+'&v=free">Открыть в читалке →</a>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<aside class="bk-aside">' +
+          '<div class="bk-card">' +
+            '<p class="bk-sec-title" style="margin:0 0 var(--space-2)">Оглавление</p>' +
+            '<div id="bk-toc-host">'+tocHTML()+'</div>' +
+          '</div>' +
+        '</aside>' +
+      '</div>';
+    }
+
+    function panelRate(){
+      return '<div class="bk-layout"><div>' +
+        '<div class="bk-gate">' +
+          '<div class="bk-gate-ic">★</div>' +
+          '<h3>Оценки и рецензии</h3>' +
+          '<p>Рецензии и оценки могут оставлять <b>профессионалы</b> с подтверждённой квалификацией (взвешенное голосование, Pro-only — CON / specs §1.9). На этой книге пока нет оценок.</p>' +
+        '</div>' +
+        '<p class="bk-empty">Когда появятся рецензии, они отобразятся здесь с весом голоса автора (×ранг · ×проф).</p>' +
+      '</div>' +
+      '<aside class="bk-aside"><div class="bk-card">' +
+        '<p class="bk-sec-title" style="margin:0 0 var(--space-2)">Рейтинг</p>' +
+        '<p class="bk-empty" style="padding:var(--space-3) 0">Нет оценок</p>' +
+      '</div></aside></div>';
+    }
+
+    function panelDiscussion(){
+      return '<div class="bk-layout"><div>' +
+        '<p class="bk-sec-title">Обсуждение (Thread)</p>' +
+        '<p class="bk-empty">Обсуждение этой книги ещё не началось.'+(isPriv()?' Начните первую ветку.':' Войдите, чтобы участвовать (гости не могут оставлять реакции — CON-01).')+'</p>' +
+        (isPriv()?'<div class="bk-card"><textarea style="width:100%;min-height:80px;border:var(--hairline) solid var(--line);border-radius:var(--radius-sm,6px);padding:10px;font-family:var(--font-sans)" placeholder="Ваша мысль о книге…"></textarea><div style="text-align:right;margin-top:8px"><button class="bk-btn bk-btn--primary" style="padding:8px 16px" data-stub>Опубликовать</button></div></div>':'') +
+      '</div><aside class="bk-aside"><div class="bk-card">' +
+        '<p class="bk-sec-title" style="margin:0 0 var(--space-2)">Сейчас читают</p>' +
+        '<p class="bk-empty" style="padding:var(--space-3) 0">Пока никто не отметился.</p>' +
+      '</div></aside></div>';
+    }
+
+    function panelRequisites(){
+      var rows = book.requisites.map(function(r){ return '<tr><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td></tr>'; }).join('');
+      var citeStr = BA.bookData.citation(book, curEd.v, 1);
+      var url = BA.bookData.deepLink(book, curEd.v, 1);
+      return '<div class="bk-layout"><div>' +
+        '<p class="bk-sec-title">Библиографические сведения</p>' +
+        '<table class="bk-req"><tbody>'+rows+'</tbody></table>' +
+        '<div class="bk-cite">' +
+          '<p class="bk-sec-title" style="margin:0 0 var(--space-1)">Академическая ссылка</p>' +
+          '<p class="bk-cite-str" id="bk-cite-str">'+esc(citeStr)+'</p>' +
+          '<div class="bk-cite-link">' +
+            '<span class="bk-cite-url" id="bk-cite-url">'+esc(url)+'</span>' +
+            '<button class="bk-copy" data-act="copy-cite">Копировать ссылку</button>' +
+            '<button class="bk-copy" data-act="copy-url" style="background:var(--surface);color:var(--ink-soft);border:var(--hairline) solid var(--line)">Копировать URL</button>' +
+          '</div>' +
+        '</div>' +
+      '</div><aside class="bk-aside"><div class="bk-card">' +
+        '<p class="bk-sec-title" style="margin:0 0 var(--space-2)">Формат цитаты</p>' +
+        '<p style="font-family:var(--font-sans);font-size:var(--fs-small,14px);color:var(--ink-soft);line-height:1.5;margin:0">Автор, год. Название. Издание. β→α. С. страница. — обновляется при смене версии.</p>' +
+      '</div></aside></div>';
+    }
+
+    function panelVersions(){
+      var cards = book.editions.map(function(e){
+        var locked = !isPriv() && e.access!=='free';
+        return '<div class="bk-ver'+(e.current?' is-current':'')+'">' +
+          '<div class="bk-ver-head">' +
+            '<span class="bk-ver-label">'+esc(e.label)+'</span>' +
+            '<span class="bk-vbadge bk-vbadge--'+e.badge+'">'+esc(e.badgeLabel)+'</span>' +
+          '</div>' +
+          '<p class="bk-ver-note">'+esc(e.note)+'</p>' +
+          '<div style="margin-top:var(--space-2,8px)">' +
+            (locked
+              ? '<span style="font-family:var(--font-sans);font-size:var(--fs-small,14px);color:var(--ink-faint)">🔒 Доступно после входа</span>'
+              : '<a class="bk-ver-read" href="reader.html?book='+book.slug+'&v='+esc(e.v)+'">Читать это издание →</a>') +
+          '</div>' +
+        '</div>';
+      }).join('');
+      return '<div><p class="bk-sec-title">Издания и версии</p><p style="font-family:var(--font-sans);font-size:var(--fs-small,14px);color:var(--ink-soft);max-width:60ch;margin:0 0 var(--space-5)">Каждая книга в Primer имеет синтетический корпус версий: свободный фрагмент + растущие издания v1…vN (последнее — полное). Версия фиксируется в каждой ссылке и цитате.</p>'+cards+'</div>';
+    }
+
+    function renderPanel(key){
+      var host = document.getElementById('bk-panel-host');
+      if (key==='overview') { host.innerHTML = '<div class="bk-panel is-active">'+panelOverview()+'</div>'; mountFragment(); }
+      else if (key==='rate') host.innerHTML = '<div class="bk-panel is-active">'+panelRate()+'</div>';
+      else if (key==='discussion') host.innerHTML = '<div class="bk-panel is-active">'+panelDiscussion()+'</div>';
+      else if (key==='requisites') host.innerHTML = '<div class="bk-panel is-active">'+panelRequisites()+'</div>';
+      else if (key==='versions') host.innerHTML = '<div class="bk-panel is-active">'+panelVersions()+'</div>';
+    }
+
+    function mountFragment(){
+      var stage = document.getElementById('bk-frag-stage');
+      if (!stage) return;
+      if (frag) { try{ frag.destroy(); }catch(e){} frag=null; }
+      frag = BA.readerEngine.create({
+        stage: stage, url: book.fragmentPdf, book: book, twoPage: false, mode: 'delve', clickToTurn: true,
+        onRender: function(st){ var p=document.getElementById('bk-frag-pos'); if(p) p.textContent = 'с. '+st.page+' / '+st.numPages; }
+      });
+      frag.load();
+    }
+
+    function selectEdition(v){
+      var ed = BA.bookData.editionByVersion(book, v); if (!ed) return;
+      curEd = ed;
+      var chip = document.getElementById('bk-ver-chip'); if (chip) chip.textContent = ed.badgeLabel;
+      var pg = document.getElementById('bk-ed-pages'); if (pg) pg.textContent = ed.pages + ' с.';
+      var cs = document.getElementById('bk-cite-str'); if (cs) cs.textContent = BA.bookData.citation(book, ed.v, 1);
+      var cu = document.getElementById('bk-cite-url'); if (cu) cu.textContent = BA.bookData.deepLink(book, ed.v, 1);
+    }
+
+    function showTab(key){
+      document.querySelectorAll('.bk-tab').forEach(function(t){ t.classList.toggle('is-active', t.getAttribute('data-tab')===key); });
+      renderPanel(key);
+      window.scrollTo({ top: Math.min(window.scrollY, document.querySelector('.bk-tabs').offsetTop), behavior:'auto' });
+    }
+
+    function build(){
+      book = BA.bookData.get(slug);
+      if (!book) { document.getElementById('bk-root').innerHTML = '<div class="bk-loading">Книга не найдена. <a href="library.html">В библиотеку →</a></div>'; return; }
+      book.fragment = book.fragment || book.fragmentPdf;
+      document.title = book.title + ' — β→α академия';
+      curEd = BA.bookData.defaultEdition(book, isPriv());
+      var root = document.getElementById('bk-root');
+      root.innerHTML = '<div class="bk-wrap">'+heroHTML(book)+'</div>' + tabsHTML('overview') + '<div class="bk-wrap"><div id="bk-panel-host"></div></div>';
+      var pg = document.getElementById('bk-ed-pages'); if (pg) pg.textContent = curEd.pages + ' с.';
+      renderPanel('overview');
+
+      root.addEventListener('click', function(e){
+        /* TOC chapter inside the free fragment → jump the preview to it (W-6.2) */
+        var fp = e.target.closest('[data-frag-page]');
+        if (fp){
+          if (frag){ frag.goToPage(parseInt(fp.getAttribute('data-frag-page'),10)||1); }
+          var st = document.getElementById('bk-frag-stage'); if (st) st.scrollIntoView({ behavior:'smooth', block:'center' });
+          return;
+        }
+        var act = e.target.closest('[data-act]'); if (!act) return;
+        var a = act.getAttribute('data-act');
+        if (a==='browse') BA.bookCard.open(book.slug);
+        else if (a==='login') { if (BA.frame && BA.frame.openLogin) BA.frame.openLogin(); }
+        else if (a==='frag-prev' && frag) frag.prev();
+        else if (a==='frag-next' && frag) frag.next();
+        else if (a==='copy-cite') copy(BA.bookData.citation(book, curEd.v, 1), act);
+        else if (a==='copy-url') copy(BA.bookData.deepLink(book, curEd.v, 1), act);
+      });
+      root.addEventListener('change', function(e){ if (e.target.id==='bk-edsel') selectEdition(e.target.value); });
+      document.querySelector('.bk-tabs').addEventListener('click', function(e){
+        var t = e.target.closest('.bk-tab'); if (t) showTab(t.getAttribute('data-tab'));
+      });
+      var cover = document.getElementById('bk-cover');
+      if (cover) cover.addEventListener('click', function(){ BA.bookCard.open(book.slug); });
+
+      /* async: load chapters/citations → refresh TOC */
+      BA.bookData.load(slug).then(function(full){
+        book.chapters = full.chapters; book.citations = full.citations;
+        var host = document.getElementById('bk-toc-host'); if (host) host.innerHTML = tocHTML();
+      }).catch(function(){});
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      BA.frame.init({ page: 'library' });
+      build();
+      /* re-render on auth change (gating + default edition) — bound once */
+      document.addEventListener('ba:session-change', function(){ if (frag){ try{frag.destroy();}catch(e){} frag=null; } build(); });
+    });
+  </script>
+</body>
+</html>

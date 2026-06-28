@@ -1,643 +1,1772 @@
 /* =====================================================================
-   book-card.css — Unified Book Card drawer (shared component)
-   Extracted from pub-landing.html rich card (blueprint-rebuild-v2 §5).
-   Rendered inside a right-slide drawer shell (.bcd-*).
-   All colour/type/spacing from styles/tokens.css.
+   book-card.css — Book Card overlay (F, «Карта книги»)
+   Canonical stylesheet for components/book-card.js.
+   Spec: site-map.md §10.6 / §10.8 / §10.9 (dock) · briefs/blueprint-book-card.md §3–5
+   Composition: a RIGHT-EDGE-DOCKED drawer (same docking as the Debug
+   console) — single-scroll info column on the left, a large full-height
+   full-bleed COVER on the right edge that triggers the MiniReader. The
+   MiniReader expands LEFTWARD from the docked drawer, over the page.
+   All colour / type / spacing read from styles/tokens.css — no raw hex/px
+   for themable values.
    ===================================================================== */
 
-    /* ---- Book card panel --------------------------------------------- */
-    .book-card-panel {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      background: var(--surface);
-      border-left: var(--hairline) solid var(--line);
-      animation: bookCardSlideIn 260ms var(--ease-out-quart) backwards;
-    }
-    @keyframes bookCardSlideIn {
-      from { transform: translateX(40px); opacity: 0; }
-      to   { transform: translateX(0);    opacity: 1; }
-    }
+/* ---- Backdrop ------------------------------------------------------- */
+.bcd-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay, 780);
+  background: rgba(20, 16, 12, .42);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-base, 200ms) var(--ease-out-quart);
+}
+.bcd-backdrop.is-open { opacity: 1; pointer-events: auto; }
 
-    .book-card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-4);
-      padding: var(--space-3) var(--space-4);
-      border-bottom: var(--hairline) solid var(--line);
-      flex-shrink: 0;
-    }
-    .book-card-header-left {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-    }
-    .book-card-read {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: transparent;
-      border: var(--hairline) solid var(--accent);
-      border-radius: var(--radius-pill);
-      color: var(--accent);
-      font-family: var(--font-sans);
-      font-size: var(--fs-small);
-      padding: var(--space-1) var(--space-4);
-      cursor: pointer;
-      transition: background var(--dur-fast) var(--ease-out-quart),
-                  color var(--dur-fast) var(--ease-out-quart);
-    }
-    .book-card-read:hover { background: var(--accent); color: #fff; }
-    .book-card-catalog-link {
-      padding: var(--space-1) var(--space-4);
-      font-size: var(--fs-small);
-    }
-    .book-card-close {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: transparent;
-      border: var(--hairline) solid var(--line);
-      border-radius: var(--radius-pill);
-      color: var(--ink-soft);
-      font-family: var(--font-sans);
-      font-size: var(--fs-small);
-      padding: var(--space-1) var(--space-4);
-      cursor: pointer;
-      line-height: 1;
-      cursor: pointer;
-      transition: color var(--dur-fast) var(--ease-out-quart);
-    }
-    .book-card-close:hover { color: var(--ink); }
-    .book-card-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* ---- Root: passthrough holder; children are fixed-positioned -------- */
+.bcd-root {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-overlay, 780) + 1);
+  pointer-events: none; /* the dimmed page (backdrop) stays clickable to close */
+  /* --bcd-card is the card's share of the ACTUAL screen. For a fixed element,
+     % resolves against the zoom-scaled layout viewport, so a plain % is already
+     screen-accurate at ×1/×1.2/×1.4; only the rem "preferred" is zoom-corrected
+     (÷ --ba-zoom) so it tracks the screen too. Default (overlay or collapsed —
+     NOT docked beside the reader): 55–80%. */
+  --bcd-card: clamp(55%, calc(54rem / var(--ba-zoom, 1)), 80%);
+  --bcd-drawer-w: var(--bcd-card);
+  --bcd-cover-w: 94px;              /* cover column width (content area = drawer − cover) */
+}
+/* Side mode (reader docked left of the card — reachable only in wide/modest):
+   squeeze the card to 20–25% so the reader gets the room. */
+.bcd-root.is-open:not(.is-reader-over):not(.is-reader-collapsed) { --bcd-card: clamp(20%, calc(18rem / var(--ba-zoom, 1)), 25%); }
+/* data-media / data-ui / data-content / data-height are set by JS (_applyMediaClass)
+   using zoom-adjusted breakpoints. The RESPONSIVE section at the bottom drives all
+   card-width, cover-width, content-density, and bleed rules. */
+.bcd-root.is-open > .bcd-drawer,
+.bcd-root.is-open > .bcd-reader { pointer-events: auto; }
 
-    .book-card-body { flex: 1; }
-
-    /* ---- Book card main: info (left) + cover column (right) ------------ */
-    .book-card-main {
-      display: flex;
-      flex-direction: row;
-      align-items: stretch;
-    }
-    .book-card-cover-col {
-      flex-shrink: 0;
-      width: min(220px, 32%);
-      position: relative;
-      cursor: pointer;
-      overflow: hidden;
-      border-left: var(--hairline) solid var(--line);
-      transition: width 320ms var(--ease-out-quart);
-    }
-    /* Reading mode: cover col expands to 2/3 and lets the viewer set its height */
-    .book-card-panel.is-reading .book-card-cover-col {
-      flex: 0 0 66%;
-      width: 66%;
-      overflow: visible;
-      cursor: default;
-    }
-    .book-card-panel.is-reading .book-card-info {
-      overflow-y: auto;
-    }
-
-    /* ---- Spread viewer (two book pages, no toolbars) -------------------- */
-    .book-card-spread-viewer {
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      background: var(--surface);
-      user-select: none;
-    }
-    .spread-slot {
-      flex: 1;
-      min-width: 0;
-    }
-    .spread-slot--left  { cursor: w-resize; }
-    .spread-slot--right { cursor: e-resize; }
-    .spread-slot canvas {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-    /* Fullscreen toggle bar — sits above the spread viewer */
-    .spread-viewer-bar {
-      display: flex;
-      justify-content: flex-end;
-      padding: var(--space-1) var(--space-2);
-    }
-    .spread-fullscreen-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      background: transparent;
-      border: var(--hairline) solid var(--line);
-      border-radius: var(--radius-sm);
-      color: var(--ink-faint);
-      cursor: pointer;
-      transition: color var(--dur-fast) var(--ease-out-quart),
-                  border-color var(--dur-fast) var(--ease-out-quart);
-    }
-    .spread-fullscreen-btn:hover { color: var(--ink); border-color: var(--ink-faint); }
-    /* Fullscreen mode — viewer covers entire viewport */
-    .book-card-spread-viewer.is-fullscreen {
-      position: fixed;
-      inset: 0;
-      z-index: 9000;
-      display: flex;
-      align-items: center;
-    }
-    .book-card-spread-viewer.is-fullscreen .spread-slot {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    .book-card-spread-viewer.is-fullscreen .spread-slot canvas {
-      width: auto;
-      max-width: 100%;
-      max-height: 100vh;
-    }
-    /* Bar floats to top-right corner in fullscreen */
-    .spread-viewer-bar.is-fullscreen {
-      position: fixed;
-      top: var(--space-4);
-      right: var(--space-4);
-      z-index: 9001;
-      padding: 0;
-    }
-
-    /* ---- Frameview overlay — full-viewport reader -------------------------------- */
-    .frameview-overlay {
-      display: none; /* toggled to flex by JS */
-      position: fixed;
-      inset: 0;
-      z-index: 9000;
-      flex-direction: column;
-      background: var(--surface);
-    }
-    .frameview-header {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      gap: var(--space-4);
-      padding: 0 var(--space-6);
-      height: 52px;
-      border-bottom: var(--hairline) solid var(--line);
-    }
-    .frameview-logo {
-      font-family: var(--font-sans);
-      font-size: var(--fs-small);
-      font-weight: var(--fw-medium);
-      letter-spacing: var(--tracking-label);
-      color: var(--ink-soft);
-      flex-shrink: 0;
-    }
-    .frameview-title {
-      flex: 1;
-      font-family: var(--font-serif);
-      font-size: var(--fs-body);
-      color: var(--ink-soft);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .frameview-nav {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-      flex-shrink: 0;
-    }
-    .frameview-nav-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      background: transparent;
-      border: var(--hairline) solid var(--line);
-      border-radius: var(--radius-sm);
-      color: var(--ink-faint);
-      cursor: pointer;
-      transition: color var(--dur-fast) var(--ease-out-quart),
-                  border-color var(--dur-fast) var(--ease-out-quart);
-    }
-    .frameview-nav-btn:hover { color: var(--ink); border-color: var(--ink-faint); }
-    .frameview-nav-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
-    .frameview-counter {
-      font-family: var(--font-sans);
-      font-size: var(--fs-small);
-      color: var(--ink-faint);
-      min-width: 5ch;
-      text-align: center;
-    }
-    .frameview-close {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      background: transparent;
-      border: var(--hairline) solid var(--line);
-      border-radius: var(--radius-sm);
-      color: var(--ink-faint);
-      cursor: pointer;
-      transition: color var(--dur-fast) var(--ease-out-quart),
-                  border-color var(--dur-fast) var(--ease-out-quart);
-    }
-    .frameview-close:hover { color: var(--ink); border-color: var(--ink-faint); }
-    /* Zoom controls */
-    .frameview-zoom {
-      display: flex;
-      align-items: center;
-      gap: var(--space-1);
-      flex-shrink: 0;
-      padding-left: var(--space-4);
-      border-left: var(--hairline) solid var(--line);
-    }
-    .frameview-zoom-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      background: transparent;
-      border: var(--hairline) solid var(--line);
-      border-radius: var(--radius-sm);
-      color: var(--ink-faint);
-      font-family: var(--font-sans);
-      font-size: var(--fs-body);
-      line-height: 1;
-      cursor: pointer;
-      transition: color var(--dur-fast) var(--ease-out-quart),
-                  border-color var(--dur-fast) var(--ease-out-quart);
-    }
-    .frameview-zoom-btn:hover { color: var(--ink); border-color: var(--ink-faint); }
-    .frameview-zoom-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
-    .frameview-zoom-label {
-      font-family: var(--font-sans);
-      font-size: var(--fs-small);
-      color: var(--ink-faint);
-      min-width: 3.5ch;
-      text-align: center;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 0 var(--space-1);
-      transition: color var(--dur-fast) var(--ease-out-quart);
-    }
-    .frameview-zoom-label:hover { color: var(--ink); }
-    .frameview-body {
-      flex: 1;
-      min-height: 0;
-      display: flex;
-    }
-    /* Stage: clips overflow, handles zoom/pan pointer events */
-    .frameview-stage {
-      flex: 1;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-      cursor: default;
-    }
-    .frameview-stage.is-zoomed   { cursor: grab; }
-    .frameview-stage.is-dragging { cursor: grabbing; }
-    /* Canvas-wrap: receives CSS transform (translate + scale) */
-    .frameview-canvas-wrap {
-      transform-origin: center center;
-      will-change: transform;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      flex-shrink: 0;
-    }
-    /* Spread viewer + slots sit flush — no centering gaps between pages */
-    .frameview-canvas-wrap .book-card-spread-viewer {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      flex-shrink: 0;
-    }
-    .frameview-canvas-wrap .spread-slot {
-      flex: none;
-      display: flex;
-      align-items: center;
-    }
-    .frameview-canvas-wrap .spread-slot--left,
-    .frameview-canvas-wrap .spread-slot--right { cursor: inherit; }
-    .frameview-canvas-wrap .spread-slot canvas {
-      max-height: calc(100vh - 52px);
-      height: auto;
-      width: auto;
-      display: block;
-    }
-
-    .book-card-cover-col img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: top center;
-      display: block;
-    }
-    .book-card-cover-col-hint {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.48);
-      font-family: var(--font-sans);
-      font-size: var(--fs-body);
-      font-weight: var(--fw-medium);
-      letter-spacing: var(--tracking-label);
-      color: #fff;
-      opacity: 0;
-      transition: opacity var(--dur-base) var(--ease-out-quart);
-      user-select: none;
-    }
-    .book-card-cover-col:hover .book-card-cover-col-hint { opacity: 1; }
-
-    /* ---- Mini-reader ---------------------------------------------------- */
-    .mini-reader {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-    }
-    /* ---- PDF.js canvas spread reader ------------------------------------- */
-    .mini-reader-viewport {
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      gap: 1px;
-      background: #1a1a1a;
-      overflow: hidden;
-      cursor: pointer;
-      position: relative;
-    }
-    .mini-reader-loading {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-sans);
-      font-size: var(--fs-small);
-      color: rgba(255, 255, 255, 0.45);
-      pointer-events: none;
-    }
-    .spread-canvas { display: block; flex-shrink: 0; }
-    .mini-reader-controls {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--space-4);
-      padding: var(--space-2) var(--space-4);
-      background: rgba(0, 0, 0, 0.55);
-    }
-    .mini-reader-btn,
-    .mini-reader-expand {
-      width: 32px;
-      height: 32px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      border: var(--hairline) solid rgba(255, 255, 255, 0.3);
-      background: transparent;
-      color: rgba(255, 255, 255, 0.85);
-      cursor: pointer;
-      transition: color var(--dur-fast) var(--ease-out-quart),
-                  border-color var(--dur-fast) var(--ease-out-quart);
-    }
-    .mini-reader-btn:hover,
-    .mini-reader-expand:hover { color: #fff; border-color: rgba(255, 255, 255, 0.6); }
-    .mini-reader-btn:disabled { opacity: 0.3; cursor: default; }
-    .mini-reader-expand { border-radius: var(--radius-sm); border: none; margin-left: var(--space-4); }
-    .mini-reader-counter {
-      font-family: var(--font-sans);
-      font-size: var(--fs-small);
-      color: rgba(255, 255, 255, 0.85);
-      min-width: 70px;
-      text-align: center;
-    }
-
-    /* ---- Book info section ----------------------------------------------- */
-    .book-card-info {
-      flex: 1;
-      min-width: 0;
-      position: relative;
-      z-index: 1;
-      padding: var(--space-8) var(--space-8) var(--space-12);
-      background: var(--surface);
-    }
-    .book-card-meta-line {
-      display: flex;
-      align-items: center;
-      gap: var(--space-3);
-      margin-bottom: var(--space-3);
-    }
-    .book-card-year-version {
-      font-family: var(--font-sans);
-      font-size: var(--fs-caption);
-      color: var(--ink-faint);
-    }
-    .book-card-title {
-      font-family: var(--font-serif);
-      font-size: var(--fs-h1);
-      font-weight: var(--fw-semibold);
-      color: var(--ink);
-      text-wrap: balance;
-      margin: 0 0 var(--space-1);
-    }
-    .book-card-subtitle {
-      font-family: var(--font-serif);
-      font-style: italic;
-      font-size: var(--fs-h2);
-      color: var(--ink-soft);
-      margin: 0 0 var(--space-3);
-    }
-    .book-card-authors {
-      font-family: var(--font-sans);
-      font-size: var(--fs-small);
-      color: var(--ink-soft);
-      margin: 0 0 var(--space-6);
-    }
-    .book-card-annotation {
-      margin: 0 0 var(--space-6);
-    }
-    .book-card-annotation-p {
-      font-family: var(--font-serif);
-      font-size: var(--fs-body);
-      line-height: var(--lh-body);
-      color: var(--ink-soft);
-      margin: 0 0 var(--space-3);
-    }
-    .book-card-annotation-p:last-child { margin-bottom: 0; }
-    .book-card-citation {
-      border-left: 3px solid var(--accent);
-      padding: var(--space-3) var(--space-5);
-      margin: var(--space-4) 0 var(--space-6);
-      background: rgba(var(--accent-rgb, 90, 90, 70), 0.04);
-      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    }
-    .book-card-citation-text {
-      font-family: var(--font-serif);
-      font-size: var(--fs-body);
-      font-style: italic;
-      line-height: var(--lh-body);
-      color: var(--ink);
-      margin: 0 0 var(--space-2);
-    }
-    .book-card-citation-source {
-      font-family: var(--font-sans);
-      font-size: var(--fs-caption);
-      color: var(--ink-faint);
-      margin: 0;
-    }
-    .book-card-details {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-1);
-      margin: var(--space-2) 0 var(--space-6);
-    }
-    .book-card-detail-row {
-      display: flex;
-      gap: var(--space-3);
-      font-family: var(--font-sans);
-      font-size: var(--fs-caption);
-    }
-    .book-card-detail-label {
-      color: var(--ink-faint);
-      flex-shrink: 0;
-      min-width: 100px;
-    }
-    .book-card-detail-value {
-      color: var(--ink-soft);
-    }
-    .book-card-separator {
-      border: none;
-      border-top: var(--hairline) solid var(--line);
-      margin: 0 0 var(--space-6);
-    }
-    .book-card-notice {
-      background: color-mix(in srgb, var(--accent) 8%, var(--surface));
-      border-left: 2px solid var(--accent);
-      padding: var(--space-3) var(--space-4);
-      font-family: var(--font-sans);
-      font-size: var(--fs-small);
-      color: var(--ink-soft);
-      margin: 0;
-    }
+/* Viewport too narrow to fit card ≥ 300 px + content ≥ 300 px — hide card panel.
+   Backdrop remains so the user can click outside to close.
+   Collapse bar stays visible at the viewport's right edge; reader fills freed space. */
+.bcd-root.is-too-narrow .bcd-drawer,
+.bcd-root.is-too-narrow .bcd-close-btm { display: none !important; }
+/* Collapse bar: keep visible, move to the viewport right edge */
+.bcd-root.is-too-narrow .bcd-reader-collapse { right: 0; }
+/* Hide size snap buttons — no card to resize */
+.bcd-root.is-too-narrow .bcd-collapse-size-btns { display: none; }
+/* Sideview reader: expand to fill the space the card vacated */
+.bcd-root.is-too-narrow:not(.is-reader-over) .bcd-reader { right: 0; width: 100%; }
 
 /* =====================================================================
-   Folded dependencies — classes the card markup references, made
-   self-contained so the component renders identically on every page.
-   (Originals live in pub-landing; copied verbatim here.)
+   DRAWER — docked to the right edge (matches .dbg-sidebar):
+   scroll column (left) + full-bleed cover (right edge)
    ===================================================================== */
-.btn-landing-ghost {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-sans);
-  font-size: var(--fs-body);
-  font-weight: var(--fw-medium);
-  letter-spacing: var(--tracking-label);
-  text-decoration: none;
-  cursor: pointer;
-  border-radius: var(--radius-pill);
-  padding: calc(var(--space-2) + 2px) var(--space-8);
-  background: transparent;
-  color: var(--ink-soft);
-  border: var(--hairline) solid var(--line);
-  transition: background var(--dur-base) var(--ease-out-quart),
-              border-color var(--dur-base) var(--ease-out-quart),
-              color var(--dur-base) var(--ease-out-quart),
-              transform var(--dur-fast) var(--ease-out-quart);
+.bcd-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--bcd-drawer-w);
+  display: flex;
+  flex-direction: row;
+  background: var(--surface);
+  border-left: var(--hairline) solid var(--line);
+  box-shadow: -12px 0 48px rgba(20, 16, 12, .18);
+  overflow: visible; /* let the left-edge reader strip-tab protrude */
+  transform: translateX(100%);
+  transition: transform 280ms var(--ease-out-quart);
 }
-.btn-landing-ghost:hover { color: var(--ink); border-color: var(--ink-soft); transform: translateY(-1px); }
-.btn-landing-ghost:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-pill); }
-.btn-landing-primary {
-  display: inline-flex;
+.bcd-root.is-open .bcd-drawer { transform: translateX(0); }
+
+/* Tab stack — accent controls on the drawer's LEFT edge, centred vertically,
+   protruding onto the page. The strip-tab toggles the MiniReader; a
+   rectangular full-reader button stacks above it only when the reader is hidden. */
+.bcd-tab-stack {
+  position: absolute;
+  left: 0;
+  transform: translateX(-100%);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+  z-index: 3;
+  opacity: 0;            /* hidden with the closed card (it protrudes past the */
+  pointer-events: none;  /* drawer's slid-out edge, so don't let it linger)    */
+  transition: opacity var(--dur-base) var(--ease-out-quart);
+}
+.bcd-tab-stack--top { top: var(--space-12, 3.5rem); }                 /* «Читалка» near the top */
+.bcd-tab-stack--mid { top: 50%; transform: translate(-100%, -50%); }  /* browse — vertically centred */
+.bcd-tab-stack--bot { bottom: var(--space-12, 3.5rem); }              /* Chapters + Memory — bottom-left */
+.bcd-root.is-open .bcd-tab-stack { opacity: 1; pointer-events: auto; }
+.bcd-reader-tab {
+  width: 45px; /* ×1.5 wider */
+  height: 28vh;        /* «Show» bar — same height as the «Hide» (collapse) bar */
+  min-height: 120px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-sans);
-  font-size: var(--fs-body);
-  font-weight: var(--fw-medium);
-  letter-spacing: var(--tracking-label);
-  text-decoration: none;
-  cursor: pointer;
-  border-radius: var(--radius-pill);
-  padding: calc(var(--space-2) + 2px) var(--space-8);
   background: var(--accent);
   color: var(--on-accent);
-  border: var(--hairline) solid var(--accent);
-  transition: background var(--dur-base) var(--ease-out-quart),
-              border-color var(--dur-base) var(--ease-out-quart),
-              color var(--dur-base) var(--ease-out-quart),
+  border: none; /* borderless */
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  box-shadow: -4px 0 18px rgba(20, 16, 12, .22);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out-quart);
+}
+.bcd-reader-tab:hover { background: var(--accent-hover); }
+.bcd-reader-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Full-reader «Читалка» tab — stacked above the strip-tab, ALWAYS visible
+   while the card is open (independent of the reader's open/collapsed state).
+   Same vertical-rectangle look as the strip-tab, with a label above the icon. */
+.bcd-tab-fullpage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  width: 46px; /* bigger — the prominent reader CTA */
+  padding: var(--space-3) 0;
+  background: var(--accent);
+  color: var(--on-accent);
+  border: none; /* borderless */
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  box-shadow: -4px 0 18px rgba(20, 16, 12, .22);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out-quart);
+}
+.bcd-tab-fullpage:hover { background: var(--accent-hover); }
+.bcd-tab-fullpage:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.bcd-tab-fullpage-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small, 14px); /* bigger (back to full size) */
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* Browse + side tabs −25% (15px); the «Читалка» CTA stays bigger (20px) */
+.bcd-tab-fullpage svg, .bcd-reader-tab svg, .bcd-side-tab svg { width: 15px; height: 15px; }
+.bcd-tab-fullpage svg { width: 20px; height: 20px; }
+/* Side tabs — Chapters + Memory. Horizontal gradient border: bright on the
+   left, fading to the card background (surface) on the right. −25% size. */
+.bcd-side-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 30px; /* −25% */
+  padding: var(--space-2) 0;
+  color: var(--on-accent);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  background:
+    linear-gradient(var(--accent), var(--accent)) padding-box,
+    linear-gradient(to right, var(--bcd-tab-edge, rgba(255, 255, 255, .9)), var(--surface)) border-box;
+  box-shadow: -4px 0 18px rgba(20, 16, 12, .22);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out-quart);
+}
+.bcd-side-tab:hover {
+  background:
+    linear-gradient(var(--accent-hover), var(--accent-hover)) padding-box,
+    linear-gradient(to right, var(--bcd-tab-edge, rgba(255, 255, 255, .9)), var(--surface)) border-box;
+}
+.bcd-side-tab.is-active {
+  background:
+    linear-gradient(var(--accent-hover), var(--accent-hover)) padding-box,
+    linear-gradient(to right, var(--bcd-tab-edge, rgba(255, 255, 255, .9)), var(--surface)) border-box;
+  box-shadow: -4px 0 18px rgba(20, 16, 12, .22), inset 3px 0 0 var(--on-accent);
+}
+.bcd-side-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.bcd-side-tab-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-sans);
+  font-size: calc(var(--fs-small, 14px) * 0.75); /* −25% */
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.bcd-reader-tab-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ---- Compact sidebar bar — replaces individual stacks when they'd overlap --
+   Same accent rectangle + shadow language as the collapse bar.
+   Shown only when .bcd-root carries .is-tabs-compact (set via ResizeObserver). */
+.bcd-tabs-compact-bar {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translate(-100%, -50%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 3px;
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  box-shadow: -4px 0 18px rgba(20, 16, 12, .22);
+  z-index: 4;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease-out-quart);
+}
+.bcd-root.is-open .bcd-tabs-compact-bar { opacity: 1; pointer-events: auto; }
+.bcd-root.is-tabs-compact .bcd-tab-stack { display: none !important; }
+.bcd-root.is-tabs-compact .bcd-tabs-compact-bar { display: flex; }
+/* When compact bar is shown, hide the full-size collapse bar and vice-versa */
+.bcd-root.is-tabs-compact .bcd-reader-collapse { display: none !important; }
+/* Small circle buttons inside the compact bar — same white-circle style as the
+   collapse bar's layout toggle so both bars feel like one visual system. */
+.bcd-ctab {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: var(--hairline, 1px) solid var(--line);
+  background: var(--surface);
+  color: var(--ink-2, #6b6560);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: background var(--dur-fast) var(--ease-out-quart),
+              color var(--dur-fast) var(--ease-out-quart),
               transform var(--dur-fast) var(--ease-out-quart);
 }
-.btn-landing-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--on-accent); transform: translateY(-1px); }
-.btn-landing-primary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-pill); box-shadow: 0 0 0 2px var(--surface); }
+.bcd-ctab svg { width: 14px; height: 14px; }
+.bcd-ctab:hover { background: var(--surface-sunk); color: var(--ink); transform: scale(1.06); }
+.bcd-ctab.is-active { background: var(--surface); color: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.bcd-ctab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Middle collapse button blends into the compact bar — no own circle. */
+.bcd-tabs-compact-bar .bcd-ctab[data-act="reader-toggle"] {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--on-accent);
+}
+.bcd-tabs-compact-bar .bcd-ctab[data-act="reader-toggle"]:hover {
+  background: rgba(255, 255, 255, .15);
+  color: var(--on-accent);
+  border-color: transparent;
+  box-shadow: none;
+}
 
-.topic-chip {
+/* ---- Night / dark theme tweaks ------------------------------------------
+   (Chapters/Memory tabs use the horizontal gradient border in every theme.)
+   No border on «Читалка»; the in-reader layout/page-mode controls go
+   dark-grey (not pure black). */
+html[data-theme="night"] .bcd-tab-fullpage,
+html[data-theme="dark"] .bcd-tab-fullpage { border-color: transparent; }
+html[data-theme="night"] .bcd-pagemode-btn,
+html[data-theme="night"] .bcd-collapse-layout-btn,
+html[data-theme="dark"] .bcd-pagemode-btn,
+html[data-theme="dark"] .bcd-collapse-layout-btn {
+  background: rgba(240, 235, 222, 0.92); /* bright warm-white — stands out against dark reader bg */
+  border-color: rgba(0, 0, 0, 0.18);
+  color: #2a2018; /* dark ink to stay readable on bright bg */
+}
+html[data-theme="night"] .bcd-pagemode-btn:hover,
+html[data-theme="night"] .bcd-collapse-layout-btn:hover,
+html[data-theme="dark"] .bcd-pagemode-btn:hover,
+html[data-theme="dark"] .bcd-collapse-layout-btn:hover {
+  background: rgba(255, 250, 240, 1);
+  border-color: rgba(0, 0, 0, 0.28);
+}
+
+/* Collapse bar — anchored to the right page edge, split into two interactive zones:
+   top = overlay/side layout toggle; bottom = collapse the reader.
+   It's a <div> container (not a button) so both inner buttons are valid HTML. */
+.bcd-reader-collapse {
+  /* position:absolute within .bcd-root (position:fixed; inset:0) = viewport-relative.
+     The bar lives on _root, NOT inside .bcd-reader: the reader has transform:translateX
+     which creates a containing block and traps position:fixed descendants inside it. */
+  position: absolute;
+  right: calc(var(--bcd-drawer-w) - 1px); /* sideview: bar at the card's left edge */
+  left: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  /* Must exceed the overlay reader's z-index (--z-overlay + 3 = 783). */
+  z-index: calc(var(--z-overlay, 780) + 4);
+  width: 34px;
+  height: 28vh;
+  max-height: min(28vh, calc(var(--bcd-page-render-h, 100vh) * 0.8));
+  min-height: 80px;
+  display: none;                       /* hidden until reader opens */
+  pointer-events: auto;                /* .bcd-root may carry pointer-events:none */
+  flex-direction: column;
+  align-items: stretch;
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  box-shadow: -4px 0 18px rgba(20, 16, 12, .28);
+  overflow: hidden;                    /* clips inner button hover to the bar's rounded corners */
+}
+/* Show when reader is open and not collapsed */
+.bcd-root.is-open:not(.is-reader-collapsed) .bcd-reader-collapse { display: flex; }
+/* Overlay mode: bar moves to the cover strip's left edge instead of the card edge */
+.bcd-root.is-reader-over .bcd-reader-collapse { right: calc(var(--bcd-cover-w, 94px) - 1px); }
+/* Hidden cover mode: --bcd-cover-w set to actions-strip width (40px), collapse bar
+   stays at cover edge via the overlay rule; sideview uses drawer edge as usual. */
+/* Bottom zone: card-width snap buttons — sideview only */
+.bcd-collapse-size-btns {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding-bottom: 6px;
+  margin-top: auto;            /* pushes the pair to the bottom of the flex bar */
+}
+.bcd-root.is-reader-over .bcd-collapse-size-btns { display: none; }
+/* Top zone: layout toggle (overlay ↔ side) — circle ornament floating in the accent bar */
+.bcd-collapse-layout-btn {
+  flex: 0 0 auto;
+  align-self: center;      /* don't stretch; let the circle be its own width */
+  margin-top: 5px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  border: var(--hairline) solid var(--line);
+  box-shadow: var(--shadow-soft);
+  color: #4a8cd8;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out-quart),
+              color var(--dur-fast) var(--ease-out-quart),
+              border-color var(--dur-fast) var(--ease-out-quart),
+              transform var(--dur-fast) var(--ease-out-quart);
+}
+.bcd-collapse-layout-btn svg { width: 14px; height: 14px; }
+.bcd-collapse-layout-btn:hover { background: var(--surface-sunk); color: var(--ink); border-color: var(--ink-faint); transform: scale(1.06); }
+.bcd-collapse-layout-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Bottom zone: collapse / expand the reader */
+.bcd-collapse-main-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out-quart);
+}
+.bcd-collapse-main-btn:hover { background: rgba(255, 255, 255, .14); }
+.bcd-collapse-main-btn:focus-visible { outline: 2px solid rgba(255, 255, 255, .6); outline-offset: -2px; }
+.bcd-reader-collapse-ic { display: inline-flex; }
+
+/* While the reader is open, the drawer-edge browse tab yields to the
+   page-glued collapse; it returns as the «Листать» expand tab when collapsed. */
+.bcd-root.is-open:not(.is-reader-collapsed) .bcd-reader.bcd-has-viewer ~ .bcd-drawer .bcd-reader-tab {
+  display: none;
+}
+
+/* Single scroll column ------------------------------------------------ */
+.bcd-scroll {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Cover — narrow, full-height, full-bleed on the drawer's right edge.
+   On hover it reveals a vertical section index (jump-to-scroll). ------ */
+.bcd-cover-col {
+  flex-shrink: 0;
+  width: var(--bcd-cover-w, 94px);
+  position: relative;
+  /* no overflow: hidden — the cover-nav must fly out leftward */
+  border-left: var(--hairline) solid var(--line);
+  background: var(--surface-sunk);
+}
+/* Clip wrapper — keeps the image inside the strip without clipping the nav */
+.bcd-cover-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: zoom-in;
+}
+.bcd-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bcd-cover-ed {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  right: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-caption);
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(20, 16, 12, .55);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  z-index: 1;
+}
+/* Section index — vertical list at the TOP of the cover. Revealed on hover
+   AND once the content is scrolled; the current top section is highlighted. */
+.bcd-cover-nav {
+  position: absolute;
+  top: 0;
+  right: 0;       /* anchor to the cover strip's right edge */
+  left: auto;     /* allow leftward expansion */
+  min-width: 160px;
+  max-height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4) 0 var(--space-2); /* breathing room from the top */
+  background: rgba(20, 16, 12, .86);
+  backdrop-filter: blur(3px);
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  /* fade OUT: 0.3 s after a 1 s idle delay (hover/scroll ended) */
+  transition: opacity 0.3s var(--ease-out-quart) 1s;
+}
+.bcd-cover-col:hover .bcd-cover-nav,
+.bcd-cover-col.is-scrolled .bcd-cover-nav,
+.bcd-cover-nav:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+  /* fade IN: fast, no delay */
+  transition: opacity 0.15s var(--ease-out-quart) 0s;
+}
+.bcd-cover-nav-item {
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  line-height: 1.25;
+  color: rgba(255, 255, 255, .82);
+  background: transparent;
+  border: none;
+  border-left: 2px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  white-space: normal;
+  transition: color var(--dur-fast), background var(--dur-fast), border-color var(--dur-fast);
+}
+.bcd-cover-nav-item:hover { color: #fff; background: rgba(255, 255, 255, .14); }
+.bcd-cover-nav-item.is-active {
+  color: #fff;
+  font-weight: var(--fw-semibold);
+  background: color-mix(in srgb, var(--accent) 42%, transparent);
+  border-left-color: var(--accent);
+}
+
+/* Vertical action tabs on the cover's right edge, rotated 90°, stacked:
+   «Страница книги» (book page) then «Читалка» (open reader) below it. */
+.bcd-cover-actions {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+.bcd-cover-page-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4) 4px;
+  background: var(--accent);
+  color: var(--on-accent);
+  border: none;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  box-shadow: -4px 0 18px rgba(20, 16, 12, .28);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out-quart);
+}
+.bcd-cover-page-btn:hover { background: var(--accent-hover); }
+.bcd-cover-page-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.bcd-cover-page-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* «Читалка» (open reader) tab — inverted colors + border to distinguish from «Страница книги» */
+.bcd-cover-reader-btn {
+  padding: var(--space-8) 8px;
+  background: var(--surface);
+  color: var(--accent);
+  border: var(--hairline) solid var(--accent);
+  border-right: none;
+}
+.bcd-cover-reader-btn:hover { background: var(--surface-sunk); }
+.bcd-cover-reader-btn .bcd-cover-page-label { font-size: calc(var(--fs-caption, 12px) * 2); }
+
+/* Bottom-centre close control — centred on the card CONTENT area (drawer minus
+   the cover column), pinned above the over-card reader so it stays reachable. */
+.bcd-close-btm {
+  position: fixed;
+  bottom: var(--space-5, 20px);
+  right: calc((var(--bcd-drawer-w) + var(--bcd-cover-w, 94px)) / 2);
+  transform: translateX(50%);
+  z-index: 9001;
+  pointer-events: auto;
+  display: none; /* shown only while the card is open (gated below) */
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5, 20px);
+  background: var(--surface);
+  color: var(--ink-soft);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-soft);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: color var(--dur-fast), border-color var(--dur-fast), background var(--dur-fast);
+}
+.bcd-root.is-open .bcd-close-btm { display: inline-flex; }
+/* Don't show the close control over the mini-reader pages: hide it while the
+   reader is spread OVER the card (it's reachable again once the reader is
+   collapsed / docked left). The narrow top-bottom layout re-shows it below. */
+.bcd-root.is-reader-over:not(.is-reader-collapsed) .bcd-close-btm { display: none; }
+.bcd-close-btm:hover { color: var(--ink); border-color: var(--ink-faint); background: var(--surface-sunk); }
+.bcd-close-btm:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* =====================================================================
+   ACTION BAR (scroll §1)
+   ===================================================================== */
+.bcd-actions {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: saturate(140%) blur(8px);
+  border-bottom: var(--hairline) solid var(--line);
+}
+.bcd-actions .bcd-spacer { flex: 1; }
+
+/* Buttons ------------------------------------------------------------- */
+.bcd-btn {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-medium);
+  line-height: 1;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  border: var(--hairline) solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--dur-fast) var(--ease-out-quart),
+              color var(--dur-fast) var(--ease-out-quart),
+              border-color var(--dur-fast) var(--ease-out-quart);
+}
+.bcd-btn--primary { background: var(--accent); color: var(--on-accent); }
+.bcd-btn--primary:hover { background: var(--accent-hover); color: var(--on-accent); }
+.bcd-btn--ghost { background: transparent; color: var(--ink-soft); border-color: var(--line); }
+.bcd-btn--ghost:hover { color: var(--ink); border-color: var(--ink-faint); }
+.bcd-btn--quiet { background: transparent; color: var(--ink-soft); padding: var(--space-2) var(--space-3); }
+.bcd-btn--quiet:hover { color: var(--accent); }
+.bcd-btn--block { width: 100%; }
+.bcd-btn--sm { font-size: var(--fs-caption); padding: var(--space-1) var(--space-3); }
+
+.bcd-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  background: transparent;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-pill);
+  color: var(--ink-soft);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--dur-fast), border-color var(--dur-fast);
+}
+.bcd-close:hover { color: var(--ink); border-color: var(--ink-faint); }
+
+/* =====================================================================
+   SECTION SCAFFOLD
+   ===================================================================== */
+.bcd-sec { padding: var(--space-8) var(--space-6); border-top: var(--hairline) solid var(--line); }
+.bcd-sec:first-of-type { border-top: none; }
+.bcd-sec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+.bcd-sec-title {
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-caption);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.bcd-sec-link {
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  color: var(--accent);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.bcd-sec-link:hover { color: var(--accent-hover); }
+
+/* =====================================================================
+   IDENTITY (scroll §2)
+   ===================================================================== */
+.bcd-identity { padding: var(--space-6) var(--space-6) var(--space-4); }
+.bcd-chips { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-bottom: var(--space-3); }
+.bcd-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;            /* ~1.5× smaller than before */
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: var(--fw-medium);
+  border: var(--hairline) solid;
+}
+.bcd-chip--psycho  { color: var(--slate); border-color: var(--slate); }
+.bcd-chip--theory  { color: var(--amber); border-color: var(--amber); }
+.bcd-chip--clinical{ color: var(--sage);  border-color: var(--sage); }
+.bcd-title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-h2);
+  color: var(--ink);
+  margin: 0 0 var(--space-1);
+}
+.bcd-subtitle {
+  font-family: var(--font-serif);
+  font-size: var(--fs-h3);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink-soft);
+  margin: 0 0 var(--space-3);
+}
+.bcd-author {
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  color: var(--ink);
+  margin: 0 0 var(--space-4);
+}
+.bcd-author-link {
+  color: var(--accent);
+  cursor: pointer;
+  border-bottom: var(--hairline) solid transparent;
+  transition: border-color var(--dur-fast);
+}
+.bcd-author-link:hover { border-bottom-color: var(--accent); }
+
+/* Edition dropdown */
+/* edition-switch link (under the edition indicator) → opens the editions list */
+/* sits right below the edition name, left-aligned with it */
+.bcd-edition-switch {
   align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 3px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: var(--fw-medium);
+  color: var(--accent);
+  cursor: pointer;
+  transition: color var(--dur-fast);
+}
+.bcd-edition-switch:hover { color: var(--accent-hover); }
+
+/* editions list — replaces the scroll content (cover + reader stay) */
+.bcd-editions { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-3); }
+.bcd-editions-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+.bcd-editions-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background: transparent;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: color var(--dur-fast), border-color var(--dur-fast);
+}
+.bcd-editions-back:hover { color: var(--ink); border-color: var(--ink-faint); }
+.bcd-editions-title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+}
+.bcd-edition-opt {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-4);
+  background: var(--surface);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--dur-fast), background var(--dur-fast);
+}
+.bcd-edition-opt:hover { border-color: var(--accent); }
+.bcd-edition-opt.is-current { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 5%, var(--surface)); }
+.bcd-edition-opt-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-2); }
+.bcd-edition-opt-label { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--ink); }
+.bcd-edition-opt-date, .bcd-edition-opt-pages { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); white-space: nowrap; }
+.bcd-edition-opt .bcd-vbadges { margin-bottom: var(--space-2); }
+.bcd-edition-opt-note { font-family: var(--font-sans); font-size: var(--fs-caption); line-height: 1.5; color: var(--ink-soft); }
+
+/* Year / pages meta */
+.bcd-meta-row {
+  display: flex;
+  align-items: flex-start; /* edition item is taller (carries the switch link) */
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-2);
+}
+.bcd-meta-item { display: flex; flex-direction: column; gap: 1px; }
+.bcd-meta-sep { margin-top: 2px; }
+.bcd-meta-label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  letter-spacing: var(--tracking-caption);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.bcd-meta-val {
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-medium);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.bcd-meta-sep { width: var(--hairline); height: 28px; background: var(--line); }
+
+/* Rating summary */
+.bcd-rating { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.bcd-stars { display: inline-flex; gap: 1px; }
+.bcd-star { font-size: 15px; line-height: 1; }
+.bcd-star.f { color: var(--amber); }
+.bcd-star.e { color: var(--line); }
+.bcd-star.h { /* half via clip */ position: relative; color: var(--line); }
+.bcd-rating-num {
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.bcd-rating-count { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-soft); }
+
+/* =====================================================================
+   MY STATUS (scroll §3, private only, conditional)
+   ===================================================================== */
+.bcd-mystatus {
+  margin: 0 var(--space-6) var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface-sunk));
+  border: var(--hairline) solid color-mix(in srgb, var(--accent) 18%, var(--line));
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.bcd-ms-row { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.bcd-shelf {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: var(--accent-tint);
+  border: var(--hairline) solid var(--accent);
+  border-radius: var(--radius-pill);
   font-family: var(--font-sans);
   font-size: var(--fs-caption);
   font-weight: var(--fw-medium);
-  letter-spacing: var(--tracking-label);
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-pill);
-  border: var(--hairline) solid var(--slate);
-  color: var(--slate);
+  color: var(--accent);
+  cursor: pointer;
 }
-.topic-chip--therapy { border-color: var(--sage);  color: var(--sage); }
-.topic-chip--theory  { border-color: var(--amber); color: var(--amber); }
+.bcd-ms-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  color: var(--ink-soft);
+}
+.bcd-ms-rating .bcd-star { font-size: 13px; }
+.bcd-progress-row { display: flex; align-items: center; gap: var(--space-3); }
+.bcd-progress-bar {
+  flex: 1;
+  height: 5px;
+  background: var(--line);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.bcd-progress-fill { height: 100%; background: var(--accent); border-radius: var(--radius-pill); }
+.bcd-progress-label {
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  color: var(--ink-soft);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
 
 /* =====================================================================
-   Drawer shell — right-slide (blueprint-rebuild-v2 §5).
-   The rich .book-card-panel mounts inside .bcd-host.
+   ANNOTATION + PULL-QUOTE (scroll §4)
    ===================================================================== */
-.bcd-backdrop {
-  position: fixed; inset: 0; z-index: 1100;
-  background: color-mix(in srgb, var(--noir-paper) 42%, transparent);
-  opacity: 0; pointer-events: none;
-  transition: opacity var(--dur-base) var(--ease-out-quart);
+.bcd-annotation {
+  font-family: var(--font-serif);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--ink-soft);
+  margin: 0 0 var(--space-4);
 }
-.bcd-backdrop.is-open { opacity: 1; pointer-events: auto; }
-.bcd {
-  position: fixed; top: 0; right: 0; bottom: 0; z-index: 1110;
-  width: min(940px, 95vw);
+.bcd-quote {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+.bcd-quote-text {
+  font-family: var(--font-serif);
+  font-size: var(--fs-quote);
+  font-style: italic;
+  line-height: var(--lh-quote);
+  color: var(--ink);
+  margin: 0 0 var(--space-2);
+}
+.bcd-quote-src { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); margin: 0; }
+
+/* =====================================================================
+   MINIREADER FLYOUT (scroll §5 anchor + left flyout panel)
+   ===================================================================== */
+/* In-scroll anchor block */
+.bcd-reader-anchor {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-sunk);
+  border: var(--hairline) dashed var(--line);
+  border-radius: var(--radius-md);
+}
+.bcd-reader-anchor-text { flex: 1; font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-soft); }
+
+/* The flyout panel — fixed, docked to the LEFT of the drawer; expands
+   leftward over the page on trigger. Collapsed (hidden) by default.
+   Transparent and chrome-less: only the large book pages float here. */
+.bcd-reader {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: var(--bcd-drawer-w); /* sits immediately left of the drawer */
+  width: calc(100% - var(--bcd-drawer-w)); /* fill the rest of the screen (% is screen-accurate) */
+  --bcd-page-maxw: 90%; /* side mode: pages ≤ 90% of the reader = 90% of the space not covered by the card */
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  overflow: hidden;
+  transform: translateX(100%); /* hidden: slid right, behind the drawer */
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 280ms var(--ease-out-quart),
+              opacity var(--dur-base) var(--ease-out-quart);
+}
+.bcd-root.is-open .bcd-reader:not(.is-collapsed) {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.bcd-reader.is-collapsed { transform: translateX(100%); opacity: 0; pointer-events: none; }
+.bcd-reader-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.bcd-reader-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--hairline) solid var(--line);
+  flex-shrink: 0;
+}
+.bcd-reader-bar-title {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-caption);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.bcd-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--ink-faint);
+  cursor: pointer;
+  transition: color var(--dur-fast), border-color var(--dur-fast);
+}
+.bcd-icon-btn:hover { color: var(--ink); border-color: var(--ink-faint); }
+
+.bcd-reader-body {
+  flex: 1;
+  display: flex;
+  align-items: safe center; /* centred, but pins to the top when the book bleeds (so the top stays reachable) */
+  justify-content: center;
+  overflow-x: hidden;
+  overflow-y: auto; /* short content area (< 800px) → the book bleeds and scrolls vertically */
+  background: transparent; /* book floats over the dimmed page — no chrome */
+  padding: var(--space-6);
+  min-height: 240px;
+}
+/* The book pages — large (~2.5×), centred, no toolbars. Empty slots take
+   no space so a single page can grow to fill the available height. */
+.bcd-spread {
+  position: relative; /* anchors the page-mode toggle to the page bottom edge */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  width: 100%;
+  /* page area ≤ 90% of the available width: 90vw in overlay, or 90% of the
+     reader's uncovered width in side mode (--bcd-page-maxw, set on .bcd-reader). */
+  max-width: var(--bcd-page-maxw, 90%);
+  height: auto;
+  /* no max-height: let the spread grow to the book's height so that when the
+     book bleeds (short area) the WHOLE of it scrolls — capping here would centre
+     the overflow and clip the top out of reach. */
+  user-select: none;
+}
+/* Two equal halves: a page keeps the SAME size whether the spread has one
+   or two pages, and a lone page stays on its own side; the empty half holds
+   its space (and clicking it — outside the pages — closes the card). Pages
+   hug the centre gutter. */
+.bcd-slot { flex: 1 1 0; min-width: 0; display: flex; align-items: center; }
+.bcd-slot--left  { justify-content: flex-end;   cursor: w-resize; }
+.bcd-slot--right { justify-content: flex-start;  cursor: e-resize; }
+/* One-page mode: a single larger page, centred */
+.bcd-spread.is-single { justify-content: center; width: fit-content; max-width: var(--bcd-page-maxw, 90%); } /* shrink-wrap the page (≤ 90% of available width) so edge-anchored controls hit the page edge */
+.bcd-slot--single { flex: 0 1 auto; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+/* Controls straddling the pages, centred between them:
+   – layout switch (round) at the TOP edge, between the pages,
+   – page-mode toggle (round) at the BOTTOM edge,
+   – collapse tab at the RIGHT page edge (.bcd-reader-collapse).
+   (The open-in-full-reader CTA lives on the drawer edge — .bcd-tab-fullpage.) */
+.bcd-pagemode-btn,
+.bcd-layout-btn {
+  position: absolute;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--surface);
-  border-left: var(--hairline) solid var(--line);
-  box-shadow: -12px 0 48px color-mix(in srgb, var(--noir-paper) 22%, transparent);
-  transform: translateX(100%);
-  transition: transform 300ms var(--ease-out-quart);
-  display: flex; flex-direction: column; overflow: hidden;
+  color: #4a8cd8; /* bright blue — icons must read clearly (background unchanged) */
+  border: var(--hairline) solid var(--line);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  z-index: 4;
+  transition: background var(--dur-fast) var(--ease-out-quart),
+              color var(--dur-fast) var(--ease-out-quart),
+              border-color var(--dur-fast) var(--ease-out-quart),
+              transform var(--dur-fast) var(--ease-out-quart);
 }
-.bcd.is-open { transform: translateX(0); }
-.bcd-host { flex: 1; display: flex; min-height: 0; overflow-y: auto; }
-.bcd-host .book-card-panel { border-left: none; animation: none; flex: 1; }
-@media (prefers-reduced-motion: reduce) {
-  .bcd, .bcd-backdrop { transition: none; }
+.bcd-pagemode-btn { bottom: 0; transform: translate(-50%, 50%);  width: 44px; height: 44px; border-radius: var(--radius-pill); }
+.bcd-layout-btn   { top: 0;    transform: translate(-50%, -50%); width: 40px; height: 40px; border-radius: var(--radius-pill); }
+.bcd-pagemode-btn:hover { background: var(--surface-sunk); color: var(--ink); border-color: var(--ink-faint); transform: translate(-50%, 50%) scale(1.06); }
+.bcd-layout-btn:hover   { background: var(--surface-sunk); color: var(--ink); border-color: var(--ink-faint); transform: translate(-50%, -50%) scale(1.06); }
+.bcd-pagemode-btn:focus-visible,
+.bcd-layout-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.bcd-slot canvas {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  /* ≤ 90% of the viewport height (÷ --ba-zoom corrects for body{zoom}). But never
+     cap below 720px — i.e. below an 800px content area (720 = 90% of 800), the
+     book keeps that height, bleeds past the short area, and the reader scrolls. */
+  max-height: max(calc(90vh / var(--ba-zoom, 1)), calc(720px / var(--ba-zoom, 1)));
+  display: block;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 40px rgba(20, 16, 12, .34);
+  background: var(--surface);
+}
+/* Absent (facing) page — a very faint, frosted "frozen" outline where the
+   missing page would sit. JS sets aspect-ratio from the bitmap so the ghost
+   scales together with the real page on any card width change.
+   width:100% fills the slot (canvas fills it via its intrinsic bitmap size;
+   an empty <div> with width:auto collapses to zero in flex). */
+.bcd-page-ghost {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: max(calc(90vh / var(--ba-zoom, 1)), calc(720px / var(--ba-zoom, 1)));
+  box-sizing: border-box;
+  align-self: center;
+  pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--ink) 24%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--surface) 52%, transparent);
+  backdrop-filter: blur(2px);
+}
+.bcd-card-width-badge {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 var(--space-2);
+  font-size: 11px;
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+  background: var(--surface);
+  border-bottom: var(--hairline) solid var(--line);
+  letter-spacing: 0.02em;
+  user-select: none;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.bcd-badge-title {
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.bcd-badge-sep { color: var(--ink-faint); flex-shrink: 0; }
+.bcd-badge-author { color: var(--ink-soft); flex-shrink: 0; }
+.bcd-badge-width { color: var(--ink-soft); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.bcd-badge-content-w { color: var(--accent); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.bcd-badge-hint-sep { color: var(--ink-faint); flex-shrink: 0; }
+.bcd-badge-hint { color: var(--ink-faint); overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.bcd-reader-msg {
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  color: var(--ink-faint);
+  text-align: center;
 }
 
-/* Private-mode action row (entry points → book.html / stubs) */
-.book-card-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-1); }
-.book-card-actions .bcd-action { font-size: var(--fs-small); padding: calc(var(--space-1) + 1px) var(--space-5); }
-.book-card-version-row { display: flex; align-items: baseline; gap: var(--space-2); flex-wrap: wrap; }
-.book-card-version-change { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--accent); text-decoration: none; }
-.book-card-version-change:hover { text-decoration: underline; }
+/* Public free-fragment login prompt — floating pill over the page (no chrome) */
+.bcd-reader-cta {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-6);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: saturate(140%) blur(8px);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-soft);
+  white-space: nowrap;
+}
+.bcd-reader-cta-text { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-soft); }
+
+/* Fullscreen — overrides the docked position to cover the viewport */
+.bcd-reader.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  right: 0;
+  width: 100vw;
+  border: none;
+  border-radius: 0;
+  transform: none;
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 9000;
+}
+.bcd-reader.is-fullscreen .bcd-reader-inner { width: 100%; height: 100vh; }
+.bcd-reader.is-fullscreen .bcd-slot canvas { max-height: 82vh; }
+
+/* ---- Over-the-card layout ------------------------------------------------
+   The MiniReader spreads OVER the card, taking the whole viewport width minus
+   small horizontal margins (instead of flying out to the left of the card).
+   Raised above the drawer so it covers the card; the collapse tab brings the
+   card back. Toggled via .bcd-layout-btn / forced by size in book-card.js. */
+.bcd-root.is-reader-over .bcd-reader {
+  left: var(--bcd-reader-over-m, clamp(12px, 4vw, 72px));
+  right: var(--bcd-reader-over-m, clamp(12px, 4vw, 72px));
+  width: auto;
+  --bcd-page-maxw: calc(90vw / var(--ba-zoom, 1)); /* overlay: pages ≤ 90% of the viewport */
+  z-index: calc(var(--z-overlay, 780) + 3); /* above the docked drawer */
+}
+
+/* =====================================================================
+   RATINGS & REVIEWS (scroll §6)
+   ===================================================================== */
+.bcd-agg {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-sunk);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-3);
+}
+.bcd-agg-score {
+  font-family: var(--font-sans);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+  line-height: 1;
+}
+.bcd-agg-note { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-soft); line-height: 1.4; }
+.bcd-agg-note b { color: var(--amber); font-weight: var(--fw-semibold); }
+
+.bcd-review {
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-2);
+}
+.bcd-review-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-2); }
+.bcd-person { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.bcd-av {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  color: var(--on-accent);
+}
+.bcd-person-info { min-width: 0; }
+.bcd-person-name {
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+}
+.bcd-person-name.is-link { cursor: pointer; }
+.bcd-person-name.is-link:hover { color: var(--accent); }
+.bcd-badges { display: inline-flex; align-items: center; gap: var(--space-1); flex-wrap: wrap; margin-top: 1px; }
+.bcd-rep {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: var(--fw-medium);
+  border: var(--hairline) solid;
+  font-variant-numeric: tabular-nums;
+}
+.bcd-rep--maitre  { color: var(--accent); border-color: var(--accent); }
+.bcd-rep--expert  { color: var(--slate);  border-color: var(--slate); }
+.bcd-rep--practik { color: var(--amber);  border-color: var(--amber); }
+.bcd-rep--novice  { color: var(--ink-faint); border-color: var(--line); }
+.bcd-pro {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: var(--fw-semibold);
+  color: var(--sage);
+  background: color-mix(in srgb, var(--sage) 12%, var(--surface-sunk));
+}
+.bcd-you-tag {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: var(--fw-semibold);
+  color: var(--accent);
+  padding: 0 5px;
+  border: var(--hairline) solid var(--accent);
+  border-radius: var(--radius-pill);
+  margin-left: 4px;
+}
+.bcd-date { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); white-space: nowrap; }
+.bcd-review-text {
+  font-family: var(--font-serif);
+  font-size: var(--fs-small);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  font-style: italic;
+  margin: 0 0 var(--space-2);
+}
+.bcd-review-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); flex-wrap: wrap; }
+.bcd-weight-note { font-family: var(--font-sans); font-size: 11px; color: var(--ink-faint); }
+.bcd-weight-note b { color: var(--amber); font-weight: var(--fw-semibold); }
+
+/* Vote control */
+.bcd-vote { display: inline-flex; align-items: center; gap: var(--space-1); }
+.bcd-vote-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  border: var(--hairline) solid var(--line);
+  background: transparent;
+  color: var(--ink-faint);
+  font-size: 11px;
+  cursor: pointer;
+  transition: color var(--dur-fast), border-color var(--dur-fast), background var(--dur-fast);
+}
+.bcd-vote-btn:hover { color: var(--accent); border-color: var(--accent); }
+.bcd-vote-btn.is-up.is-active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.bcd-vote-btn.is-down.is-active { background: var(--surface-sunk); border-color: var(--ink-faint); color: var(--ink-faint); }
+.bcd-vote-total {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 34px;
+  justify-content: center;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+  color: var(--ink-soft);
+  background: var(--surface-sunk);
+  border: var(--hairline) solid var(--line);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Star picker (cast/change rating) */
+.bcd-compose {
+  margin-top: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+}
+.bcd-compose-label {
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+  color: var(--ink);
+  margin-bottom: var(--space-2);
+  display: block;
+}
+.bcd-starpick { display: inline-flex; gap: 2px; margin-bottom: var(--space-2); }
+.bcd-starpick span {
+  font-size: 22px;
+  line-height: 1;
+  color: var(--line);
+  cursor: pointer;
+  transition: color var(--dur-fast);
+}
+.bcd-starpick span.is-on { color: var(--amber); }
+.bcd-compose-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+/* =====================================================================
+   DISCUSSION (scroll §7)
+   ===================================================================== */
+.bcd-comment {
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-2);
+}
+.bcd-comment-text {
+  font-family: var(--font-serif);
+  font-size: var(--fs-small);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin: var(--space-2) 0;
+}
+.bcd-comment-foot { display: flex; align-items: center; gap: var(--space-3); }
+.bcd-reply-btn { background: none; border: none; font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); cursor: pointer; padding: 0; }
+.bcd-reply-btn:hover { color: var(--accent); }
+.bcd-replies {
+  margin-top: var(--space-2);
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.bcd-reply { padding: var(--space-2) var(--space-3); background: var(--surface-sunk); border-radius: var(--radius-sm); }
+.bcd-reply-to { font-family: var(--font-sans); font-size: 11px; color: var(--ink-faint); margin-bottom: 2px; }
+.bcd-reply-text { font-family: var(--font-serif); font-size: var(--fs-caption); line-height: 1.5; color: var(--ink-soft); }
+.bcd-reply-meta { font-family: var(--font-sans); font-size: 11px; color: var(--ink-faint); margin-top: var(--space-1); display: flex; align-items: center; gap: var(--space-1); }
+
+.bcd-addbox {
+  margin-top: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.bcd-textarea {
+  width: 100%;
+  min-height: 64px;
+  padding: var(--space-3);
+  background: var(--surface-sunk);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  font-family: var(--font-serif);
+  font-size: var(--fs-small);
+  color: var(--ink);
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--dur-fast);
+}
+.bcd-textarea:focus { border-color: var(--accent); }
+.bcd-textarea::placeholder { color: var(--ink-faint); }
+.bcd-addbox-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); flex-wrap: wrap; }
+
+/* =====================================================================
+   COMMUNITY ACTIVITY (scroll §8)
+   ===================================================================== */
+.bcd-pulse-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: var(--hairline) solid var(--line);
+}
+.bcd-pulse-item:last-child { border-bottom: none; }
+.bcd-av--sm { width: 28px; height: 28px; }
+.bcd-pulse-info { flex: 1; min-width: 0; }
+.bcd-pulse-name { font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium); color: var(--ink); cursor: pointer; }
+.bcd-pulse-name:hover { color: var(--accent); }
+.bcd-pulse-action { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); }
+
+/* =====================================================================
+   VERSIONS & ACCESS (scroll §9)
+   ===================================================================== */
+.bcd-versions { display: flex; flex-direction: column; gap: var(--space-2); }
+.bcd-vcard {
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+}
+.bcd-vcard.is-current { border-color: var(--accent); }
+.bcd-vcard-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-1); }
+.bcd-vcard-label { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--ink); }
+.bcd-vcard-date, .bcd-vcard-pages { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); white-space: nowrap; }
+.bcd-vbadges { display: flex; gap: var(--space-1); flex-wrap: wrap; margin-bottom: var(--space-1); }
+.bcd-vbadge {
+  display: inline-flex;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: var(--fw-semibold);
+  border: var(--hairline) solid;
+}
+.bcd-vbadge--full    { color: var(--sage);   border-color: var(--sage); }
+.bcd-vbadge--early   { color: var(--amber);  border-color: var(--amber); }
+.bcd-vbadge--free    { color: var(--slate);  border-color: var(--slate); }
+.bcd-vbadge--current { color: var(--accent); border-color: var(--accent); }
+.bcd-vcard-note { font-family: var(--font-sans); font-size: var(--fs-caption); line-height: 1.4; color: var(--ink-soft); }
+.bcd-access-note {
+  margin-top: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  color: var(--ink-faint);
+  line-height: 1.4;
+}
+
+/* =====================================================================
+   REQUISITES & CITATION (scroll §10)
+   ===================================================================== */
+.bcd-req-table { width: 100%; border-collapse: collapse; margin-bottom: var(--space-3); }
+.bcd-req-table tr { border-bottom: var(--hairline) solid var(--line); }
+.bcd-req-table tr:last-child { border-bottom: none; }
+.bcd-req-table th {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-caption);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  text-align: left;
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  width: 110px;
+  vertical-align: top;
+  white-space: nowrap;
+}
+.bcd-req-table td { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink); padding: var(--space-2) 0; line-height: 1.45; }
+
+.bcd-citation {
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-sunk);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+}
+.bcd-citation-string { font-family: var(--font-serif); font-size: var(--fs-caption); line-height: 1.55; color: var(--ink); margin: 0 0 var(--space-2); }
+.bcd-deeplink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-3);
+  background: var(--surface);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-md);
+}
+.bcd-deeplink-url {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--ink-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =====================================================================
+   READER SIDE-VIEWS — Chapters · Memory · Selection
+   ===================================================================== */
+.bcd-subview { padding: var(--space-4) 0; }
+.bcd-subview-head {
+  display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-3);
+  padding: var(--space-2) var(--space-6) var(--space-4);
+}
+
+/* Chapters (TOC) */
+.bcd-chapters { display: flex; flex-direction: column; padding: 0 var(--space-4); }
+.bcd-chapter {
+  position: relative;
+  display: flex; flex-direction: column; gap: var(--space-1);
+  width: 100%; text-align: left;
+  padding: var(--space-3);
+  background: transparent; border: none; border-bottom: var(--hairline) solid var(--line);
+  border-left: 2px solid transparent;
+  cursor: pointer; transition: background var(--dur-fast), border-color var(--dur-fast);
+}
+.bcd-chapter:hover:not(:disabled) { background: var(--surface-sunk); }
+.bcd-chapter.is-current { background: color-mix(in srgb, var(--accent) 6%, transparent); border-left-color: var(--accent); }
+/* chapters outside the free fragment — shown for structure, not navigable (W-6.2) */
+.bcd-chapter.is-out, .bcd-chapter:disabled { opacity: 0.5; cursor: default; }
+.bcd-chapter-head { display: flex; align-items: baseline; gap: var(--space-3); width: 100%; }
+/* number — a distinct accent badge (visually set apart from the name) */
+.bcd-chapter-n {
+  flex-shrink: 0; min-width: 24px; height: 21px; padding: 0 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--accent) 13%, transparent);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-label); color: var(--accent); font-variant-numeric: tabular-nums;
+}
+.bcd-chapter.is-current .bcd-chapter-n { background: var(--accent); color: var(--on-accent); }
+/* name — serif, stronger, clearly distinct from the badge */
+.bcd-chapter-title { flex: 1; font-family: var(--font-serif); font-size: var(--fs-body); font-weight: var(--fw-semibold); color: var(--ink); line-height: 1.35; }
+.bcd-chapter-page { flex-shrink: 0; align-self: center; font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+/* description — below the name, clamped to 3 rows */
+.bcd-chapter-desc {
+  margin: 2px 0 0; padding-left: calc(24px + var(--space-3));
+  font-family: var(--font-sans); font-size: var(--fs-caption); line-height: 1.5; color: var(--ink-soft);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
+}
+/* full-text hover popup — only where the clamp actually cuts (.has-clamp) */
+.bcd-chapter-desc-full {
+  position: absolute; left: var(--space-3); right: var(--space-3); top: calc(100% - var(--space-2));
+  z-index: 30;
+  background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-raise); padding: var(--space-3) var(--space-4);
+  font-family: var(--font-sans); font-size: var(--fs-caption); line-height: 1.55; color: var(--ink);
+  opacity: 0; visibility: hidden; transform: translateY(-4px); pointer-events: none;
+  transition: opacity var(--dur-fast), transform var(--dur-fast), visibility var(--dur-fast);
+}
+.bcd-chapter.has-clamp:hover .bcd-chapter-desc-full { opacity: 1; visibility: visible; transform: translateY(0); }
+/* show/hide all: when not toggled on, only the current chapter keeps its desc */
+.bcd-chapters:not(.is-show-all) .bcd-chapter:not(.is-current) .bcd-chapter-desc,
+.bcd-chapters:not(.is-show-all) .bcd-chapter:not(.is-current) .bcd-chapter-desc-full { display: none; }
+.bcd-chapters-toggle {
+  margin-left: auto; background: none; border: none; padding: 0;
+  font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-medium);
+  color: var(--accent); cursor: pointer; white-space: nowrap;
+}
+.bcd-chapters-toggle:hover { color: var(--accent-hover); }
+
+/* Memory (user items) */
+.bcd-mem-hint { padding: 0 var(--space-6); font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); line-height: 1.5; margin: 0 0 var(--space-3); }
+.bcd-mem-add { display: flex; flex-wrap: wrap; gap: var(--space-2); padding: 0 var(--space-6) var(--space-4); }
+.bcd-mem-list { display: flex; flex-direction: column; gap: var(--space-6); padding: 0 var(--space-6) var(--space-6); }
+.bcd-mem-group { display: flex; flex-direction: column; gap: var(--space-2); }
+.bcd-mem-gtitle {
+  font-family: var(--font-sans); font-size: var(--fs-caption); font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-caption); text-transform: uppercase; color: var(--ink-faint); margin: 0 0 var(--space-1);
+}
+.bcd-mem-empty { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); font-style: italic; margin: 0; }
+.bcd-mem-item {
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface); border: var(--hairline) solid var(--line); border-radius: var(--radius-md);
+}
+.bcd-mem-item-head { display: flex; align-items: center; gap: var(--space-2); }
+.bcd-mem-loc { font-family: var(--font-sans); font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--accent); background: none; border: none; padding: 0; cursor: pointer; }
+.bcd-mem-loc:hover { color: var(--accent-hover); text-decoration: underline; }
+.bcd-mem-ts { flex: 1; font-family: var(--font-sans); font-size: 11px; color: var(--ink-faint); }
+.bcd-mem-del { flex-shrink: 0; background: none; border: none; color: var(--ink-faint); cursor: pointer; font-size: 14px; line-height: 1; padding: 2px 4px; border-radius: var(--radius-sm); }
+.bcd-mem-del:hover { color: var(--accent); background: var(--surface-sunk); }
+.bcd-mem-text { font-family: var(--font-serif); font-size: var(--fs-small); font-style: italic; line-height: 1.5; color: var(--ink-soft); margin: var(--space-2) 0 0; }
+.bcd-mem-comment { font-family: var(--font-sans); font-size: var(--fs-caption); line-height: 1.45; color: var(--ink); margin: var(--space-2) 0 0; padding-left: var(--space-3); border-left: 2px solid var(--accent); }
+.bcd-mem-cbtn { margin-top: var(--space-2); background: none; border: none; padding: 0; font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); cursor: pointer; }
+.bcd-mem-cbtn:hover { color: var(--accent); }
+
+/* Selection — page cursor + floating toolbar over the reader */
+.bcd-selecting canvas { cursor: text; }
+.bcd-selecting.bcd-sel-cross canvas { cursor: pointer; }
+.bcd-sel-bar {
+  position: absolute; left: 50%; bottom: var(--space-5, 20px); transform: translateX(-50%);
+  z-index: 6; width: min(460px, 88%);
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: color-mix(in srgb, var(--surface) 95%, transparent);
+  backdrop-filter: saturate(140%) blur(8px);
+  border: var(--hairline) solid var(--line); border-radius: var(--radius-lg, 14px);
+  box-shadow: var(--shadow-soft);
+}
+.bcd-sel-modes { display: inline-flex; gap: 2px; padding: 2px; background: var(--surface-sunk); border-radius: var(--radius-pill); align-self: center; }
+.bcd-sel-mode { padding: 4px 12px; border: none; background: transparent; border-radius: var(--radius-pill); font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-soft); cursor: pointer; }
+.bcd-sel-mode.is-on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-soft); font-weight: var(--fw-semibold); }
+.bcd-sel-hint { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink-faint); margin: 0; text-align: center; }
+.bcd-sel-line { font-family: var(--font-sans); font-size: var(--fs-caption); color: var(--ink); margin: 0; line-height: 1.45; }
+.bcd-sel-line b { color: var(--accent); }
+.bcd-sel-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: center; }
+
+/* =====================================================================
+   RESPONSIVE — card width · cover width · content density · bleed
+   Driven by data-ui × data-media × data-height (set by _applyMediaClass).
+   All values from the layout spec table (normal / fat / compact UI size).
+   ===================================================================== */
+
+/* ---- Card max-width (overlay / collapsed-reader mode) ---------------
+   In side mode the existing high-specificity rule (line ~42) overrides
+   these to ~20% regardless of UI size — these drive the overlay card.  */
+/* Normal UI */
+.bcd-root[data-ui="normal"][data-media="wide"]     { --bcd-card: 55%; }
+.bcd-root[data-ui="normal"][data-media="modest"]   { --bcd-card: 20%; }
+.bcd-root[data-ui="normal"][data-media="narrow"]   { --bcd-card: 90%; }
+.bcd-root[data-ui="normal"][data-media="matchbox"] { --bcd-card: 90%; }
+/* Fat UI (same card widths as normal) */
+.bcd-root[data-ui="fat"][data-media="wide"]     { --bcd-card: 55%; }
+.bcd-root[data-ui="fat"][data-media="modest"]   { --bcd-card: 20%; }
+.bcd-root[data-ui="fat"][data-media="narrow"]   { --bcd-card: 90%; }
+.bcd-root[data-ui="fat"][data-media="matchbox"] { --bcd-card: 90%; }
+/* Compact UI — always 90% */
+.bcd-root[data-ui="compact"] { --bcd-card: 90%; }
+
+/* ---- Cover column width — three modes (JS sets data-cover-mode via ResizeObserver)
+   normal: card > 600 logical px → 94 px
+   half:   card 300–600 px       → 47 px   (also hides the section nav)
+   hidden: card ≤ 300 px         → cover col removed                          */
+.bcd-root[data-cover-mode="normal"] { --bcd-cover-w: 94px; }
+.bcd-root[data-cover-mode="half"]   { --bcd-cover-w: 47px; }
+/* Hidden mode: col shrinks to an actions-only strip (image + nav hidden). Width
+   matches the reader btn (padding 8px×2 + ~24px label) so the collapse bar
+   and close btn centering formula still work via --bcd-cover-w. */
+.bcd-root[data-cover-mode="hidden"] { --bcd-cover-w: 40px; }
+.bcd-root[data-cover-mode="hidden"] .bcd-cover-col {
+  background: transparent;
+  border-left: none;
+}
+.bcd-root[data-cover-mode="hidden"] .bcd-cover-clip,
+.bcd-root[data-cover-mode="hidden"] .bcd-cover-ed { display: none; }
+/* Section nav only visible in normal mode and when reader is not in overlay */
+.bcd-root:not([data-cover-mode="normal"]) .bcd-cover-nav { display: none; }
+.bcd-root.is-reader-over .bcd-cover-nav { display: none; }
+
+/* ---- Cosmetic: no left border on the drawer in narrow / matchbox -----*/
+.bcd-root[data-media="narrow"]   .bcd-drawer,
+.bcd-root[data-media="matchbox"] .bcd-drawer { border-left: none; }
+
+/* ---- Content compact mode -------------------------------------------
+   Reduced padding + slightly smaller type in the card's scroll column.
+   Applied when data-content="compact" (JS sets this based on UI×media). */
+.bcd-root[data-content="compact"] .bcd-sec {
+  padding: var(--space-4) var(--space-4);
+}
+.bcd-root[data-content="compact"] .bcd-identity {
+  padding: var(--space-4) var(--space-4) var(--space-2);
+}
+.bcd-root[data-content="compact"] .bcd-title {
+  font-size: calc(var(--fs-h2) * 0.85);
+}
+.bcd-root[data-content="compact"] .bcd-subtitle {
+  font-size: var(--fs-small);
+  margin-bottom: var(--space-2);
+}
+.bcd-root[data-content="compact"] .bcd-annotation {
+  font-size: var(--fs-small);
+  line-height: 1.45;
+}
+.bcd-root[data-content="compact"] .bcd-meta-row {
+  gap: var(--space-2);
+}
+.bcd-root[data-content="compact"] .bcd-sec-head {
+  margin-bottom: var(--space-2);
+}
+.bcd-root[data-content="compact"] .bcd-review,
+.bcd-root[data-content="compact"] .bcd-comment {
+  padding: var(--space-2) var(--space-3);
+}
+.bcd-root[data-content="compact"] .bcd-mystatus {
+  margin: 0 var(--space-4) var(--space-2);
+  padding: var(--space-2) var(--space-3);
+}
+
+/* ---- Vertical bleed (tight area height ≤ 600 px) --------------------
+   Pages only (not buttons) may extend beyond the reader area's top/bottom
+   edges. Remove the reader body's vertical padding so pages fill edge to
+   edge; raise the max-height from 90 vh to 100 vh so pages are larger on
+   short screens and the user scrolls to read them. Buttons remain within
+   the spread boundaries (= within the reader area), so they do not bleed. */
+.bcd-root[data-height="tight"] .bcd-reader-body {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.bcd-root[data-height="tight"] .bcd-slot canvas {
+  max-height: max(calc(100vh / var(--ba-zoom, 1)), calc(720px / var(--ba-zoom, 1)));
+}
+
+/* ---- Side mode + 1-page: card takes more room (reader needs less width) --
+   Specificity 0,6,0 beats the base side rule (0,5,0) at line ~42.          */
+.bcd-root.is-open:not(.is-reader-over):not(.is-reader-collapsed)[data-pages="1"] {
+  --bcd-card: clamp(28%, calc(22rem / var(--ba-zoom, 1)), 38%);
+}
+
+/* ---- Side mode: compensate for the tab-stack that protrudes ~45 px into
+   the reader from the right, so the page is visually centred in the open area. */
+.bcd-root.is-open:not(.is-reader-over):not(.is-reader-collapsed) .bcd-reader-body {
+  padding-right: calc(var(--space-6) + 45px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bcd-backdrop, .bcd-drawer, .bcd-reader { transition: opacity .01ms; }
+}
+
+/* =====================================================================
+   COVER LIGHTBOX
+   ===================================================================== */
+.bcd-cover-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(14, 10, 8, 0);
+  cursor: zoom-out;
+  transition: background var(--dur-base, 220ms) var(--ease-out-quart, ease-out);
+}
+.bcd-cover-lightbox.is-open {
+  background: rgba(14, 10, 8, .9);
+}
+.bcd-cover-lb-img {
+  display: block;
+  height: calc(100vh - 48px);
+  max-height: calc(100vh - 48px);
+  max-width: calc(100vw - 96px);
+  width: auto;
+  object-fit: contain;
+  border-radius: var(--radius-sm, 4px);
+  box-shadow: 0 32px 96px rgba(0, 0, 0, .7);
+  cursor: default;
+  opacity: 0;
+  transform: scale(.96);
+  transition:
+    opacity var(--dur-base, 220ms) var(--ease-out-quart, ease-out),
+    transform var(--dur-base, 220ms) var(--ease-out-quart, ease-out);
+}
+.bcd-cover-lightbox.is-open .bcd-cover-lb-img {
+  opacity: 1;
+  transform: scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .bcd-cover-lightbox, .bcd-cover-lb-img { transition: none; }
+}
+
+/* ---- Card resize handle — left edge of .bcd-drawer ------------------- */
+.bcd-resize-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: ew-resize;
+  z-index: 20;
+}
+.bcd-resize-handle:hover,
+.bcd-resize-handle.is-dragging {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+/* Empty-state note for sections with no social data (book-data social left empty this round) */
+.bcd-empty-note{font-family:var(--font-sans);font-size:var(--fs-small,14px);color:var(--ink-faint);font-style:italic;margin:var(--space-2,8px) 0 0;padding:var(--space-3,12px) 0;}

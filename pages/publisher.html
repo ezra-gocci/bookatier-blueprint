@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Издатель — β→α академия</title>
+  <!-- Publisher page = the Publisher entity given the full content area (the same
+       entity the Producers tab lists; system-model §4.3/§4.8). Dynamic by
+       ?publisher=<id>. Feature area: Producers · Publisher page. Spec refs:
+       specs.md §1.5 (Publisher), principle 7 (publisher surfaced as a main entity;
+       its id stays internal). β→α is the sole publisher in the Primer. Community
+       reactions left empty this round; gating per CON-01. Tokens-only. -->
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/chrome.css">
+  <style>
+    /* No padding-top: the sticky .site-header already reserves its height (B1). */
+    .pub-main { min-height: 100vh; }
+    .pub-wrap { max-width: 980px; margin: 0 auto; padding: 0 var(--gutter, 40px); }
+    @media (max-width: 700px){ .pub-wrap { padding: 0 var(--space-4, 16px); } }
+    /* Hero */
+    .pub-hero { display: flex; align-items: center; gap: var(--space-6, 24px); padding: var(--space-12, 48px) 0 var(--space-8, 32px); flex-wrap: wrap; }
+    .pub-seal { width: 132px; height: 132px; border-radius: var(--radius-md, 10px); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; background: var(--ink); color: var(--paper);
+      font-family: var(--font-serif); font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; box-shadow: var(--shadow-raise); }
+    .pub-hero-text { min-width: 0; flex: 1; }
+    .pub-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--accent); margin: 0 0 var(--space-2, 8px); }
+    .pub-name { font-family: var(--font-serif); font-size: 2rem; font-weight: 600; color: var(--ink); margin: 0; letter-spacing: -0.01em; }
+    .pub-full { font-family: var(--font-sans); font-size: var(--fs-body, 16px); color: var(--ink-soft); margin: var(--space-2, 8px) 0 0; }
+    .pub-blurb { font-family: var(--font-serif); font-size: var(--fs-body, 16px); font-style: italic; color: var(--ink-soft); margin: var(--space-3, 12px) 0 0; max-width: 60ch; }
+    .pub-hero-actions { margin-top: var(--space-4, 16px); display: flex; align-items: center; gap: var(--space-3, 12px); flex-wrap: wrap; }
+    .pub-btn { font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: 600; padding: 9px 18px; border-radius: var(--radius-pill, 999px);
+      cursor: pointer; border: var(--hairline) solid var(--line); background: var(--surface); color: var(--ink-soft); transition: all 140ms; }
+    .pub-btn--track { background: var(--accent); color: var(--on-accent, #fff); border-color: var(--accent); }
+    .pub-btn--track.is-on { background: var(--surface); color: var(--accent); }
+    .pub-btn:hover { border-color: var(--accent); }
+    .pub-stats { display: flex; gap: var(--space-6, 24px); }
+    .pub-stat-val { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 600; color: var(--ink); }
+    .pub-stat-lbl { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-faint); }
+    /* Sections */
+    .pub-sec { padding: var(--space-8, 32px) 0; border-top: var(--hairline) solid var(--line); }
+    .pub-sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin: 0 0 var(--space-4, 16px); }
+    .pub-sec-title { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--ink-faint); margin: 0; }
+    .pub-sec-link { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--accent); text-decoration: none; }
+    .pub-sec-link:hover { text-decoration: underline; }
+    .pub-about { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); line-height: 1.7; color: var(--ink); max-width: 68ch; margin: 0; }
+    .pub-focus { display: flex; flex-wrap: wrap; gap: var(--space-2, 8px); margin-top: var(--space-4, 16px); }
+    .pub-focus-chip { font-family: var(--font-sans); font-size: var(--fs-small, 14px); padding: 7px 14px; border-radius: var(--radius-pill, 999px);
+      background: var(--surface-sunk); color: var(--ink-soft); }
+    /* Publications grid */
+    .pub-books { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4, 16px); }
+    @media (max-width: 760px){ .pub-books { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 460px){ .pub-books { grid-template-columns: 1fr; } }
+    .pub-book { display: flex; gap: var(--space-3, 12px); padding: var(--space-3, 12px); align-items: center;
+      border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface);
+      text-decoration: none; transition: border-color 140ms, box-shadow 140ms; }
+    .pub-book:hover { border-color: var(--accent); box-shadow: var(--shadow-soft); }
+    .pub-book-cover { width: 48px; height: 68px; object-fit: cover; border-radius: var(--radius-sm, 6px); flex-shrink: 0;
+      border: var(--hairline) solid var(--line); background: var(--surface-sunk); }
+    .pub-book-info { min-width: 0; }
+    .pub-book-title { font-family: var(--font-serif); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink); margin: 0; line-height: 1.3; }
+    .pub-book-sub { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: 3px 0 0; }
+    /* Authors roster */
+    .pub-authors { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4, 16px); }
+    @media (max-width: 760px){ .pub-authors { grid-template-columns: 1fr; } }
+    .pub-author { display: flex; gap: var(--space-3, 12px); padding: var(--space-4, 16px); align-items: center;
+      border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface);
+      text-decoration: none; transition: border-color 140ms, box-shadow 140ms; }
+    .pub-author:hover { border-color: var(--accent); box-shadow: var(--shadow-soft); }
+    .pub-author-av { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid var(--line); background: var(--surface-sunk); }
+    .pub-author-name { font-family: var(--font-serif); font-size: var(--fs-body, 16px); font-weight: 600; color: var(--ink); margin: 0; }
+    .pub-author-meta { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: 2px 0 0; }
+    .pub-empty { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-faint); font-style: italic; margin: 0; }
+    .pub-loading { font-family: var(--font-sans); color: var(--ink-faint); padding: var(--space-16, 64px); text-align: center; }
+  </style>
+</head>
+<body>
+  <main id="main-content" data-page-body class="pub-main">
+    <div class="pub-wrap" id="pub-root"><div class="pub-loading">Загрузка…</div></div>
+  </main>
+
+  <script src="../components/session.js"></script>
+  <script src="../components/frame.js"></script>
+  <script src="../components/avatar-menu.js"></script>
+  <script src="../components/notifications.js"></script>
+  <script src="../components/search.js"></script>
+  <script src="../components/pulse.js"></script>
+  <script src="../components/debug.js"></script>
+  <script src="../components/book-data.js"></script>
+  <script src="../components/author-data.js"></script>
+  <script src="../components/publisher-data.js"></script>
+  <script src="../components/reader-engine.js"></script>
+  <script src="../components/book-card.js"></script>
+  <script src="../components/member-card.js"></script>
+  <script src="../components/author-card.js"></script>
+
+  <script>
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+    var id = new URLSearchParams(location.search).get('publisher') || 'beta-alpha';
+
+    function build(){
+      var p = BA.publisherData.get(id);
+      if (!p){ document.getElementById('pub-root').innerHTML = '<div class="pub-loading">Издатель не найден. <a href="library.html?tab=producers">К издателям →</a></div>'; return; }
+      document.title = p.name + ' — β→α академия';
+      var priv = !!(window.BA && BA.session && BA.session.isPrivate());
+      var books = BA.publisherData.publicationsOf(p);
+      var authors = BA.publisherData.authorsOf(p);
+      var s = BA.publisherData.stats(p);
+
+      var booksHTML = books.map(function(b){
+        return '<a class="pub-book" href="book.html?book='+esc(b.slug)+'">' +
+          '<img class="pub-book-cover" src="'+esc(b.cover)+'" alt="Обложка: '+esc(b.title)+'" loading="lazy">' +
+          '<span class="pub-book-info"><p class="pub-book-title">'+esc(b.title)+'</p><p class="pub-book-sub">'+esc(b.author)+' · '+esc(b.year)+'</p></span>' +
+        '</a>';
+      }).join('');
+
+      var authorsHTML = authors.map(function(a){
+        var av = (window.BA && BA.avatars) ? BA.avatars.pick(a.name) : '';
+        return '<a class="pub-author" href="author.html?author='+esc(a.id)+'">' +
+          (av?'<img class="pub-author-av" src="'+esc(av)+'" alt="" loading="lazy">':'') +
+          '<span><p class="pub-author-name">'+esc(a.name)+'</p><p class="pub-author-meta">'+esc(a.meta||'')+'</p></span>' +
+        '</a>';
+      }).join('');
+
+      var focusHTML = (p.focus||[]).map(function(f){ return '<span class="pub-focus-chip">'+esc(f)+'</span>'; }).join('');
+
+      document.getElementById('pub-root').innerHTML =
+        '<section class="pub-hero">' +
+          '<div class="pub-seal" aria-hidden="true">'+esc(p.mark||'β→α')+'</div>' +
+          '<div class="pub-hero-text">' +
+            '<p class="pub-eyebrow">Издатель</p>' +
+            '<h1 class="pub-name">'+esc(p.name)+'</h1>' +
+            '<p class="pub-full">'+esc(p.fullName||'')+'</p>' +
+            '<p class="pub-blurb">'+esc(p.blurb||'')+'</p>' +
+            '<div class="pub-hero-actions">' +
+              '<button class="pub-btn pub-btn--track" type="button" data-act="track">+ Следить</button>' +
+              '<div class="pub-stats">' +
+                '<div><div class="pub-stat-val">'+s.titles+'</div><div class="pub-stat-lbl">изданий</div></div>' +
+                '<div><div class="pub-stat-val">'+s.authors+'</div><div class="pub-stat-lbl">авторов</div></div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</section>' +
+        '<section class="pub-sec"><p class="pub-sec-title">Об издательстве</p>' +
+          '<p class="pub-about">'+esc(p.about)+'</p>' +
+          (focusHTML?'<div class="pub-focus">'+focusHTML+'</div>':'') +
+        '</section>' +
+        '<section class="pub-sec">' +
+          '<div class="pub-sec-head"><p class="pub-sec-title">Каталог издательства ('+books.length+')</p>' +
+            '<a class="pub-sec-link" href="library.html?tab=catalogue">Весь каталог →</a></div>' +
+          '<div class="pub-books">'+booksHTML+'</div>' +
+        '</section>' +
+        '<section class="pub-sec">' +
+          '<div class="pub-sec-head"><p class="pub-sec-title">Авторы издательства ('+authors.length+')</p>' +
+            '<a class="pub-sec-link" href="library.html?tab=pantheon">В пантеон →</a></div>' +
+          '<div class="pub-authors">'+authorsHTML+'</div>' +
+        '</section>' +
+        '<section class="pub-sec"><p class="pub-sec-title">Реакции сообщества</p>' +
+          '<p class="pub-empty">'+(priv?'Голоса и реакции на издателя (community-display, принцип 7) появятся здесь.':'Войдите, чтобы видеть и оставлять реакции сообщества (CON-01).')+'</p>' +
+        '</section>';
+
+      document.getElementById('pub-root').addEventListener('click', function(e){
+        var act = e.target.closest('[data-act]'); if (!act) return;
+        var t = act.getAttribute('data-act');
+        if (t==='track'){ act.classList.toggle('is-on'); act.textContent = act.classList.contains('is-on') ? '✓ Вы следите' : '+ Следить'; }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      BA.frame.init({ page: 'library' });
+      build();
+      document.addEventListener('ba:session-change', build);
+    });
+  </script>
+</body>
+</html>

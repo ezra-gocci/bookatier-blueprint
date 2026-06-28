@@ -1,0 +1,68 @@
+{
+  "slug": "bion-learning",
+  "title": "Научение на опыте. Итальянские семинары",
+  "subtitle": "Learning from Experience. Italian Seminars",
+  "author_display": "Уилфред Р. Бион",
+  "ai_content_ready": true,
+  "source_file": "Научение_на_опыте_Итальянские_семинары_Уилфред_Р_Бион.pdf",
+  "total_pages": 324,
+  "known": {
+    "author": "Уилфред Р. Бион",
+    "year": 2022,
+    "publisher": "Beta 2 Alpha"
+  },
+  "covers": {
+    "small": "covers/cover-small.jpg",
+    "medium": "covers/cover-medium.jpg",
+    "large": "covers/cover-large.jpg"
+  },
+  "free_edition": {
+    "start_page": 21,
+    "end_page": 37,
+    "page_count": 17,
+    "pdf_path": "editions/free/bion-learning-free.pdf"
+  },
+  "editions": [
+    {
+      "version": "v1",
+      "start_page": 1,
+      "end_page": 162,
+      "page_count": 162,
+      "pdf_path": "editions/v1/bion-learning-v1.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v2",
+      "start_page": 1,
+      "end_page": 202,
+      "page_count": 202,
+      "pdf_path": "editions/v2/bion-learning-v2.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v3",
+      "start_page": 1,
+      "end_page": 242,
+      "page_count": 242,
+      "pdf_path": "editions/v3/bion-learning-v3.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v4",
+      "start_page": 1,
+      "end_page": 282,
+      "page_count": 282,
+      "pdf_path": "editions/v4/bion-learning-v4.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v5",
+      "start_page": 1,
+      "end_page": 324,
+      "page_count": 324,
+      "pdf_path": "editions/v5/bion-learning-v5.pdf",
+      "is_complete": true
+    }
+  ],
+  "toc_entry_count": 45
+}

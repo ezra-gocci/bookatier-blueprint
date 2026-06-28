@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Библиотека — β→α академия</title>
+  <!-- Feature areas: Catalogue · Pantheon · Producers · Collection (Library section).
+       Spec refs: system-model §4.2/§4.8 (Library = 2nd-level section frame hosting
+       tabs; this is the shared L1 master under index.html L0). Tokens-only. -->
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/chrome.css">
+  <link rel="stylesheet" href="../styles/book-card.css">
+  <style>
+    /* No padding-top: the injected .site-header is position:sticky (in normal
+       flow), so it already reserves its own height — adding it again left an
+       empty band under the header (B1). */
+    .lib-main { min-height: 100vh; }
+    /* Hero (noir band) */
+    .lib-hero { background: var(--ink); color: var(--paper); border-bottom: var(--hairline) solid var(--line); }
+    .lib-hero-inner { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-6);
+      flex-wrap: wrap; padding: var(--space-8, 32px) 0 var(--space-6, 24px); }
+    .lib-hero h1 { font-family: var(--font-serif); font-size: 2rem; font-weight: 600; margin: 0;
+      color: var(--paper); letter-spacing: -0.01em; }
+    .lib-hero-sub { font-family: var(--font-sans); font-size: var(--fs-small, 14px); margin: var(--space-2) 0 0;
+      color: color-mix(in srgb, var(--paper) 70%, transparent); max-width: 52ch; }
+    .lib-stats { display: flex; align-items: center; gap: var(--space-5, 20px); }
+    .lib-stat { text-align: center; }
+    .lib-stat-val { display: block; font-family: var(--font-serif); font-size: 1.5rem; font-weight: 600; color: var(--paper); }
+    .lib-stat-lbl { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); text-transform: uppercase;
+      letter-spacing: 0.04em; color: color-mix(in srgb, var(--paper) 60%, transparent); }
+    /* Editorial / announcements strip */
+    .lib-ed { background: var(--surface); border-bottom: var(--hairline) solid var(--line); }
+    .lib-ed-inner { padding: var(--space-5, 20px) 0; }
+    .lib-ed-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4);
+      margin-bottom: var(--space-4, 16px); }
+    .lib-ed-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin: 0; }
+    .lib-ed-title { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--ink); margin: 2px 0 0; }
+    .lib-ed-link { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--accent); text-decoration: none; white-space: nowrap; }
+    .lib-ed-books { display: flex; gap: var(--space-4, 16px); overflow-x: auto; padding-bottom: var(--space-2); }
+    .lib-ed-book { display: flex; gap: var(--space-3, 12px); min-width: 280px; padding: var(--space-3, 12px);
+      border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface);
+      cursor: pointer; transition: border-color 140ms, box-shadow 140ms; text-align: left; }
+    .lib-ed-book:hover { border-color: var(--accent); box-shadow: var(--shadow-soft); }
+    .lib-ed-cover { width: 46px; height: 64px; object-fit: cover; border-radius: var(--radius-sm, 6px); flex-shrink: 0;
+      border: var(--hairline) solid var(--line); }
+    .lib-ed-info { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .lib-ed-bk-author { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: 0; }
+    .lib-ed-bk-title { font-family: var(--font-serif); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink);
+      line-height: 1.3; margin: 0; }
+    /* Tab bar */
+    .lib-tabs { position: sticky; top: var(--header-height, 64px); z-index: 80;
+      background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px);
+      border-bottom: var(--hairline) solid var(--line); }
+    .lib-tabs-inner { display: flex; gap: var(--space-1, 4px); overflow-x: auto; }
+    .lib-tab { font-family: var(--font-sans); font-size: var(--fs-body, 16px); font-weight: 500; color: var(--ink-soft);
+      background: none; border: none; border-bottom: 2px solid transparent; padding: var(--space-4, 16px) var(--space-4, 16px);
+      cursor: pointer; white-space: nowrap; transition: color 140ms, border-color 140ms; }
+    .lib-tab:hover { color: var(--ink); }
+    .lib-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
+    .lib-tab-count { font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin-left: 4px; }
+    /* Tab content + stubs */
+    #lib-tab-content { min-height: 50vh; }
+    .lib-stub { padding: var(--space-16, 64px) 0; text-align: center; color: var(--ink-faint); font-family: var(--font-sans); }
+    .lib-stub h2 { font-family: var(--font-serif); font-size: var(--fs-h2, 22px); color: var(--ink-soft); margin: 0 0 var(--space-2); }
+    /* Pantheon (authors) grid */
+    .pan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5, 20px); padding: var(--space-6, 24px) 0 var(--space-12); }
+    @media (max-width: 760px){ .pan-grid { grid-template-columns: 1fr; } }
+    .pan-card { display: flex; gap: var(--space-4, 16px); padding: var(--space-5, 20px); align-items: center;
+      border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface);
+      text-decoration: none; transition: border-color 140ms, box-shadow 140ms; }
+    .pan-card:hover { border-color: var(--accent); box-shadow: var(--shadow-soft); }
+    .pan-av { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid var(--line); background: var(--surface-sunk); }
+    .pan-name { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--ink); margin: 0; }
+    .pan-meta { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: 2px 0 0; }
+    .pan-works { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); margin: 4px 0 0; }
+    /* Producers (publishers) */
+    .prod-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-5, 20px); padding: var(--space-6, 24px) 0 var(--space-12); }
+    @media (max-width: 760px){ .prod-grid { grid-template-columns: 1fr; } }
+    .prod-card { display: flex; gap: var(--space-5, 20px); padding: var(--space-6, 24px); align-items: center;
+      border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface);
+      text-decoration: none; transition: border-color 140ms, box-shadow 140ms; }
+    .prod-card:hover { border-color: var(--accent); box-shadow: var(--shadow-soft); }
+    .prod-seal { width: 84px; height: 84px; border-radius: var(--radius-md, 10px); flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      background: var(--ink); color: var(--paper); font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+    .prod-info { min-width: 0; }
+    .prod-name { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--ink); margin: 0; }
+    .prod-blurb { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); line-height: 1.5; margin: var(--space-2, 8px) 0; max-width: 48ch; }
+    .prod-stats { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: 0; }
+    /* Collection (published subsets) */
+    .coll-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5, 20px); padding: var(--space-6, 24px) 0 var(--space-12); }
+    @media (max-width: 900px){ .coll-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px){ .coll-grid { grid-template-columns: 1fr; } }
+    .coll-card { display: flex; flex-direction: column; text-align: left; padding: 0; overflow: hidden; cursor: pointer;
+      border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); transition: border-color 140ms, box-shadow 140ms, transform 140ms; }
+    .coll-card:hover { border-color: var(--accent); box-shadow: var(--shadow-raise); transform: translateY(-2px); }
+    .coll-covers { display: flex; gap: 4px; padding: var(--space-4, 16px); background: var(--surface-sunk); justify-content: center; }
+    .coll-cover { width: 48px; height: 68px; object-fit: cover; border-radius: var(--radius-sm, 6px); box-shadow: var(--shadow-soft); border: var(--hairline) solid var(--line); }
+    .coll-body { padding: var(--space-4, 16px); display: flex; flex-direction: column; gap: 4px; }
+    .coll-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin: 0; }
+    .coll-title { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--ink); margin: 0; }
+    .coll-blurb { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); line-height: 1.5; margin: 0; }
+    .coll-meta { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: var(--space-1, 4px) 0 0; }
+    /* Collection detail view */
+    .coll-back { font-family: var(--font-sans); font-size: var(--fs-small, 14px); background: none; border: none; color: var(--ink-soft); cursor: pointer; padding: var(--space-4, 16px) 0 0; }
+    .coll-back:hover { color: var(--accent); }
+    .coll-view-title { font-family: var(--font-serif); font-size: 1.6rem; font-weight: 600; color: var(--ink); margin: var(--space-3, 12px) 0 var(--space-1); }
+    .coll-view-blurb { font-family: var(--font-sans); font-size: var(--fs-body, 16px); color: var(--ink-soft); margin: 0 0 var(--space-2); max-width: 60ch; }
+    .coll-books { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4, 16px); padding: var(--space-5, 20px) 0 var(--space-12); }
+    @media (max-width: 700px){ .coll-books { grid-template-columns: 1fr; } }
+    .coll-book { display: flex; gap: var(--space-4, 16px); padding: var(--space-4, 16px); align-items: center;
+      border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); text-decoration: none; transition: border-color 140ms, box-shadow 140ms; }
+    .coll-book:hover { border-color: var(--accent); box-shadow: var(--shadow-soft); }
+    .coll-book-cover { width: 52px; height: 74px; object-fit: cover; border-radius: var(--radius-sm, 6px); flex-shrink: 0; border: var(--hairline) solid var(--line); }
+    .coll-book-title { font-family: var(--font-serif); font-size: var(--fs-body, 16px); font-weight: 600; color: var(--ink); margin: 0; line-height: 1.3; }
+    .coll-book-sub { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: 4px 0 0; }
+  </style>
+</head>
+<body>
+  <!-- frame.js injects header here -->
+  <main id="main-content" data-page-body class="lib-main">
+
+    <section class="lib-hero">
+      <div class="container">
+        <div class="lib-hero-inner">
+          <div>
+            <h1>Библиотека</h1>
+            <p class="lib-hero-sub">Курируемое собрание psychotherapy & psychoanalysis — читайте, обсуждайте и цитируйте профессиональную литературу beta→alpha.</p>
+          </div>
+          <div class="lib-stats" id="lib-stats"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lib-ed">
+      <div class="container lib-ed-inner">
+        <div class="lib-ed-head">
+          <div>
+            <p class="lib-ed-eyebrow">Подборка редакции</p>
+            <p class="lib-ed-title">Итальянская школа психоанализа</p>
+          </div>
+          <a class="lib-ed-link" href="?tab=collection" data-go-tab="collection">Все подборки →</a>
+        </div>
+        <div class="lib-ed-books" id="lib-ed-books"></div>
+      </div>
+    </section>
+
+    <nav class="lib-tabs" aria-label="Разделы библиотеки">
+      <div class="container lib-tabs-inner" id="lib-tabs"></div>
+    </nav>
+
+    <div class="container" id="lib-tab-content"></div>
+
+  </main>
+  <!-- frame.js injects footer here -->
+
+  <script src="../components/session.js"></script>
+  <script src="../components/frame.js"></script>
+  <script src="../components/avatar-menu.js"></script>
+  <script src="../components/notifications.js"></script>
+  <script src="../components/search.js"></script>
+  <script src="../components/pulse.js"></script>
+  <script src="../components/debug.js"></script>
+  <script src="../components/book-data.js"></script>
+  <script src="../components/author-data.js"></script>
+  <script src="../components/publisher-data.js"></script>
+  <script src="../components/reader-engine.js"></script>
+  <script src="../components/book-card.js"></script>
+  <script src="../components/member-card.js"></script>
+  <script src="../components/author-card.js"></script>
+  <script src="../components/catalogue.js"></script>
+
+  <script>
+    /* ── Library section frame: shared header/hero/tabbar; tabs swap content.
+       Catalogue is real; Pantheon is a light authors grid; Producers/Collection
+       are stubs this round (system-model §4.8). Default/saved-tab rule §4.1. ── */
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+    var TABS = [
+      { key:'catalogue', label:'Каталог' },
+      { key:'pantheon',  label:'Пантеон' },
+      { key:'producers', label:'Издатели' },
+      { key:'collection',label:'Подборки' }
+    ];
+    var SAVED_KEY = 'lib-tab';
+
+    /* Seeded, curated published Collections (= a subset of Publications, §4.8).
+       Real user-published collections (from the Shelf/Cabinet) come later. */
+    var COLLECTIONS = [
+      { id:'italian-school', eyebrow:'Подборка редакции', title:'Итальянская школа психоанализа',
+        blurb:'Ферро и Николи — ведущие голоса современной итальянской традиции, от аналитического поля до близости в кабинете.',
+        slugs:['ferro-cabinet','ferro-emotions','nicoli-burning','nicoli-anger','nicoli-patients'] },
+      { id:'bion-legacy', eyebrow:'Тематическая подборка', title:'Наследие Биона',
+        blurb:'От теории мышления и альфа-функции Биона к постбионианскому полю его наследников.',
+        slugs:['bion-attention','bion-learning','ferro-cabinet','ferro-emotions'] },
+      { id:'clinic', eyebrow:'Для практики', title:'Клиника и техника',
+        blurb:'Книги, обращённые к практической работе аналитика — сеттинг, эмоции, дистанционный анализ.',
+        slugs:['ferro-cabinet','ferro-emotions','nicoli-anger','nicoli-patients','nicoli-burning'] }
+    ];
+    function plural(n, one, few, many){ var m10=n%10,m100=n%100; if(m10===1&&m100!==11)return one; if(m10>=2&&m10<=4&&(m100<10||m100>=20))return few; return many; }
+
+    function renderStats(){
+      var n = BA.bookData.SLUGS.length;
+      document.getElementById('lib-stats').innerHTML =
+        '<div class="lib-stat"><span class="lib-stat-val">'+n+'</span><span class="lib-stat-lbl">изданий</span></div>' +
+        '<div class="lib-stat"><span class="lib-stat-val">'+BA.authorData.ids().length+'</span><span class="lib-stat-lbl">авторов</span></div>' +
+        '<div class="lib-stat"><span class="lib-stat-val">1</span><span class="lib-stat-lbl">издатель</span></div>';
+    }
+
+    function renderEditorial(){
+      var picks = ['bion-learning','ferro-cabinet','nicoli-burning'].map(function(s){ return BA.bookData.get(s); }).filter(Boolean);
+      document.getElementById('lib-ed-books').innerHTML = picks.map(function(b){
+        return '<button class="lib-ed-book" type="button" data-slug="'+esc(b.slug)+'">' +
+          '<img class="lib-ed-cover" src="'+esc(b.covers.small)+'" alt="" loading="lazy">' +
+          '<span class="lib-ed-info">' +
+            '<span class="lib-ed-bk-author">'+esc(b.editor?b.editor+' (ред.)':b.author)+'</span>' +
+            '<span class="lib-ed-bk-title">'+esc(b.title)+'</span>' +
+          '</span>' +
+        '</button>';
+      }).join('');
+      document.getElementById('lib-ed-books').addEventListener('click', function(e){
+        var btn = e.target.closest('.lib-ed-book'); if (btn) BA.bookCard.open(btn.getAttribute('data-slug'));
+      });
+    }
+
+    function renderTabs(active){
+      var bar = document.getElementById('lib-tabs');
+      var counts = { catalogue: BA.bookData.SLUGS.length, pantheon: BA.authorData.ids().length,
+        producers: BA.publisherData.ids().length, collection: COLLECTIONS.length };
+      bar.innerHTML = TABS.map(function(t){
+        var count = counts[t.key]!=null ? '<span class="lib-tab-count">'+counts[t.key]+'</span>' : '';
+        return '<button class="lib-tab'+(t.key===active?' is-active':'')+'" data-tab="'+t.key+'">'+t.label+count+'</button>';
+      }).join('');
+    }
+
+    function renderProducers(host){
+      var grid = document.createElement('div'); grid.className = 'prod-grid';
+      grid.innerHTML = BA.publisherData.all().map(function(p){
+        var s = BA.publisherData.stats(p);
+        return '<a class="prod-card" href="publisher.html?publisher='+esc(p.id)+'">' +
+          '<span class="prod-seal" aria-hidden="true">'+esc(p.mark||'β→α')+'</span>' +
+          '<span class="prod-info">' +
+            '<p class="prod-name">'+esc(p.name)+'</p>' +
+            '<p class="prod-blurb">'+esc(p.blurb)+'</p>' +
+            '<p class="prod-stats">'+s.titles+' '+plural(s.titles,'издание','издания','изданий')+' · '+s.authors+' '+plural(s.authors,'автор','автора','авторов')+'</p>' +
+          '</span>' +
+        '</a>';
+      }).join('');
+      host.appendChild(grid);
+    }
+
+    function renderCollections(host){
+      host.innerHTML = '<div class="coll-grid">' + COLLECTIONS.map(function(c){
+        var covers = c.slugs.slice(0,4).map(function(s){ var b=BA.bookData.get(s); return b?'<img class="coll-cover" src="'+esc(b.covers.small)+'" alt="" loading="lazy">':''; }).join('');
+        return '<button class="coll-card" type="button" data-coll="'+c.id+'">' +
+          '<div class="coll-covers">'+covers+'</div>' +
+          '<div class="coll-body">' +
+            '<p class="coll-eyebrow">'+esc(c.eyebrow)+'</p>' +
+            '<p class="coll-title">'+esc(c.title)+'</p>' +
+            '<p class="coll-blurb">'+esc(c.blurb)+'</p>' +
+            '<p class="coll-meta">'+c.slugs.length+' '+plural(c.slugs.length,'книга','книги','книг')+'</p>' +
+          '</div>' +
+        '</button>';
+      }).join('') + '</div>';
+      host.querySelector('.coll-grid').addEventListener('click', function(e){
+        var card = e.target.closest('[data-coll]'); if (card) showCollection(card.getAttribute('data-coll'), host);
+      });
+    }
+
+    function showCollection(cid, host){
+      var c = COLLECTIONS.filter(function(x){ return x.id===cid; })[0]; if (!c) return;
+      var books = c.slugs.map(function(s){ return BA.bookData.get(s); }).filter(Boolean);
+      host.innerHTML = '<div class="coll-view">' +
+        '<button class="coll-back" type="button" data-coll-back>← Все подборки</button>' +
+        '<h2 class="coll-view-title">'+esc(c.title)+'</h2>' +
+        '<p class="coll-view-blurb">'+esc(c.blurb)+'</p>' +
+        '<div class="coll-books">' + books.map(function(b){
+          return '<a class="coll-book" href="book.html?book='+esc(b.slug)+'">' +
+            '<img class="coll-book-cover" src="'+esc(b.covers.small)+'" alt="Обложка: '+esc(b.title)+'" loading="lazy">' +
+            '<span><p class="coll-book-title">'+esc(b.title)+'</p>' +
+            '<p class="coll-book-sub">'+esc(b.editor?b.editor+' (ред.)':b.author)+' · '+b.year+'</p></span>' +
+          '</a>';
+        }).join('') + '</div>' +
+      '</div>';
+      host.querySelector('[data-coll-back]').addEventListener('click', function(){ renderCollections(host); });
+    }
+
+    function renderPantheon(host){
+      var grid = document.createElement('div'); grid.className = 'pan-grid';
+      grid.innerHTML = BA.authorData.all().map(function(a){
+        var works = BA.authorData.worksOf(a).map(function(w){ return w.title; }).join(' · ');
+        var av = (window.BA && BA.avatars) ? BA.avatars.pick(a.name) : '';
+        return '<a class="pan-card" href="author.html?author='+esc(a.id)+'">' +
+          (av?'<img class="pan-av" src="'+esc(av)+'" alt="" loading="lazy">':'') +
+          '<span><p class="pan-name">'+esc(a.name)+'</p>' +
+          '<p class="pan-meta">'+esc(a.meta)+'</p>' +
+          '<p class="pan-works">'+esc(works)+'</p></span>' +
+        '</a>';
+      }).join('');
+      host.appendChild(grid);
+    }
+
+    function showTab(key){
+      var host = document.getElementById('lib-tab-content');
+      host.innerHTML = '';
+      renderTabs(key);
+      try { BA.store.set(SAVED_KEY, key); } catch(e){}
+      var url = new URL(location.href); url.searchParams.set('tab', key); history.replaceState(null,'',url);
+      if (key==='catalogue') { BA.catalogue.render(host); }
+      else if (key==='pantheon') { renderPantheon(host); }
+      else if (key==='producers') { renderProducers(host); }
+      else { renderCollections(host); }
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      BA.frame.init({ page: 'library' });
+      renderStats(); renderEditorial();
+      document.getElementById('lib-tabs').addEventListener('click', function(e){
+        var t = e.target.closest('.lib-tab'); if (t) showTab(t.getAttribute('data-tab'));
+      });
+      /* in-page links that jump to a tab (e.g. the editorial "Все подборки →") */
+      document.querySelectorAll('[data-go-tab]').forEach(function(el){
+        el.addEventListener('click', function(e){ e.preventDefault(); showTab(el.getAttribute('data-go-tab')); });
+      });
+      var params = new URLSearchParams(location.search);
+      var saved = null; try { saved = BA.store.get(SAVED_KEY); } catch(e){}
+      var initial = params.get('tab') || saved || 'catalogue';
+      if (!TABS.some(function(t){ return t.key===initial; })) initial = 'catalogue';
+      showTab(initial);
+    });
+  </script>
+</body>
+</html>

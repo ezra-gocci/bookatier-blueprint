@@ -1,0 +1,60 @@
+{
+  "slug": "bion-attention",
+  "title": "Внимание и интерпретация",
+  "subtitle": "Научный подход к инсайту в психоанализе и групповой работе",
+  "author_display": "Уилфред Р. Бион",
+  "ai_content_ready": true,
+  "source_file": "Уилфпед Р. Бион - Внимание и интерпретация (2023, Beta2Alpha) - libgen.li.pdf",
+  "total_pages": 212,
+  "known": {
+    "author": "Уилфред Р. Бион",
+    "year": 2023,
+    "publisher": "Beta 2 Alpha"
+  },
+  "covers": {
+    "small": "covers/cover-small.jpg",
+    "medium": "covers/cover-medium.jpg",
+    "large": "covers/cover-large.jpg"
+  },
+  "free_edition": {
+    "start_page": 21,
+    "end_page": 37,
+    "page_count": 17,
+    "pdf_path": "editions/free/bion-attention-free.pdf"
+  },
+  "editions": [
+    {
+      "version": "v1",
+      "start_page": 1,
+      "end_page": 106,
+      "page_count": 106,
+      "pdf_path": "editions/v1/bion-attention-v1.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v2",
+      "start_page": 1,
+      "end_page": 141,
+      "page_count": 141,
+      "pdf_path": "editions/v2/bion-attention-v2.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v3",
+      "start_page": 1,
+      "end_page": 176,
+      "page_count": 176,
+      "pdf_path": "editions/v3/bion-attention-v3.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v4",
+      "start_page": 1,
+      "end_page": 212,
+      "page_count": 212,
+      "pdf_path": "editions/v4/bion-attention-v4.pdf",
+      "is_complete": true
+    }
+  ],
+  "toc_entry_count": 16
+}

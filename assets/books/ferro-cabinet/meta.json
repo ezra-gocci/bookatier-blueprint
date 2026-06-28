@@ -1,0 +1,68 @@
+{
+  "slug": "ferro-cabinet",
+  "title": "В кабинете психоаналитика",
+  "subtitle": "Эмоции, истории, трансформации",
+  "author_display": "Антонино Ферро",
+  "ai_content_ready": true,
+  "source_file": "Антонино Ферро - В кабинете психоаналитика Эмоции, истории, трансформации (2022, Beta 2 Alpha) - libgen.li.pdf",
+  "total_pages": 367,
+  "known": {
+    "author": "Антонино Ферро",
+    "year": 2022,
+    "publisher": "Beta 2 Alpha"
+  },
+  "covers": {
+    "small": "covers/cover-small.jpg",
+    "medium": "covers/cover-medium.jpg",
+    "large": "covers/cover-large.jpg"
+  },
+  "free_edition": {
+    "start_page": 21,
+    "end_page": 37,
+    "page_count": 17,
+    "pdf_path": "editions/free/ferro-cabinet-free.pdf"
+  },
+  "editions": [
+    {
+      "version": "v1",
+      "start_page": 1,
+      "end_page": 183,
+      "page_count": 183,
+      "pdf_path": "editions/v1/ferro-cabinet-v1.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v2",
+      "start_page": 1,
+      "end_page": 229,
+      "page_count": 229,
+      "pdf_path": "editions/v2/ferro-cabinet-v2.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v3",
+      "start_page": 1,
+      "end_page": 275,
+      "page_count": 275,
+      "pdf_path": "editions/v3/ferro-cabinet-v3.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v4",
+      "start_page": 1,
+      "end_page": 321,
+      "page_count": 321,
+      "pdf_path": "editions/v4/ferro-cabinet-v4.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v5",
+      "start_page": 1,
+      "end_page": 367,
+      "page_count": 367,
+      "pdf_path": "editions/v5/ferro-cabinet-v5.pdf",
+      "is_complete": true
+    }
+  ],
+  "toc_entry_count": 12
+}

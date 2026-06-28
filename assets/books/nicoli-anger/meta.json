@@ -1,0 +1,60 @@
+{
+  "slug": "nicoli-anger",
+  "title": "Искусство злиться и любить, не теряя себя",
+  "subtitle": null,
+  "author_display": "Лука Николи",
+  "ai_content_ready": true,
+  "source_file": "Искусство злиться и любить, не теряя себя{Николи Лука}(2024){115896319} libgen.li.pdf",
+  "total_pages": 208,
+  "known": {
+    "author": "Лука Николи",
+    "year": 2024,
+    "publisher": "Beta 2 Alpha"
+  },
+  "covers": {
+    "small": "covers/cover-small.jpg",
+    "medium": "covers/cover-medium.jpg",
+    "large": "covers/cover-large.jpg"
+  },
+  "free_edition": {
+    "start_page": 21,
+    "end_page": 37,
+    "page_count": 17,
+    "pdf_path": "editions/free/nicoli-anger-free.pdf"
+  },
+  "editions": [
+    {
+      "version": "v1",
+      "start_page": 1,
+      "end_page": 104,
+      "page_count": 104,
+      "pdf_path": "editions/v1/nicoli-anger-v1.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v2",
+      "start_page": 1,
+      "end_page": 138,
+      "page_count": 138,
+      "pdf_path": "editions/v2/nicoli-anger-v2.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v3",
+      "start_page": 1,
+      "end_page": 172,
+      "page_count": 172,
+      "pdf_path": "editions/v3/nicoli-anger-v3.pdf",
+      "is_complete": false
+    },
+    {
+      "version": "v4",
+      "start_page": 1,
+      "end_page": 208,
+      "page_count": 208,
+      "pdf_path": "editions/v4/nicoli-anger-v4.pdf",
+      "is_complete": true
+    }
+  ],
+  "toc_entry_count": 0
+}
