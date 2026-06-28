@@ -34,14 +34,14 @@
   <script src="../components/book-data.js"></script><script src="../components/author-data.js"></script>
   <script src="../components/publisher-data.js"></script><script src="../components/member-data.js"></script>
   <script src="../components/store.js"></script><script src="../components/sim.js"></script>
-  <script src="../components/frame.js"></script><script src="../components/avatar-menu.js"></script>
+  <script src="../components/frame.js?v=4"></script><script src="../components/avatar-menu.js"></script>
   <script src="../components/notifications.js"></script><script src="../components/search.js"></script>
   <script src="../components/pulse.js"></script><script src="../components/debug.js"></script>
   <script src="../components/registration.js"></script><script src="../components/demo.js"></script>
   <script>
     function row(k,v,href){ return '<div class="dd-row"><span class="dd-k">'+(href?'<a href="'+href+'">'+k+'</a>':k)+'</span><span>'+v+'</span></div>'; }
-    var TIER1=[['index.html','Мастер-фрейм: редирект по авторизации + сохранённой позиции'],['landing.html','Публичный Landing (Вербовка) — гость','landing.html'],['about.html','О проекте (community-first)','about.html'],['search.html','Результаты поиска (оверлей E → страница)','search.html'],['404.html','Ошибка'],['components.html','Хост общих компонентов','components.html']];
-    var FRAMES=[['Library · library.html','Catalogue · Pantheon · Producers · Collection','library.html'],['Cabinet · cabinet.html','Poster(=Home,default) · Overview · Profile · Shelf · Excerpt · Correspondence','cabinet.html?tab=poster'],['Community · community.html','MemberBoard · Discussion · ReadingClub · Post · News · Pulse','community.html']];
+    var TIER1=[['index.html','Мастер-фрейм: редирект по авторизации + сохранённой позиции'],['beta2alpha.html','Главная β→α (Вербовка) — гость','beta2alpha.html'],['about.html','О проекте (community-first)','about.html'],['search.html','Результаты поиска (оверлей E → страница)','search.html'],['404.html','Ошибка'],['components.html','Хост общих компонентов','components.html']];
+    var FRAMES=[['Library · library.html','Catalogue · Pantheon · Producers · Collection','library.html'],['Cabinet · cabinet.html','Poster(=Home,default) · Overview · Profile · Shelf · Excerpt · Correspondence','cabinet.html?tab=overview'],['Community · community.html','MemberBoard · Discussion · ReadingClub · Post · News · Pulse','community.html']];
     var CARDS=[['book.html','Book (+ Reader)','book.html?book=bion-learning'],['reader.html','Reader (Delve)','reader.html?book=bion-learning'],['author.html','Author','author.html?author=author-bion'],['publisher.html','Publisher','publisher.html?publisher=beta-alpha'],['member.html','Member','member.html?member=u2']];
     var OVERLAYS=[['A Login','реальный вход (debug-stub) против посеянных участников'],['B Registration','захват намерения → открывает Login (B-4)'],['C Notifications','производная, сгруппирована (O-10)'],['D Avatar menu','аккаунт + тема + размер'],['E Search panel','→ search.html'],['G Pulse','лента событий (= таб Pulse)'],['H Debug console','Users·Cohorts·Simulation·Data·Events·Adaptive'],['Toast / Demo','обратная связь · лёгкий тур (B-1)']];
     document.addEventListener('DOMContentLoaded',function(){ BA.frame.init({page:'dev-ux'});

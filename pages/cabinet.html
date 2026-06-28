@@ -124,7 +124,7 @@
   <script src="../components/member-data.js"></script>
   <script src="../components/store.js"></script>
   <script src="../components/sim.js"></script>
-  <script src="../components/frame.js"></script>
+  <script src="../components/frame.js?v=4"></script>
   <script src="../components/avatar-menu.js"></script>
   <script src="../components/notifications.js"></script>
   <script src="../components/search.js"></script>
@@ -139,7 +139,7 @@
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
     var ST = function(){ return window.BA.store; };
     var TABS = [
-      { key:'poster', label:'Афиша' }, { key:'overview', label:'Сводка' }, { key:'profile', label:'Профиль' },
+      { key:'overview', label:'Сводка' }, { key:'profile', label:'Профиль' },
       { key:'shelf', label:'Полка' }, { key:'excerpt', label:'Выдержки' }, { key:'correspondence', label:'Переписка' }
     ];
     var SAVED_KEY = 'cab-tab';
@@ -356,8 +356,8 @@
       document.addEventListener('ba:session-change', function(){ renderHead(); var a=document.querySelector('.sec-tab.is-active'); if(a) showTab(a.getAttribute('data-tab')); });
       var params = new URLSearchParams(location.search);
       var saved=null; try { saved=BA.store.get(SAVED_KEY); } catch(e){}
-      var initial = params.get('tab') || saved || 'poster';
-      if (!TABS.some(function(t){ return t.key===initial; })) initial='poster';
+      var initial = params.get('tab') || saved || 'overview';
+      if (!TABS.some(function(t){ return t.key===initial; })) initial='overview';
       showTab(initial);
     });
   </script>

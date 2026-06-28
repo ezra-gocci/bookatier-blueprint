@@ -137,7 +137,7 @@
         '<button class="avm-item avm-act-pulse" type="button" role="menuitem"><span class="avm-icon">' + SVG_PULSE + '</span>Пульс</button>',
       '</div>',
       '<div class="avm-sep"></div>',
-      '<a class="avm-item" href="cabinet.html?tab=poster" role="menuitem"><span class="avm-icon">🏠</span>Кабинет</a>',
+      '<a class="avm-item" href="cabinet.html?tab=overview" role="menuitem"><span class="avm-icon">🏠</span>Кабинет</a>',
       '<a class="avm-item" href="cabinet.html?tab=profile" role="menuitem"><span class="avm-icon">👤</span>Профиль</a>',
       '<a class="avm-item" href="cabinet.html?tab=shelf" role="menuitem"><span class="avm-icon">📚</span>Моя полка</a>',
       '<a class="avm-item" href="member.html?member=' + _esc((session && session.id) || '') + '" role="menuitem"><span class="avm-icon">🪪</span>Моя страница</a>',
@@ -222,7 +222,7 @@
         BA.avatarMenu.close();
         if (window.BA && BA.frame && BA.frame.logout) BA.frame.logout(); else BA.session.clear();
         if (window.BA && BA.frame) BA.frame.showToast('Вы вышли из аккаунта');
-        setTimeout(function () { location.href = 'landing.html'; }, 300);
+        setTimeout(function () { location.href = 'beta2alpha.html'; }, 300);
       });
     }
 

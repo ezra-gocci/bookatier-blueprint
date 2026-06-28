@@ -36,6 +36,10 @@
     .sec-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
     .sec-tab-count { font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin-left: 4px; }
     #sec-content { min-height: 50vh; padding-bottom: var(--space-12); }
+    /* full login gate (same as cabinet) for the non-News tabs when signed out */
+    .sec-gate { padding: var(--space-16, 64px) var(--space-4); text-align: center; max-width: 44ch; margin: 0 auto; }
+    .sec-gate h2 { font-family: var(--font-serif); font-size: var(--fs-h2, 22px); color: var(--ink); margin: 0 0 var(--space-3); }
+    .sec-gate p { font-family: var(--font-sans); font-size: var(--fs-body, 16px); color: var(--ink-soft); line-height: 1.6; margin: 0 0 var(--space-5); }
     /* write-gate notice */
     .gate-note { background: var(--surface-sunk); border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px);
       padding: var(--space-4, 16px); margin: var(--space-5, 20px) 0; font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
@@ -105,6 +109,78 @@
     .news-title { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--ink); margin: 0 0 var(--space-2); }
     .news-body { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); line-height: 1.6; margin: 0; }
     .news-when { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin-top: var(--space-2); }
+    /* --- Publisher-news (origin News page content) ------------------------ */
+    .pn-wrap { padding: var(--space-6) 0 var(--space-12); }
+    .pn-chip { display: inline-flex; align-items: center; font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: var(--fw-medium, 500); letter-spacing: var(--tracking-label, 0.02em); padding: 2px var(--space-2); border-radius: var(--radius-pill, 9999px); border: var(--hairline, 1px) solid currentColor; white-space: nowrap; flex-shrink: 0; }
+    .pn-chip--publisher { color: var(--amber); }
+    .pn-chip--community { color: var(--slate); }
+    .pn-chip--platform  { color: var(--accent); }
+    .pn-chip--culture   { color: var(--sage); }
+    .pn-date { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); letter-spacing: var(--tracking-caption, 0.04em); color: var(--ink-soft); }
+    /* Featured article */
+    .pn-featured { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: var(--hairline, 1px) solid var(--line); border-radius: var(--radius-md, 10px); overflow: hidden; background: var(--surface); box-shadow: var(--shadow-soft); margin-bottom: var(--space-12); transition: box-shadow var(--dur-base, 200ms) var(--ease-out-quart, ease); }
+    .pn-featured:hover { box-shadow: 0 8px 32px color-mix(in srgb, var(--ink) 12%, transparent); }
+    .pn-featured-img-col { overflow: hidden; background: var(--surface-sunk); }
+    .pn-featured-img { width: 100%; height: 100%; object-fit: cover; display: block; min-height: 280px; transition: transform 500ms var(--ease-out-quart, ease); }
+    .pn-featured:hover .pn-featured-img { transform: scale(1.02); }
+    .pn-featured-content { padding: var(--space-12); display: flex; flex-direction: column; gap: var(--space-4); justify-content: center; }
+    .pn-meta { display: flex; align-items: center; gap: var(--space-3); }
+    .pn-featured-title { font-family: var(--font-serif); font-size: clamp(1.25rem, 2vw, 1.625rem); font-weight: var(--fw-semibold, 600); color: var(--ink); margin: 0; line-height: 1.35; }
+    .pn-featured-excerpt { font-family: var(--font-serif); font-size: var(--fs-body, 16px); color: var(--ink-soft); line-height: var(--lh-body, 1.5); margin: 0; }
+    .pn-more { font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: var(--fw-medium, 500); letter-spacing: var(--tracking-label, 0.02em); color: var(--accent); text-decoration: none; align-self: flex-start; transition: color var(--dur-fast, 120ms); }
+    .pn-more:hover { color: var(--accent-hover); text-decoration: underline; }
+    /* News grid + cards */
+    .pn-label { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: var(--fw-medium, 500); letter-spacing: var(--tracking-caption, 0.04em); text-transform: uppercase; color: var(--ink-soft); padding-bottom: var(--space-4); border-bottom: var(--hairline, 1px) solid var(--line); margin: var(--space-16) 0 var(--space-6); }
+    .pn-label:first-of-type { margin-top: 0; }
+    .pn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); }
+    .pn-card { background: var(--surface); border: var(--hairline, 1px) solid var(--line); border-radius: var(--radius-md, 10px); overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow-soft); transition: transform var(--dur-base, 200ms) var(--ease-out-quart, ease), box-shadow var(--dur-base, 200ms) var(--ease-out-quart, ease), border-color var(--dur-base, 200ms) var(--ease-out-quart, ease); }
+    .pn-card:hover { transform: translateY(-3px); box-shadow: 0 6px 22px color-mix(in srgb, var(--ink) 10%, transparent); border-color: color-mix(in srgb, var(--ink) 14%, transparent); }
+    .pn-card-img-wrap { aspect-ratio: 16 / 9; overflow: hidden; background: var(--surface-sunk); flex-shrink: 0; }
+    .pn-card-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 500ms var(--ease-out-quart, ease); }
+    .pn-card:hover .pn-card-img { transform: scale(1.04); }
+    .pn-card-body { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-3); flex: 1; }
+    .pn-card-title { font-family: var(--font-serif); font-size: var(--fs-body, 16px); font-weight: var(--fw-semibold, 600); color: var(--ink); margin: 0; line-height: var(--lh-body, 1.5); }
+    .pn-card-excerpt { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); line-height: var(--lh-small, 1.45); margin: 0; }
+    .pn-card-link { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: var(--fw-medium, 500); letter-spacing: var(--tracking-label, 0.02em); color: var(--accent); text-decoration: none; align-self: flex-start; margin-top: auto; }
+    .pn-card:hover .pn-card-link { text-decoration: underline; }
+    /* Featured nav (prev / next) */
+    .pn-featured-nav { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-5); }
+    .pn-nav-btn { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: transparent; border: var(--hairline, 1px) solid var(--line); border-radius: var(--radius-pill, 9999px); color: var(--ink-soft); font-size: 0.85rem; cursor: pointer; flex-shrink: 0; padding: 0; transition: color var(--dur-fast, 120ms) var(--ease-out-quart, ease), border-color var(--dur-fast, 120ms) var(--ease-out-quart, ease); }
+    .pn-nav-btn:hover:not(:disabled) { color: var(--ink); border-color: var(--ink-faint); }
+    .pn-nav-btn:disabled { opacity: 0.35; cursor: default; }
+    .pn-nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .pn-nav-label { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); white-space: nowrap; }
+    /* Cards are clickable to promote */
+    .pn-grid .pn-card { cursor: pointer; }
+    .pn-grid .pn-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    /* Expand / collapse buttons inside featured */
+    .pn-expand-btn, .pn-collapse-btn { display: inline-flex; align-items: center; font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: var(--fw-medium, 500); letter-spacing: var(--tracking-label, 0.02em); color: var(--accent); background: transparent; border: none; padding: 0; cursor: pointer; align-self: flex-start; margin-top: var(--space-2); transition: color var(--dur-fast, 120ms); }
+    .pn-expand-btn:hover, .pn-collapse-btn:hover { color: var(--accent-hover); text-decoration: underline; }
+    .pn-expand-btn:focus-visible, .pn-collapse-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    /* Expanded featured — single column, top-aligned, full body */
+    .pn-featured--expanded { grid-template-columns: 1fr !important; }
+    .pn-featured--expanded:hover { box-shadow: var(--shadow-soft) !important; }
+    .pn-featured--expanded:hover .pn-featured-img { transform: none !important; }
+    .pn-featured--expanded .pn-featured-img-col { max-height: 360px; }
+    .pn-featured--expanded .pn-featured-img { min-height: 200px; max-height: 360px; }
+    .pn-featured--expanded .pn-featured-content { padding: var(--space-8) var(--space-12); justify-content: flex-start; }
+    .pn-featured-full-text { font-family: var(--font-serif); font-size: var(--fs-body, 16px); color: var(--ink-soft); line-height: var(--lh-body, 1.5); }
+    .pn-featured-full-text p { margin: 0 0 var(--space-4); }
+    .pn-featured-full-text p:last-child { margin-bottom: 0; }
+    @media (max-width: 900px) {
+      .pn-featured { grid-template-columns: 1fr; }
+      .pn-featured-img { min-height: 220px; }
+      .pn-featured-content { padding: var(--space-8); }
+      .pn-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .pn-grid { grid-template-columns: 1fr; }
+      .pn-featured-content { padding: var(--space-6); }
+      .pn-featured--expanded .pn-featured-content { padding: var(--space-6); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pn-card, .pn-featured, .pn-card-img, .pn-featured-img, .pn-nav-btn { transition: none; }
+    }
     .post-form { max-width: 600px; padding: var(--space-6) 0; }
     .post-form label { display: block; font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink); margin: var(--space-4) 0 var(--space-2); }
     .post-form textarea, .post-form select, .post-form input { width: 100%; box-sizing: border-box; font-family: var(--font-sans); font-size: var(--fs-small, 14px);
@@ -149,7 +225,7 @@
   <script src="../components/member-data.js"></script>
   <script src="../components/store.js"></script>
   <script src="../components/sim.js"></script>
-  <script src="../components/frame.js"></script>
+  <script src="../components/frame.js?v=4"></script>
   <script src="../components/avatar-menu.js"></script>
   <script src="../components/notifications.js"></script>
   <script src="../components/search.js"></script>
@@ -167,9 +243,10 @@
     /* ── Community section frame — every tab consumes BA.store (sim-populated). ── */
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
     var TABS = [
+      { key:'news', label:'Новости' },
       { key:'member-board', label:'Участники' }, { key:'discussion', label:'Обсуждения' },
       { key:'reading-club', label:'Клубы' }, { key:'post', label:'Публикация' },
-      { key:'news', label:'Новости' }, { key:'pulse', label:'Пульс' }
+      { key:'pulse', label:'Пульс' }
     ];
     var SAVED_KEY = 'com-tab';
     var ST = function(){ return window.BA.store; };
@@ -318,16 +395,239 @@
     }
 
     /* ── News (area 19) — Resource posts via Bot ── */
+    // Public News content (carried from the origin site's News page; shown to guests and members alike).
+    // Full article bodies (origin FULL_TEXTS), keyed by title — shown when a card is promoted/expanded.
+    var NEWS_FULL_TEXTS = {
+      'Книги β→α появились в «Подписных изданиях»':
+        '<p>Специальный стенд с нашими изданиями открыт в петербургском «Подписных изданиях» — одном из лучших книжных магазинов страны. Для тех, кто хочет подержать книгу в руках прежде чем открыть читалку.</p>' +
+        '<p>«Подписные издания» — магазин с особой культурой: здесь не продают случайные книги, здесь отбирают. Появление наших изданий в этом пространстве — не просто коммерческая история. Это признание того, что психоаналитическая литература заслуживает места рядом с Платоновым, Цветаевой и Кьеркегором на полках, к которым тянутся читающие люди.</p>' +
+        '<p>На стенде три книги: «Научение на опыте» Биона в обновлённом переводе, «Гореть вместе» под редакцией Николи и «Избегание эмоций, проживание эмоций» Антонино Ферро. Все три — в мягкой обложке, с аннотацией, которую мы писали долго и трудно, стараясь не скатиться ни в академическую сухость, ни в завлекательную размытость.</p>' +
+        '<p>За первую неделю стенд посетили несколько сотен человек. Продажи скромные — как и у любой профессиональной литературы. Но обратная связь иная: люди берут книгу в руки, читают несколько страниц прямо у полки, иногда фотографируют. Один читатель написал нам, что стоял с «Гореть вместе» тридцать минут, опоздал на встречу и не жалеет.</p>' +
+        '<p>Если вы в Петербурге — загляните. Стенд в основном зале, у стены напротив кассы. Если вы не в Петербурге — всё то же самое уже доступно в цифровом виде на платформе, с закладками, заметками и академической цитатой для любой страницы.</p>',
+      'Психоанализ в третьем тайме':
+        '<p>Подписчики β→α читают везде. Стадион «Лужники», матч ЦСКА — и три книги из нашего каталога на трибунах. Это не постановка. Счёт 1:1, перерыв, Бион.</p>' +
+        '<p>Нам прислали фотографию. Трибуна «В», сектор двадцать что-то, три ряда подряд. Один болельщик — молодой, в шарфе цветов ЦСКА — держит «Научение на опыте». Рядом девушка, она не смотрит на поле, она в книге. Третий, постарше, стоит с телефоном и, судя по всему, ищет цитату в читалке.</p>' +
+        '<p>Мы не знаем, как это произошло. Может быть, они знакомы — коллеги, терапевты, студенты одной программы. Может быть, совпадение. Может быть, что-то происходит с психоаналитической литературой — она выходит из кабинетов и супервизорских комнат и начинает жить в обычном мире.</p>' +
+        '<p>Это нас радует. Мы делаем издательство не для того, чтобы книги стояли на полке в кожаном переплёте и ждали торжественного момента. Мы делаем его для того, чтобы профессионал мог читать Биона в метро, в очереди, на трибуне стадиона — и это было бы нормально, привычно, почти бытово.</p>' +
+        '<p>Счёт закончился 2:1. ЦСКА проиграл. Но один из читателей написал нам потом, что это был хороший вечер.</p>',
+      'Биономерная модель на скорости 300 км/ч':
+        '<p>Что, если аналитическая работа — это гонка, где каждый поворот требует полного присутствия? Виньетка без слов — только изображение и пауза.</p>' +
+        '<p>Книга лежит на руле. Страница с диаграммой L-связей Биона — тот самый рисунок, который он рисовал на лекциях в Лос-Анджелесе. Машина похожа на тренировочную, бокс, тишина.</p>' +
+        '<p>Мы получили это изображение от одного из наших подписчиков. Он — инженер по безопасности в автоспорте, параллельно проходит аналитическую подготовку. «Я читаю Биона между заездами», — написал он. — «Там, кстати, то же самое: ты должен присутствовать целиком, но не зажиматься. Отпустить контроль, чтобы контроль работал.»</p>' +
+        '<p>Мы думаем об этом часто. Психоаналитическая теория описывает состояния внимания, которые применимы далеко за пределами клиники. Ревери как способ обработки опыта — это не только про кушетку. Это про любую практику, где требуется одновременно присутствовать и не цепляться.</p>' +
+        '<p>Диаграмма Биона на руле гоночного автомобиля — может быть, лучшее из объяснений, которые мы видели.</p>',
+      'Нужно больше Несси: идеальная компания для летнего чтения':
+        '<p>Читать Ферро у лесного озера — уже само по себе сюрреализм. Но иногда природа идёт навстречу и присылает подходящего собеседника.</p>' +
+        '<p>Фотография пришла в конце мая. Девушка сидит на берегу, в руках — «Избегание эмоций, проживание эмоций», страница примерно в середине книги — там, где Ферро пишет о трансформации бета-элементов. На заднем плане туман над озером, и в тумане — что-то длинное, тёмное и явно не бревно.</p>' +
+        '<p>Мы сначала решили, что это монтаж. Потом посмотрели внимательнее. Потом написали подписчице. «Нет, это настоящее», — ответила она. — «Я была в Шотландии, у Лох-Несса. И да, я читала Ферро. Это совпало.»</p>' +
+        '<p>Есть что-то правильное в том, чтобы читать книгу о встрече с непознаваемым рядом с существом, которое человечество не может ни подтвердить, ни опровергнуть уже восемьдесят лет. «Несси как "О"-объект» — это написал кто-то в комментариях к фотографии в нашем чате, не мы.</p>' +
+        '<p>Лето — хорошее время для Ферро. И для озёр, в которых живёт то, чему у нас пока нет названия.</p>',
+      'β→α выпускает третье издание книги Биона':
+        '<p>«Научение на опыте» в переработанном переводе: уточнённая терминология, сверенный с оригиналом текст, новая расстановка приоритетов в ключевых понятиях.</p>' +
+        '<p>Третье издание — не косметическая правка. Мы вернулись к тексту принципиально, с новым переводчиком в команде и с фокусом на проблему, которая мучила нас с первого издания: Бион пишет так, что его можно понять только если уже понимаешь. Терминология самоотсылочна, примеры предполагают клинический опыт, логика скачет.</p>' +
+        '<p>Первые два издания мы следовали за оригиналом максимально буквально. В третьем мы позволили себе — осторожно, с комментариями — расставить акценты. Там, где Бион использует неологизм, мы сохраняем его, но добавляем сноску с родственными понятиями. Там, где структура предложения в английском опирается на интонацию живой речи — а «Итальянские семинары» именно такие, стенограммы лекций — мы переводим смысл, а не синтаксис.</p>' +
+        '<p>Новое издание выйдет в цифровом виде на платформе первым. Читатели, у которых уже есть подписка, получат доступ к новой версии автоматически — в читалке будет видно: «версия 3.0 — обновлённый перевод 2026».</p>' +
+        '<p>Если вы читали предыдущие версии — попробуйте открыть главу о контейнере и содержимом. Там больше всего изменений, и они, как нам кажется, того стоили.</p>',
+      'Обсуждение: аффективная регуляция в клиническом контексте':
+        '<p>Дискуссия, которая началась в комментариях к Ферро и переросла в тред на 40 участников. Сохранили — он длинный и очень хороший.</p>' +
+        '<p>Началось с одного комментария к шестой главе «Избегания эмоций»: кто-то написал, что не понимает, чем ферровское «трансформирование» отличается от классического контейнирования по Биону — или это одно и то же, только другими словами? Обычно такие вопросы получают три ответа и затихают. Этот получил сорок. За три дня.</p>' +
+        '<p>Участники — клиницисты, теоретики, несколько студентов аналитических программ — разобрали понятие послойно. К концу треда выяснилось: терминология действительно размыта в самом оригинале, и это, возможно, намеренно. Практический вопрос («что я делаю с аффектом пациента прямо сейчас») и теоретический («какова структура этого процесса») — не одно и то же, и смешение их в одной дискуссии даёт интересный результат.</p>' +
+        '<p>Мы сохранили тред в разделе «Дискуссии». Он доступен всем подписчикам, читается в хронологическом порядке или по ветке.</p>' +
+        '<p>Если вы ещё не читали «Избегание эмоций» — это неплохое введение в книгу: посмотреть, о чём спорят те, кто уже прочитал, и решить, хочется ли вам в это погрузиться.</p>',
+      'Открыт читальный зал: первые 50 участников получили доступ':
+        '<p>Первая волна приглашений отправлена. Мы выбрали специалистов, которые давно работают с психоаналитической литературой и готовы оставлять развёрнутые отзывы.</p>' +
+        '<p>Критерии отбора были простыми и конкретными: практикующий специалист, опыт работы с профессиональной литературой не меньше пяти лет, готовность написать хотя бы один развёрнутый отзыв в первый месяц. Никаких формальных должностей, никакой аффилиации.</p>' +
+        '<p>Из примерно 200 кандидатов — 50 участников. Половина из Москвы и Петербурга, половина из других городов и двух зарубежных стран. Средний опыт в профессии — одиннадцать лет. Восемь человек сами занимаются переводами психоаналитических текстов.</p>' +
+        '<p>Первые отзывы начали поступать уже через несколько часов после открытия доступа. Большинство — об интерфейсе читалки. Это хорошо: значит, люди читают, а не просто смотрят. Несколько человек написали подробно о переводе Биона — мы передали комментарии переводчику.</p>' +
+        '<p>Следующая волна приглашений — через месяц. Если вы хотите попасть в список — оставьте заявку через кнопку «Присоединиться». Мы читаем все.</p>',
+      '«Пространство сновидения» Томаса Огдена: перевод завершён':
+        '<p>Работа над переводом одной из ключевых книг Огдена завершена. Профессиональная редактура займёт ещё шесть недель — после чего книга выйдет на платформе.</p>' +
+        '<p>«Пространство сновидения» — одна из самых трудных книг для перевода в нашем каталоге. Огден пишет теоретически плотно, но при этом не сухо: у него есть ритм, есть образы, есть места, где теория переходит в нечто похожее на поэзию. Перевести это — значит не просто найти терминологические эквиваленты, но сохранить тональность.</p>' +
+        '<p>Переводчик — Мария Ш., которая работала с нами на «Гореть вместе». Она потратила на книгу восемь месяцев. «Я читала её трижды, прежде чем начала переводить», — написала она. — «И ещё раз — когда закончила. Каждый раз это другая книга.»</p>' +
+        '<p>В редактуре участвуют два клинициста с теоретической подготовкой — они проверяют не только перевод терминов, но и то, насколько текст остаётся клинически узнаваемым. Это важно для Огдена: его теория выросла из практики, и это должно быть слышно.</p>' +
+        '<p>Релиз запланирован на август. Подписчики платформы получат доступ первыми — за две недели до бумажного тиража.</p>',
+      'Антонино Ферро: о переводе психоаналитических понятий на русский':
+        '<p>«Ревери» нельзя перевести буквально — но и транслитерацией оставлять нельзя. Разговор с переводчиком «Избегания эмоций» о том, что значит понять текст через живой опыт.</p>' +
+        '<p>— Вы перевели слово «reverie» как «мечтание». Почему не «ревери», как принято в некоторых других переводах?<br>— Потому что «ревери» звучит как технический термин, а у Ферро это живое состояние. Он пишет о том, что аналитик делает не умом — он мечтает вместе с пациентом. «Мечтание» сохраняет это. Да, оно немного детское слово. Но в этом есть точность.</p>' +
+        '<p>— Какое слово было самым сложным?<br>— «Waking dream thought». Это у Ферро отдельное понятие, почти эквивалент сновидческого мышления в бодрствовании. Я перевела как «мышление-грёза» — неологизм, но, кажется, он работает. Читатели не спотыкаются.</p>' +
+        '<p>— Вы работали с итальянским оригиналом?<br>— Мы работали с авторизованным английским переводом. Итальянский я учила специально для этого проекта, чтобы иметь возможность сверяться. В двух местах английская версия отходит от оригинала достаточно сильно, чтобы это имело значение для смысла. В этих местах мы ориентировались на итальянский.</p>' +
+        '<p>— Что посоветуете читателю, который только открывает Ферро?<br>— Читать медленно. Не торопиться понять каждое предложение. Ферро не объясняет — он показывает. Понимание приходит после, иногда сильно после.</p>',
+      'Читалка β→α: обновление 1.2 — закладки, заметки, прогресс':
+        '<p>В веб-ридере теперь: личные заметки на полях, закладки, отображение прогресса и точная академическая цитата для любой страницы с указанием версии.</p>' +
+        '<p>Закладки работают так: нажмите иконку в верхнем углу страницы — и она сохраняется. Все закладки доступны через боковую панель. Они привязаны к конкретной версии книги — если выйдет новое издание, читалка покажет вам, где именно изменился текст относительно ваших закладок.</p>' +
+        '<p>Заметки на полях — приватные, никто кроме вас их не видит. Выделите текст, нажмите «Добавить заметку», напишите что угодно. Заметки отображаются как иконки на полях. Они тоже привязаны к версии — при переходе на новое издание система предложит перенести их, в зависимости от того, изменился ли контекст.</p>' +
+        '<p>Прогресс отображается в нижней строке: сколько страниц прочитано, сколько осталось, средняя скорость чтения за последние сессии. Это не давление — это ориентир. Многие читатели просили такую опцию, особенно те, кто читает плотные теоретические тексты.</p>' +
+        '<p>Академическая цитата — наша любимая функция в этом обновлении. Выделите фрагмент, нажмите «Цитировать» — получите готовую ссылку: автор, название, версия, страница, год. Плюс прямая ссылка на фрагмент, которую можно отправить коллеге: она откроет ту же страницу, той же версии, с выделенным фрагментом.</p>' +
+        '<p>Обновление доступно всем подписчикам без дополнительных действий. Вопросы — в чат поддержки.</p>'
+    };
+
+    // Article data (origin News page). hasImg = illustrated; others render image-less.
+    var NEWS_ARTICLES = [
+      { id:'news-stand', img: '../assets/news/news4.png', hasImg: true,
+        alt: 'Стенд с книгами beta→alpha в книжном магазине — Гореть вместе, Избегание эмоций, Научение на опыте',
+        cat: 'publisher', catLabel: 'Издательство', dt: '2026-06-12', date: '12 июня 2026',
+        title: 'Книги β→α появились в «Подписных изданиях»',
+        excerpt: 'Специальный стенд с нашими изданиями открыт в петербургском «Подписных изданиях» — одном из лучших книжных магазинов страны. Встречайте в бумаге: Бион, Ферро, Николи. Для тех, кто хочет подержать книгу в руках прежде чем открыть читалку.' },
+      { id:'news-stadium', img: '../assets/news/news1.png', hasImg: true,
+        alt: 'Болельщики на стадионе читают книги beta→alpha во время матча',
+        cat: 'culture', catLabel: 'Культура', dt: '2026-06-09', date: '9 июня 2026',
+        title: 'Психоанализ в третьем тайме',
+        excerpt: 'Подписчики β→α читают везде. Стадион «Лужники», матч ЦСКА — и три книги из нашего каталога на трибунах. Это не постановка — просто так сложился вечер. Нам прислали фотографию: болельщик в шарфе цветов ЦСКА держит «Научение на опыте», рядом девушка — в книге, не на поле. Счёт 1:1, перерыв, Бион. Третий, постарше, листает читалку — ищет цитату.' },
+      { id:'news-f1', img: '../assets/news/news2.png', hasImg: true,
+        alt: 'Открытая книга с диаграммой психики на руле гоночного автомобиля Формулы-1',
+        cat: 'culture', catLabel: 'Культура', dt: '2026-06-06', date: '6 июня 2026',
+        title: 'Биономерная модель на скорости 300 км/ч',
+        excerpt: 'Что, если аналитическая работа — это гонка, где каждый поворот требует полного присутствия? Один из наших подписчиков — инженер по безопасности в автоспорте и одновременно аналитик в подготовке — прислал нам эту виньетку. Книга на руле: диаграмма L-связей Биона, бокс, тишина. «Там, кстати, то же самое: ты должен присутствовать целиком, но не зажиматься», — написал он. Отпустить контроль, чтобы контроль работал.' },
+      { id:'news-nessie', img: '../assets/news/news3.png', hasImg: true,
+        alt: 'Девушка читает книгу beta→alpha у лесного озера, на фоне — силуэт Лох-Несского чудовища',
+        cat: 'culture', catLabel: 'Культура', dt: '2026-06-03', date: '3 июня 2026',
+        title: 'Нужно больше Несси: идеальная компания для летнего чтения',
+        excerpt: 'Читать Ферро у лесного озера — уже само по себе сюрреализм. Но иногда природа идёт навстречу и присылает подходящего собеседника. Подписчица прислала фотографию с берега Лох-Несса: открытый «Избегание эмоций», туман над водой, и в тумане — длинный тёмный силуэт. Мы сначала решили, что монтаж. Оказалось — нет. «Несси как "О"-объект» — это уже написал кто-то в комментариях, не мы.' },
+      { id:'news-bion-3rd', hasImg: false,
+        cat: 'publisher', catLabel: 'Издательство', dt: '2026-06-10', date: '10 июня 2026',
+        title: 'β→α выпускает третье издание книги Биона',
+        excerpt: '«Научение на опыте» в переработанном переводе: уточнённая терминология, сверенный с оригиналом текст, новая расстановка приоритетов в ключевых понятиях. Третье издание — не косметическая правка, а принципиальный возврат к тексту с новым переводчиком в команде. Биона можно понять, только если уже понимаешь — именно эту проблему мы решали. Там, где структура предложения в английском опирается на интонацию живой речи, мы переводили смысл, а не синтаксис. Читателям предыдущих изданий особенно рекомендуем главу о контейнере и содержимом.' },
+      { id:'news-discussion', hasImg: false,
+        cat: 'community', catLabel: 'Сообщество', dt: '2026-06-08', date: '8 июня 2026',
+        title: 'Обсуждение: аффективная регуляция в клиническом контексте',
+        excerpt: 'Дискуссия, которая началась в комментариях к Ферро и переросла в тред на 40 участников — за три дня. Сохранили — он длинный и очень хороший. Всё с одного вопроса: чем ферровское «трансформирование» отличается от биновского контейнирования — или это одно и то же другими словами? Клиницисты, теоретики, студенты аналитических программ — разбирали понятие послойно. В итоге выяснилось, что терминология размыта в самом оригинале, и, возможно, намеренно.' },
+      { id:'news-reading-room', hasImg: false,
+        cat: 'platform', catLabel: 'Платформа', dt: '2026-06-04', date: '4 июня 2026',
+        title: 'Открыт читальный зал: первые 50 участников получили доступ',
+        excerpt: 'Первая волна приглашений отправлена. Из примерно 200 кандидатов — 50 участников: практикующие специалисты, опыт в профессии не менее пяти лет, готовность написать развёрнутый отзыв в первый месяц. Половина из Москвы и Петербурга, половина из других городов и двух зарубежных стран. Первые отзывы начали поступать через несколько часов после открытия доступа — большинство об интерфейсе читалки. Следующая волна приглашений — через месяц.' },
+      { id:'news-ogden', hasImg: false,
+        cat: 'publisher', catLabel: 'Издательство', dt: '2026-06-01', date: '1 июня 2026',
+        title: '«Пространство сновидения» Томаса Огдена: перевод завершён',
+        excerpt: 'Работа над переводом одной из ключевых книг Огдена завершена. «Пространство сновидения» — одна из самых трудных для перевода: плотная теория, но не сухая, с ритмом и образами. Переводчик потратила восемь месяцев. «Я читала её трижды, прежде чем начала переводить, — и ещё раз, когда закончила. Каждый раз — другая книга.» Профессиональная редактура займёт шесть недель, релиз запланирован на август.' },
+      { id:'news-ferro-talk', hasImg: false,
+        cat: 'community', catLabel: 'Сообщество', dt: '2026-05-25', date: '25 мая 2026',
+        title: 'Антонино Ферро: о переводе психоаналитических понятий на русский',
+        excerpt: '«Ревери» нельзя перевести буквально — но и транслитерацией оставлять нельзя. Разговор с переводчиком «Избегания эмоций» о том, что значит понять текст через живой опыт. Почему «мечтание» точнее «ревери», как «waking dream thought» стало «мышлением-грёзой» и почему в двух местах мы ориентировались на итальянский оригинал, а не на авторизованный английский перевод. Читать Ферро медленно — он не объясняет, он показывает.' },
+      { id:'news-reader-1-2', hasImg: false,
+        cat: 'platform', catLabel: 'Платформа', dt: '2026-05-20', date: '20 мая 2026',
+        title: 'Читалка β→α: обновление 1.2 — закладки, заметки, прогресс',
+        excerpt: 'В веб-ридере теперь: личные заметки на полях, закладки, отображение прогресса и точная академическая цитата для любой страницы с указанием версии. Закладки привязаны к конкретному изданию — при выходе нового перевода читалка покажет, где именно изменился текст. Выделите фрагмент, нажмите «Цитировать» — получите готовую ссылку в стандартном формате, которую можно отправить коллеге. Она откроет ту же страницу той же версии с выделенным фрагментом. Обновление доступно всем подписчикам без дополнительных действий.' }
+    ];
+
+    // Public News page (origin pub-news.html) — featured slot with prev/next + expand, grid promotes to featured.
     function renderNews(host){
-      var news = ST().find('events', function(e){ return e.action.codename==='post.published' && e.action.params && e.action.params.destination==='public-news'; })
-        .sort(function(a,b){ return (b.timestamp||'').localeCompare(a.timestamp||''); });
-      host.innerHTML = news.length? '<div class="news-list">'+news.map(function(e){
-        var p = e.action.params;
-        return '<div class="news-item"><p class="news-eyebrow"><span class="news-seal">β→α</span> Новость издательства</p>' +
-          '<p class="news-title">'+esc(p.title||'Новость')+'</p>' +
-          '<p class="news-body">'+esc(p.text||'')+'</p>' +
-          '<p class="news-when">'+esc(timeAgo(e.timestamp))+'</p></div>';
-      }).join('')+'</div>' : '<p class="empty">Новостей пока нет.</p>';
+      var arts = NEWS_ARTICLES;
+      // Persist selection on the host so the wired-once listener and every re-render share one state.
+      var state = host._newsState || (host._newsState = { idx: 0, expanded: false });
+
+      function chip(a){ return '<span class="pn-chip pn-chip--'+esc(a.cat)+'">'+esc(a.catLabel)+'</span>'; }
+      function meta(a){ return '<div class="pn-meta">'+chip(a)+'<time class="pn-date" datetime="'+esc(a.dt)+'">'+esc(a.date)+'</time></div>'; }
+
+      function navBar(){
+        return '<div class="pn-featured-nav">' +
+          '<button class="pn-nav-btn" data-nav="prev" type="button" aria-label="Предыдущая статья"'+(state.idx<=0?' disabled':'')+'>←</button>' +
+          '<span class="pn-nav-label">'+(state.idx+1)+' / '+arts.length+'</span>' +
+          '<button class="pn-nav-btn" data-nav="next" type="button" aria-label="Следующая статья"'+(state.idx>=arts.length-1?' disabled':'')+'>→</button>' +
+        '</div>';
+      }
+
+      function featuredHtml(){
+        var a = arts[state.idx];
+        var cls = 'pn-featured ' + (state.expanded ? 'pn-featured--expanded' : 'pn-featured--collapsed');
+        var body = state.expanded
+          ? '<div class="pn-featured-full-text">'+(NEWS_FULL_TEXTS[a.title]||('<p>'+esc(a.excerpt)+'</p>'))+'</div>' +
+            '<button class="pn-collapse-btn" data-act="collapse" type="button">↑ Свернуть</button>'
+          : '<p class="pn-featured-excerpt">'+esc(a.excerpt)+'</p>' +
+            '<button class="pn-expand-btn" data-act="expand" type="button">Читать статью →</button>';
+        var content = '<div class="pn-featured-content"'+(a.hasImg?'':' style="max-width:640px"')+'>'+
+          meta(a) +
+          '<h2 class="pn-featured-title">'+esc(a.title)+'</h2>' +
+          body +
+        '</div>';
+        var imgCol = a.hasImg
+          ? '<div class="pn-featured-img-col"><img class="pn-featured-img" src="'+esc(a.img)+'" alt="'+esc(a.alt)+'"></div>'
+          : '';
+        return '<article class="'+cls+'" data-featured aria-label="Статья: '+esc(a.title)+'">'+imgCol+content+'</article>';
+      }
+
+      function illustratedCard(a, i){
+        return '<article class="pn-card" data-idx="'+i+'" role="button" tabindex="0">' +
+          '<div class="pn-card-img-wrap"><img class="pn-card-img" src="'+esc(a.img)+'" alt="'+esc(a.alt)+'" loading="lazy"></div>' +
+          '<div class="pn-card-body">'+meta(a) +
+            '<h3 class="pn-card-title">'+esc(a.title)+'</h3>' +
+            '<p class="pn-card-excerpt">'+esc(a.excerpt)+'</p>' +
+            '<span class="pn-card-link">Читать →</span>' +
+          '</div></article>';
+      }
+      function textCard(a, i){
+        return '<article class="pn-card pn-card--text" data-idx="'+i+'" role="button" tabindex="0">' +
+          '<div class="pn-card-body">'+meta(a) +
+            '<h3 class="pn-card-title">'+esc(a.title)+'</h3>' +
+            '<p class="pn-card-excerpt">'+esc(a.excerpt)+'</p>' +
+            '<span class="pn-card-link">Читать →</span>' +
+          '</div></article>';
+      }
+
+      function gridHtml(){
+        var illustrated = '', textual = '';
+        arts.forEach(function(a, i){
+          if (a.hasImg) illustrated += illustratedCard(a, i);
+          else textual += textCard(a, i);
+        });
+        return '<p class="pn-label">Книги в неожиданных местах</p>' +
+          '<div class="pn-grid">'+illustrated+'</div>' +
+          '<p class="pn-label">Издательство · Сообщество · Платформа</p>' +
+          '<div class="pn-grid">'+textual+'</div>';
+      }
+
+      // Re-render only the nav + featured slot in place (keeps grid + scroll position stable).
+      function refreshFeatured(){
+        var slot = host.querySelector('.pn-featured-slot');
+        if (slot) slot.innerHTML = navBar() + featuredHtml();
+      }
+      /* Bring the pager to the top of the view — just below the sticky header +
+         section tabs, never higher (so the pager, not the chrome, is what shows). */
+      function scrollToPager(){
+        var slot = host.querySelector('.pn-featured-slot');
+        if (!slot || !slot.scrollIntoView) return;
+        var hEl = document.querySelector('.site-header[data-ba-frame]');
+        var tEl = document.querySelector('.sec-tabs');
+        var z = parseFloat(getComputedStyle(document.body).zoom) || 1;
+        var chrome = ((hEl ? hEl.getBoundingClientRect().height : 0) + (tEl ? tEl.getBoundingClientRect().height : 0)) / z;
+        slot.style.scrollMarginTop = (chrome + 8) + 'px';
+        slot.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      host.innerHTML = '<div class="pn-wrap">' +
+        '<div class="pn-featured-slot">'+navBar()+featuredHtml()+'</div>' +
+        gridHtml() +
+      '</div>';
+
+      if (host._newsWired) return;     // delegate once per host element
+      host._newsWired = true;
+      host.addEventListener('click', function(e){
+        if (!host.querySelector('.pn-featured-slot')) return;   // only act while News is shown
+        var nav = e.target.closest('[data-nav]');
+        if (nav){
+          if (nav.getAttribute('data-nav')==='prev' && state.idx>0){ state.idx--; state.expanded=false; refreshFeatured(); }
+          else if (nav.getAttribute('data-nav')==='next' && state.idx<arts.length-1){ state.idx++; state.expanded=false; refreshFeatured(); }
+          return;
+        }
+        if (e.target.closest('[data-act="expand"]')){ state.expanded=true; refreshFeatured(); scrollToPager(); return; }
+        if (e.target.closest('[data-act="collapse"]')){ state.expanded=false; refreshFeatured(); return; }
+        var card = e.target.closest('.pn-card[data-idx]');
+        if (card){
+          state.idx = parseInt(card.getAttribute('data-idx'), 10) || 0;
+          state.expanded = true;
+          refreshFeatured();
+          scrollToPager();
+        }
+      });
+      host.addEventListener('keydown', function(e){
+        if (e.key!=='Enter' && e.key!==' ') return;
+        var card = e.target.closest('.pn-card[data-idx]');
+        if (!card) return;
+        e.preventDefault();
+        state.idx = parseInt(card.getAttribute('data-idx'), 10) || 0;
+        state.expanded = true;
+        refreshFeatured();
+        scrollToPager();
+      });
     }
 
     /* ── Pulse (area 17) — mixed-domain event stream ── */
@@ -381,6 +681,11 @@
       renderTabs(key);
       try { BA.store.set(SAVED_KEY, key); } catch(e){}
       var url = new URL(location.href); url.searchParams.set('tab', key); history.replaceState(null,'',url);
+      /* Lobby: News is public; every other tab needs login (same gate as cabinet) */
+      if (key!=='news' && !BA.session.isPrivate()){
+        host.innerHTML = '<div class="sec-gate"><h2>Войдите, чтобы участвовать в Лобби</h2><p>Участники, обсуждения, клубы, публикации и пульс сообщества доступны после входа.</p><button class="btn btn-primary" type="button" onclick="BA.frame.openLogin()">Войти</button></div>';
+        return;
+      }
       if (key==='member-board') renderMemberBoard(host);
       else if (key==='discussion') renderDiscussion(host);
       else if (key==='reading-club') renderClubs(host);
@@ -398,8 +703,10 @@
       document.addEventListener('ba:session-change', function(){ renderStats(); var a=document.querySelector('.sec-tab.is-active'); if(a) showTab(a.getAttribute('data-tab')); });
       var params = new URLSearchParams(location.search);
       var saved = null; try { saved = BA.store.get(SAVED_KEY); } catch(e){}
-      var initial = params.get('tab') || saved || 'member-board';
-      if (!TABS.some(function(t){ return t.key===initial; })) initial = 'member-board';
+      var initial = params.get('tab') || saved || 'news';
+      if (!TABS.some(function(t){ return t.key===initial; })) initial = 'news';
+      /* a guest's remembered (gated) tab → land on the public News instead */
+      if (!params.get('tab') && initial!=='news' && !BA.session.isPrivate()) initial = 'news';
       showTab(initial);
     });
   </script>

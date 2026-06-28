@@ -55,6 +55,8 @@
     'border-radius:var(--radius-md,10px);}',
     '.nav-link-home:hover{color:#ECE3D6;opacity:.85;}',
     '.nav-link-home .arrow{color:#D2674A;}',
+    /* Active page: keep β / α orange (not the dark .nav-link active colour) */
+    '.nav-link-home[aria-current="page"]{color:#D2674A;}',
     /* light-clear theme: the home badge is a cool gray, not warm near-black */
     'html[data-theme="light-clear"] .nav-link-home,html[data-theme="light-clear"] .ba-burger-btn{background:#5A6068;}',
 
@@ -83,10 +85,21 @@
     'cursor:pointer;white-space:nowrap;transition:background 140ms;}',
     '.btn-soft-fill:hover{background:color-mix(in srgb,var(--accent,#C1654B) 18%,transparent);}',
 
+    /* Header CTAs (Войти / Присоединиться) — pill shape like the beta2alpha join
+       button; the join gets a fuller (less transparent) accent fill. */
+    '.header-actions .btn-ghost,.header-actions .btn-soft-fill{',
+    'border-radius:var(--radius-pill,999px);padding:var(--space-2,0.5rem) var(--space-6,1.5rem);}',
+    '.header-actions .btn-soft-fill{',
+    'background:color-mix(in srgb,var(--accent,#C1654B) 88%,transparent);',
+    'color:var(--on-accent,#FFFDF8);border-color:var(--accent,#C1654B);}',
+    '.header-actions .btn-soft-fill:hover{background:var(--accent,#C1654B);}',
+
     /* Footer layout */
     '.footer-inner{display:flex;align-items:center;justify-content:space-between;',
     'gap:var(--space-4,1rem);padding:calc(var(--space-6,1.5rem) * 0.75) 0;}',
     '.footer-brand{display:flex;align-items:center;gap:var(--space-4,1rem);}',
+    /* Footer brand = the same wordmark logo as the top-menu logo button */
+    '.footer-wordmark{display:block;height:26px;width:auto;}',
     '.footer-end{display:flex;align-items:center;gap:var(--space-4,1rem);}',
     '.footer-link{font-family:var(--font-sans);font-size:var(--fs-small,0.875rem);',
     'color:var(--ink-soft,#5C5249);text-decoration:none;white-space:nowrap;transition:color 140ms;}',
@@ -312,16 +325,27 @@
       '<a class="skip-link" href="#main-content">Перейти к содержимому</a>',
       '<div class="header-inner container">',
         '<div class="header-left">',
-          '<a class="wordmark" href="' + _pp() + 'pages/landing.html" aria-label="β→α академия">',
+          '<a class="wordmark" href="' + _pp() + 'pages/beta2alpha.html" aria-label="β→α академия">',
             '<img class="wordmark-img" src="' + _pp() + 'assets/decor/b2a-academy.svg" alt="β→α" width="100" height="28">',
           '</a>',
           '<a class="nav-link header-about" href="' + _pp() + 'pages/about.html">О проекте</a>',
+          '<div class="ba-burger-wrap">',
+            '<button class="ba-burger-btn" type="button" aria-label="Меню навигации" aria-haspopup="menu" aria-expanded="false">β<span class="arrow">→</span>α</button>',
+            '<div class="ba-burger-menu" role="menu" aria-label="Навигация">',
+              '<a class="ba-burger-item" href="' + _pp() + 'pages/about.html" role="menuitem">О проекте</a>',
+              '<a class="ba-burger-item" href="' + _pp() + 'pages/cabinet.html?tab=overview" role="menuitem">Кабинет</a>',
+              '<a class="ba-burger-item" href="' + _pp() + 'pages/library.html" role="menuitem">Библиотека</a>',
+              '<a class="ba-burger-item" href="' + _pp() + 'pages/community.html" role="menuitem">Лобби</a>',
+            '</div>',
+          '</div>',
         '</div>',
         '<nav class="primary-nav" aria-label="Основная навигация">',
+          '<a class="nav-link" href="' + _pp() + 'pages/cabinet.html?tab=overview">Кабинет</a>',
           '<span class="nav-lib-wrap">',
             '<a class="nav-link nav-link-home" href="' + _pp() + 'pages/library.html" aria-label="Библиотека">β<span class="arrow">→</span>α</a>',
             '<span class="nav-lib-icon"><img class="nav-books-img" src="' + _pp() + 'assets/decor/books-pile.png" alt="" aria-hidden="true" width="24" height="24"></span>',
           '</span>',
+          '<a class="nav-link" href="' + _pp() + 'pages/community.html">Лобби</a>',
           '<span class="nav-strip" aria-hidden="true"></span>',
           '<span class="nav-dot" aria-hidden="true"></span>',
         '</nav>',
@@ -347,7 +371,7 @@
       '<a class="skip-link" href="#main-content">Перейти к содержимому</a>',
       '<div class="header-inner container">',
         '<div class="header-left">',
-          '<a class="wordmark" href="' + _pp() + 'pages/cabinet.html?tab=poster" aria-label="β→α академия">',
+          '<a class="wordmark" href="' + _pp() + 'pages/cabinet.html?tab=overview" aria-label="β→α академия">',
             '<img class="wordmark-img" src="' + _pp() + 'assets/decor/b2a-academy.svg" alt="β→α" width="100" height="28">',
           '</a>',
           '<a class="nav-link header-about" href="' + _pp() + 'pages/about.html">О проекте</a>',
@@ -355,19 +379,19 @@
             '<button class="ba-burger-btn" type="button" aria-label="Меню навигации" aria-haspopup="menu" aria-expanded="false">β<span class="arrow">→</span>α</button>',
             '<div class="ba-burger-menu" role="menu" aria-label="Навигация">',
               '<a class="ba-burger-item" href="' + _pp() + 'pages/about.html" role="menuitem">О проекте</a>',
-              '<a class="ba-burger-item" href="' + _pp() + 'pages/cabinet.html?tab=poster" role="menuitem">Кабинет</a>',
+              '<a class="ba-burger-item" href="' + _pp() + 'pages/cabinet.html?tab=overview" role="menuitem">Кабинет</a>',
               '<a class="ba-burger-item" href="' + _pp() + 'pages/library.html" role="menuitem">Библиотека</a>',
-              '<a class="ba-burger-item" href="' + _pp() + 'pages/community.html" role="menuitem">Сообщество</a>',
+              '<a class="ba-burger-item" href="' + _pp() + 'pages/community.html" role="menuitem">Лобби</a>',
             '</div>',
           '</div>',
         '</div>',
         '<nav class="primary-nav" aria-label="Основная навигация">',
-          '<a class="nav-link" href="' + _pp() + 'pages/cabinet.html?tab=poster">Кабинет</a>',
+          '<a class="nav-link" href="' + _pp() + 'pages/cabinet.html?tab=overview">Кабинет</a>',
           '<span class="nav-lib-wrap">',
             '<a class="nav-link nav-link-home" href="' + _pp() + 'pages/library.html">β<span class="arrow">→</span>α</a>',
             '<span class="nav-lib-icon"><img class="nav-books-img" src="' + _pp() + 'assets/decor/books-pile.png" alt="" aria-hidden="true" width="24" height="24"></span>',
           '</span>',
-          '<a class="nav-link" href="' + _pp() + 'pages/community.html">Сообщество</a>',
+          '<a class="nav-link" href="' + _pp() + 'pages/community.html">Лобби</a>',
           '<span class="nav-strip" aria-hidden="true"></span>',
           '<span class="nav-dot" aria-hidden="true"></span>',
         '</nav>',
@@ -402,7 +426,10 @@
   function _placeDot(dot, nav, linkEl) {
     var navRect = nav.getBoundingClientRect();
     var linkRect = linkEl.getBoundingClientRect();
-    dot.style.left = (linkRect.left + linkRect.width / 2 - navRect.left) + 'px';
+    /* divide the rendered offset by the page zoom — the dot's own `left` is a
+       CSS px in the zoomed body, so far-left targets (the logo) land correctly */
+    var z = parseFloat(getComputedStyle(document.body).zoom) || 1;
+    dot.style.left = ((linkRect.left + linkRect.width / 2 - navRect.left) / z) + 'px';
     dot.style.opacity = '1';
   }
 
@@ -424,23 +451,31 @@
 
     var links = [].slice.call(nav.querySelectorAll('.nav-link'));
     var page = _opts.page;
+    function _pageOf(el) {
+      return (el.getAttribute('href') || '')
+        .replace(/^.*\//, '').replace(/[?#].*$/, '').replace(/\.html$/, '');
+    }
 
-    // Find matching active link
+    // The orange dot marks whichever TOP-MENU item matches the current page —
+    // the centred nav links (Кабинет/Библиотека/Лобби) OR the logo (home) or
+    // «О проекте» over in the header-left cluster.
+    var targets = links.concat(
+      [header.querySelector('.header-about'), header.querySelector('.wordmark')].filter(Boolean)
+    );
     var active = null;
-    links.forEach(function (link) {
-      var href = (link.getAttribute('href') || '').replace(/^.*\//, '').replace(/\.html$/, '');
-      if (page && href === page) {
-        link.setAttribute('aria-current', 'page');
-        active = link;
-      }
+    targets.forEach(function (el) {
+      if (active || !page || _pageOf(el) !== page) return;
+      if (el.classList.contains('nav-link')) el.setAttribute('aria-current', 'page');
+      active = el;
     });
-    // No fallback: off the four nav pages (about/library/home/community) there
-    // is no active item, so the red dot marker stays hidden.
 
-    // Position dot after layout
-    requestAnimationFrame(function () {
-      if (active) _placeDot(dot, nav, active);
-    });
+    // Position the dot now (so it shows even if rAF is paused, e.g. a background
+    // tab) and refine once after layout/fonts settle.
+    if (active) {
+      _placeDot(dot, nav, active);
+      requestAnimationFrame(function () { _placeDot(dot, nav, active); });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { _placeDot(dot, nav, active); });
+    }
 
     // Wire click flash
     links.forEach(function (link) {
@@ -464,6 +499,9 @@
     if (regBtn) regBtn.addEventListener('click', function () {
       if (window.BA && BA.registration) BA.registration.open();
     });
+
+    // Same unified nav as the authed header → needs the narrow-mode burger too
+    _wireBurger(header);
   }
 
   function _wirePrivateHeader(header) {
@@ -546,7 +584,7 @@
       '<div class="container">',
         '<div class="footer-inner">',
           '<div class="footer-brand">',
-            '<span class="text-mark">β<span class="arrow">→</span>α</span>',
+            '<img class="footer-wordmark" src="' + _pp() + 'assets/decor/b2a-academy.svg" alt="β→α академия">',
             '<span class="footer-tagline">© 2026 beta→alpha · Для профессионального сообщества</span>',
           '</div>',
           '<div class="footer-end">',
@@ -793,7 +831,7 @@
     try {
       var s = window.BA && BA.session ? BA.session.get() : null;
       if (!s) return;
-      if (/\/(index|landing)\.html?$/i.test(location.pathname)) return;
+      if (/\/(index|beta2alpha)\.html?$/i.test(location.pathname)) return;
       localStorage.setItem('ba:last', location.pathname + location.search);
     } catch (e) {}
   }

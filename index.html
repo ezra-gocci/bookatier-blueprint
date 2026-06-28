@@ -29,11 +29,11 @@
         var last = null;
         try { last = localStorage.getItem('ba:last'); } catch (e) {}
         var ok = last && /\/pages\/[a-z0-9-]+\.html/i.test(last) &&
-          !/\/(landing|index)\.html/i.test(last);
-        target = ok ? last : 'pages/cabinet.html?tab=poster';
+          !/\/(beta2alpha|index)\.html/i.test(last);
+        target = ok ? last : 'pages/cabinet.html?tab=overview';
       } else {
-        /* guest → the public Landing (Вербовка) */
-        target = 'pages/landing.html';
+        /* guest → the public Home (β→α), default variant */
+        target = 'pages/beta2alpha.html';
       }
       window.location.replace(target);
     })();

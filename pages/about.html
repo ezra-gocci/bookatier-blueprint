@@ -18,7 +18,8 @@
     html[data-theme="night"] .ab-hero-bg { background-image: url('../assets/backgrounds/hero-bg-01-dark.webp'); }
     .ab-hero-inner { position: relative; max-width: 760px; margin: 0 auto; padding: var(--space-16, 64px) var(--gutter, 40px); text-align: center; }
     @media (max-width: 700px){ .ab-hero-inner { padding: var(--space-12) var(--space-4); } }
-    .ab-seal { width: 72px; height: 72px; border-radius: var(--radius-md, 10px); background: var(--ink); color: var(--paper); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: var(--space-5); }
+    /* Same brand logo as the top-menu logo button (frame.js wordmark) */
+    .ab-logo { height: 48px; width: auto; display: inline-block; margin-bottom: var(--space-5); }
     .ab-eyebrow { font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin: 0 0 var(--space-3); }
     .ab-title { font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 600; color: var(--ink); margin: 0; line-height: 1.15; letter-spacing: -0.01em; }
     .ab-lede { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); line-height: 1.7; color: var(--ink-soft); margin: var(--space-6) auto 0; max-width: 56ch; }
@@ -42,7 +43,7 @@
     <section class="ab-hero">
       <div class="ab-hero-bg" aria-hidden="true"></div>
       <div class="ab-hero-inner">
-        <span class="ab-seal" aria-hidden="true">β→α</span>
+        <img class="ab-logo" src="../assets/decor/b2a-academy.svg" alt="beta→alpha академия">
         <p class="ab-eyebrow">О проекте</p>
         <h1 class="ab-title">Сообщество, собранное вокруг книг</h1>
         <p class="ab-lede">beta→alpha.academy — профессиональная читательская среда для психотерапевтов, психоаналитиков и супервизоров. Сначала — люди и разговор; издательство и каталог служат им.</p>
@@ -89,7 +90,7 @@
   <script src="../components/member-data.js"></script>
   <script src="../components/store.js"></script>
   <script src="../components/sim.js"></script>
-  <script src="../components/frame.js"></script>
+  <script src="../components/frame.js?v=4"></script>
   <script src="../components/avatar-menu.js"></script>
   <script src="../components/notifications.js"></script>
   <script src="../components/search.js"></script>

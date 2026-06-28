@@ -48,6 +48,8 @@
     .lib-ed-bk-author { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: 0; }
     .lib-ed-bk-title { font-family: var(--font-serif); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink);
       line-height: 1.3; margin: 0; }
+    /* Editorial collection rendered inside the catalogue tab content (below the tabs) */
+    .lib-ed-inline { padding: var(--space-6, 24px) 0 var(--space-2); border-bottom: var(--hairline) solid var(--line); margin-bottom: var(--space-4, 16px); }
     /* Tab bar */
     .lib-tabs { position: sticky; top: var(--header-height, 64px); z-index: 80;
       background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px);
@@ -120,34 +122,12 @@
   <!-- frame.js injects header here -->
   <main id="main-content" data-page-body class="lib-main">
 
-    <section class="lib-hero">
-      <div class="container">
-        <div class="lib-hero-inner">
-          <div>
-            <h1>Библиотека</h1>
-            <p class="lib-hero-sub">Курируемое собрание psychotherapy & psychoanalysis — читайте, обсуждайте и цитируйте профессиональную литературу beta→alpha.</p>
-          </div>
-          <div class="lib-stats" id="lib-stats"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="lib-ed">
-      <div class="container lib-ed-inner">
-        <div class="lib-ed-head">
-          <div>
-            <p class="lib-ed-eyebrow">Подборка редакции</p>
-            <p class="lib-ed-title">Итальянская школа психоанализа</p>
-          </div>
-          <a class="lib-ed-link" href="?tab=collection" data-go-tab="collection">Все подборки →</a>
-        </div>
-        <div class="lib-ed-books" id="lib-ed-books"></div>
-      </div>
-    </section>
-
     <nav class="lib-tabs" aria-label="Разделы библиотеки">
       <div class="container lib-tabs-inner" id="lib-tabs"></div>
     </nav>
+
+    <!-- Editorial collection = catalogue-tab content (members only), below the tabs -->
+    <div class="container" id="lib-editorial" hidden></div>
 
     <div class="container" id="lib-tab-content"></div>
 
@@ -158,7 +138,7 @@
   <script src="../components/member-data.js"></script>
   <script src="../components/store.js"></script>
   <script src="../components/sim.js"></script>
-  <script src="../components/frame.js"></script>
+  <script src="../components/frame.js?v=4"></script>
   <script src="../components/avatar-menu.js"></script>
   <script src="../components/notifications.js"></script>
   <script src="../components/search.js"></script>
@@ -204,15 +184,21 @@
     ];
     function plural(n, one, few, many){ var m10=n%10,m100=n%100; if(m10===1&&m100!==11)return one; if(m10>=2&&m10<=4&&(m100<10||m100>=20))return few; return many; }
 
-    function renderStats(){
-      var n = BA.bookData.SLUGS.length;
-      document.getElementById('lib-stats').innerHTML =
-        '<div class="lib-stat"><span class="lib-stat-val">'+n+'</span><span class="lib-stat-lbl">изданий</span></div>' +
-        '<div class="lib-stat"><span class="lib-stat-val">'+BA.authorData.ids().length+'</span><span class="lib-stat-lbl">авторов</span></div>' +
-        '<div class="lib-stat"><span class="lib-stat-val">1</span><span class="lib-stat-lbl">издатель</span></div>';
-    }
+    function isGuest(){ return !(window.BA && BA.session && BA.session.isPrivate()); }
+    /* Guests don't see the Collection ("Подборки") tab (members-only) */
+    function visibleTabs(){ return isGuest() ? TABS.filter(function(t){ return t.key!=='collection'; }) : TABS; }
 
-    function renderEditorial(){
+    /* Editorial collection — catalogue-tab content (members only), rendered below
+       the tab bar into its own container (so catalogue.render can't clobber it). */
+    function renderEditorial(host){
+      host.innerHTML =
+        '<div class="lib-ed-inline">' +
+          '<div class="lib-ed-head">' +
+            '<div><p class="lib-ed-eyebrow">Подборка редакции</p><p class="lib-ed-title">Итальянская школа психоанализа</p></div>' +
+            '<a class="lib-ed-link" href="?tab=collection" data-go-tab="collection">Все подборки →</a>' +
+          '</div>' +
+          '<div class="lib-ed-books" id="lib-ed-books"></div>' +
+        '</div>';
       var picks = ['bion-learning','ferro-cabinet','nicoli-burning'].map(function(s){ return BA.bookData.get(s); }).filter(Boolean);
       document.getElementById('lib-ed-books').innerHTML = picks.map(function(b){
         return '<button class="lib-ed-book" type="button" data-slug="'+esc(b.slug)+'">' +
@@ -226,13 +212,15 @@
       document.getElementById('lib-ed-books').addEventListener('click', function(e){
         var btn = e.target.closest('.lib-ed-book'); if (btn) BA.bookCard.open(btn.getAttribute('data-slug'));
       });
+      var link = host.querySelector('[data-go-tab]');
+      if (link) link.addEventListener('click', function(e){ e.preventDefault(); showTab('collection'); });
     }
 
     function renderTabs(active){
       var bar = document.getElementById('lib-tabs');
       var counts = { catalogue: BA.bookData.SLUGS.length, pantheon: BA.authorData.ids().length,
         producers: BA.publisherData.ids().length, collection: COLLECTIONS.length };
-      bar.innerHTML = TABS.map(function(t){
+      bar.innerHTML = visibleTabs().map(function(t){
         var count = counts[t.key]!=null ? '<span class="lib-tab-count">'+counts[t.key]+'</span>' : '';
         return '<button class="lib-tab'+(t.key===active?' is-active':'')+'" data-tab="'+t.key+'">'+t.label+count+'</button>';
       }).join('');
@@ -307,10 +295,14 @@
 
     function showTab(key){
       var host = document.getElementById('lib-tab-content');
+      var ed = document.getElementById('lib-editorial');
       host.innerHTML = '';
       renderTabs(key);
       try { BA.store.set(SAVED_KEY, key); } catch(e){}
       var url = new URL(location.href); url.searchParams.set('tab', key); history.replaceState(null,'',url);
+      /* Editorial collection shows only on the Catalogue tab, members only */
+      if (key==='catalogue' && !isGuest()) { ed.hidden = false; renderEditorial(ed); }
+      else { ed.hidden = true; ed.innerHTML = ''; }
       if (key==='catalogue') { BA.catalogue.render(host); }
       else if (key==='pantheon') { renderPantheon(host); }
       else if (key==='producers') { renderProducers(host); }
@@ -319,18 +311,13 @@
 
     document.addEventListener('DOMContentLoaded', function(){
       BA.frame.init({ page: 'library' });
-      renderStats(); renderEditorial();
       document.getElementById('lib-tabs').addEventListener('click', function(e){
         var t = e.target.closest('.lib-tab'); if (t) showTab(t.getAttribute('data-tab'));
-      });
-      /* in-page links that jump to a tab (e.g. the editorial "Все подборки →") */
-      document.querySelectorAll('[data-go-tab]').forEach(function(el){
-        el.addEventListener('click', function(e){ e.preventDefault(); showTab(el.getAttribute('data-go-tab')); });
       });
       var params = new URLSearchParams(location.search);
       var saved = null; try { saved = BA.store.get(SAVED_KEY); } catch(e){}
       var initial = params.get('tab') || saved || 'catalogue';
-      if (!TABS.some(function(t){ return t.key===initial; })) initial = 'catalogue';
+      if (!visibleTabs().some(function(t){ return t.key===initial; })) initial = 'catalogue';
       showTab(initial);
     });
   </script>
