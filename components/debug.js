@@ -251,8 +251,18 @@
     var _savedW = localStorage.getItem('ba-dbg-width');
     if (_savedW) document.documentElement.style.setProperty('--dbg-w-user', _savedW);
   } catch (e) {}
-  var _scale = 1.2; // 1 | 1.2 | 1.4 — page size factor; ×1.2 is the default
-  try { var _savedScale = parseFloat(BA.store.get('ba-dbg-scale')); if (_savedScale === 1 || _savedScale === 1.2 || _savedScale === 1.4) _scale = _savedScale; } catch (e) {}
+  /* Size modes S/M/L. Reduced 10% (operator 2026-06-28): Small ×1.0→0.9, Medium
+     ×1.2→1.1, Large ×1.4 unchanged. Applied via one global body{zoom:--ba-zoom},
+     so every element affected by the site mode scales with it. `_normScale`
+     migrates legacy saved values (1/1.2/1.4) to the new scale and accepts the new
+     ones (0.9/1.1/1.4). */
+  function _normScale(v) {
+    if (v === 1) return 0.9; if (v === 1.2) return 1.1;   // legacy → new (−10%)
+    if (v === 0.9 || v === 1.1 || v === 1.4) return v;    // already new
+    return null;
+  }
+  var _scale = 1.1; // 0.9 | 1.1 | 1.4 — page size factor; Medium (×1.1) is the default
+  try { var _ss = _normScale(parseFloat(BA.store.get('ba-dbg-scale'))); if (_ss) { _scale = _ss; BA.store.set('ba-dbg-scale', String(_ss)); } } catch (e) {}
 
   /* Page magnify — zoom the whole page ×1.5 (scales px AND rem, text + layout).
      The console + its gear are counter-zoomed so they stay real size and usable.
@@ -274,9 +284,9 @@
      forced to ×1 in matchbox and restored to the preference on a larger media.
      Keyed on the REAL content width (zoom-independent) so there is no feedback. */
   function _isMatchbox() { return _contentW() <= 600; }
-  function _effectiveScale() { return _isMatchbox() ? 1 : _scale; }
+  function _effectiveScale() { return _isMatchbox() ? 0.9 : _scale; }
   function _applyScale() {
-    var z = _effectiveScale(); /* 1 | 1.2 | 1.4 (matchbox forces 1) */
+    var z = _effectiveScale(); /* 0.9 | 1.1 | 1.4 (matchbox forces 0.9) */
     document.documentElement.style.setProperty('--ba-zoom', String(z));
     document.documentElement.classList.toggle('ba-magnify', z > 1);
     _scheduleFit();
@@ -522,8 +532,8 @@
       '<p style="font-size:12px;color:rgba(236,227,214,.4);padding:0 16px 8px">Увеличивает весь контент и текст. Консоль не масштабируется.' +
         (_isMatchbox() ? ' <span style="color:#DB7B5D">Увеличение недоступно в matchbox.</span>' : '') + '</p>',
       '<div style="display:flex;gap:8px;padding:0 16px 14px">',
-        '<button class="dbg-foot-btn' + (_effectiveScale() === 1 ? ' is-mode-active' : '') + '" data-set-scale="1">×1.0</button>',
-        '<button class="dbg-foot-btn' + (_effectiveScale() === 1.2 ? ' is-mode-active' : '') + (_isMatchbox() ? '" disabled style="opacity:.4;cursor:not-allowed' : '') + '" data-set-scale="1.2">×1.2</button>',
+        '<button class="dbg-foot-btn' + (_effectiveScale() === 0.9 ? ' is-mode-active' : '') + '" data-set-scale="0.9">×0.9</button>',
+        '<button class="dbg-foot-btn' + (_effectiveScale() === 1.1 ? ' is-mode-active' : '') + (_isMatchbox() ? '" disabled style="opacity:.4;cursor:not-allowed' : '') + '" data-set-scale="1.1">×1.1</button>',
         '<button class="dbg-foot-btn' + (_effectiveScale() === 1.4 ? ' is-mode-active' : '') + (_isMatchbox() ? '" disabled style="opacity:.4;cursor:not-allowed' : '') + '" data-set-scale="1.4">×1.4</button>',
       '</div>',
       '<p class="dbg-label">Вьюпорт контента</p>',
@@ -771,9 +781,8 @@
   // Registered at init so it works even before the console is ever built.
   document.addEventListener('ba:session-change', function () {
     try {
-      var s = parseFloat(BA.store.get('ba-dbg-scale'));
-      _scale = (s === 1 || s === 1.2 || s === 1.4) ? s : 1.2;
-    } catch (e) { _scale = 1.2; }
+      _scale = _normScale(parseFloat(BA.store.get('ba-dbg-scale'))) || 1.1;
+    } catch (e) { _scale = 1.1; }
     _applyScale();
   });
 
