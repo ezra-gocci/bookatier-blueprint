@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Компоненты — β→α академия</title>
+  <!-- ============================================================================
+       components.html — the shared-components HOST/manifest (Tier-1, master frame).
+       Feature area: X (DevDoc) · 23 (component system). Spec refs: system-model
+       §4.8 (master frame "+ components.html, all shared components"). The single
+       inventory of every BA.* module: what it is, its feature areas, spec refs.
+       Loads all shared component scripts so the master frame can rely on them
+       being defined; doubles as developer documentation. Tokens-only. -->
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/chrome.css">
+  <style>
+    .cmp-main { min-height: 100vh; }
+    .cmp-head { background: var(--surface); border-bottom: var(--hairline) solid var(--line); }
+    .cmp-head-inner { padding: var(--space-8, 32px) 0 var(--space-6, 24px); }
+    .cmp-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin: 0 0 var(--space-1); }
+    .cmp-title { font-family: var(--font-serif); font-size: 2rem; font-weight: 600; color: var(--ink); margin: 0; }
+    .cmp-sub { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); margin: var(--space-2) 0 0; max-width: 60ch; }
+    .cmp-section { padding: var(--space-7, 28px) 0 0; }
+    .cmp-section h2 { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); color: var(--ink); margin: 0 0 var(--space-3); }
+    .cmp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4, 16px); padding-bottom: var(--space-6); }
+    @media (max-width: 760px){ .cmp-grid { grid-template-columns: 1fr; } }
+    .cmp-card { border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px);
+      background: var(--surface); padding: var(--space-4, 16px); }
+    .cmp-name { font-family: var(--font-sans); font-size: var(--fs-body, 16px); font-weight: 600; color: var(--ink); margin: 0; }
+    .cmp-ns { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--fs-caption, 12px); color: var(--accent); }
+    .cmp-desc { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); line-height: 1.5; margin: var(--space-2) 0 0; }
+    .cmp-refs { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: var(--space-2) 0 0; }
+    .cmp-foot { padding: var(--space-6) 0 var(--space-12); }
+    .cmp-foot a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <main id="main-content" data-page-body class="cmp-main">
+    <section class="cmp-head">
+      <div class="container cmp-head-inner">
+        <p class="cmp-eyebrow">Система компонентов</p>
+        <h1 class="cmp-title">Компоненты</h1>
+        <p class="cmp-sub">Единый перечень всех модулей <code>window.BA.*</code>, на которые опирается мастер-фрейм. Каждый модуль — самостоятельный IIFE с самовнедряемым CSS, только токены.</p>
+      </div>
+    </section>
+    <div class="container" id="cmp-body"></div>
+    <div class="container cmp-foot">
+      <p>Живой стенд: <a href="showroom.html">showroom.html</a> · документация: <a href="dev-components.html">dev-components</a>.</p>
+    </div>
+  </main>
+
+  <!-- All shared component scripts (master frame relies on these being defined) -->
+  <script src="../components/session.js"></script>
+  <script src="../components/frame.js"></script>
+  <script src="../components/avatar-menu.js"></script>
+  <script src="../components/notifications.js"></script>
+  <script src="../components/search.js"></script>
+  <script src="../components/pulse.js"></script>
+  <script src="../components/debug.js"></script>
+  <script src="../components/demo.js"></script>
+  <script src="../components/registration.js"></script>
+  <script src="../components/book-data.js"></script>
+  <script src="../components/author-data.js"></script>
+  <script src="../components/publisher-data.js"></script>
+  <script src="../components/reader-engine.js"></script>
+  <script src="../components/book-card.js"></script>
+  <script src="../components/member-card.js"></script>
+  <script src="../components/author-card.js"></script>
+  <script src="../components/remark-card.js"></script>
+  <script src="../components/catalogue.js"></script>
+
+  <script>
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+    var GROUPS = [
+      { title:'Каркас и сессия', items:[
+        ['session.js','BA.session · BA.store · BA.avatars','Состояние авторизации (sessionStorage), общий типизированный стор-наблюдатель (расширяется в M2) и пул аватаров.','§4.1, §7.1, TD-8'],
+        ['frame.js','BA.frame','Мастер-фрейм: единые шапка (гость/участник) и подвал, плавающая ⚙-консоль, модал входа, тосты; перерисовка по ba:session-change.','§4.1, §4.4, §8 (design-axioms)']
+      ]},
+      { title:'Данные (hardcoded + derived)', items:[
+        ['book-data.js','BA.bookData','Модель 7-книжного пака: обложки, издания, цитаты, deep-link, разворотная математика.','§1.6, §4.10'],
+        ['author-data.js','BA.authorData','Пантеон: авторы (Бион/Ферро/Николи) + их работы.','§1.5'],
+        ['publisher-data.js','BA.publisherData','Издатель β→α (Producers); каталог и авторский состав — derived.','§1.5, принцип 7'],
+        ['reader-engine.js','BA.readerEngine','Единый PDF-рендерер (Browse + Delve): разворот, click-turn, серийный pump().','§ Component 3, area 3']
+      ]},
+      { title:'Карточки и обсуждение', items:[
+        ['book-card.js','BA.bookCard','Карточка книги + мини-читалка (Browse).','area 1/2'],
+        ['member-card.js','BA.memberCard','Карточка участника с репутацией.','area 12'],
+        ['author-card.js','BA.authorCard','Карточка автора.','area 5'],
+        ['remark-card.js','BA.remarkCard','Реакции/комментарии (Piece_of_Mind).','area 8'],
+        ['catalogue.js','BA.catalogue','Сетка каталога: поиск/фильтр/сортировка.','area 1']
+      ]},
+      { title:'Оверлеи и консоль', items:[
+        ['notifications.js','BA.notifications','Выпадающие уведомления (C).','area 16'],
+        ['search.js','BA.search','Панель поиска (E).','area 20'],
+        ['pulse.js','BA.pulse','Оверлей «Пульс» (G).','area 17'],
+        ['avatar-menu.js','BA.avatarMenu','Меню аккаунта (D).','area 21'],
+        ['registration.js','BA.registration','Регистрация-намерение (B, заглушка B-4).','area 24'],
+        ['demo.js','BA.demo','Гайд-тур (лёгкая заглушка; богатый тур — Phase 2 / B-1).','area 24'],
+        ['debug.js','BA.debug','Отладочная консоль (H): Users · Cohorts · Simulation · Data · Events · Adaptive.','area 23/22']
+      ]}
+    ];
+    document.addEventListener('DOMContentLoaded', function(){
+      BA.frame.init({ page: 'components' });
+      document.getElementById('cmp-body').innerHTML = GROUPS.map(function(g){
+        return '<section class="cmp-section"><h2>'+esc(g.title)+'</h2><div class="cmp-grid">' +
+          g.items.map(function(it){
+            return '<div class="cmp-card"><p class="cmp-name">'+esc(it[0])+' <span class="cmp-ns">'+esc(it[1])+'</span></p>' +
+              '<p class="cmp-desc">'+esc(it[2])+'</p><p class="cmp-refs">specs: '+esc(it[3])+'</p></div>';
+          }).join('') + '</div></section>';
+      }).join('');
+    });
+  </script>
+</body>
+</html>

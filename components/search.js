@@ -123,21 +123,10 @@
     _input = _panel.querySelector('#ba-search-input');
     _panel.querySelector('#ba-search-close').addEventListener('click', BA.search.close);
 
-    _input.addEventListener('input', function () {
-      clearTimeout(_searchTimer);
-      _searchTimer = setTimeout(function () {
-        var q = _input.value.trim();
-        var hist = _panel.querySelector('#ba-search-history');
-        var res = _panel.querySelector('#ba-search-results');
-        if (q.length >= 2) {
-          hist.style.display = 'none';
-          res.classList.add('has-results');
-        } else {
-          hist.style.display = '';
-          res.classList.remove('has-results');
-        }
-      }, 180);
-    });
+    /* The panel is a launcher; the results surface is search.html (overlay E →
+       results page, system-model §6.1 area 20). Enter (or a recent tag) navigates. */
+    function _go(){ var q=_input.value.trim(); if(q) location.href='search.html?q='+encodeURIComponent(q); }
+    _input.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); _go(); } });
 
     // Scope toggles
     _panel.querySelectorAll('.search-scope-btn').forEach(function (btn) {
@@ -146,11 +135,7 @@
 
     // Recent tags fill input
     _panel.querySelectorAll('.search-history-tag').forEach(function (tag) {
-      tag.addEventListener('click', function () {
-        _input.value = tag.textContent;
-        _input.dispatchEvent(new Event('input'));
-        _input.focus();
-      });
+      tag.addEventListener('click', function () { location.href = 'search.html?q=' + encodeURIComponent(tag.textContent); });
     });
 
     document.addEventListener('keydown', function (e) {

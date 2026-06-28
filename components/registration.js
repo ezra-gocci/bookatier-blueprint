@@ -95,10 +95,21 @@
     _el.querySelector('.reg-close').addEventListener('click', BA.registration.close);
     _el.addEventListener('click', function (e) { if (e.target === _el) BA.registration.close(); });
 
+    /* B-4: intent capture only — no account is created; on submit, record the
+       RegistrationSubmission (specs §1.2) and open Login (not success+autoclose),
+       since accounts remain debug-managed in the Primer (§3.1). */
     _el.querySelector('#reg-form').addEventListener('submit', function (e) {
       e.preventDefault();
-      _el.querySelector('#reg-form').style.display = 'none';
-      _el.querySelector('#reg-success').style.display = 'block';
+      var st = window.BA && BA.store;
+      if (st && st.insert) st.insert('registrationSubmissions', {
+        id: st.uuid(), name: (_el.querySelector('#reg-name').value || ''),
+        email: (_el.querySelector('#reg-email').value || ''),
+        message: (_el.querySelector('#reg-role').value || '') + ' · ' + (_el.querySelector('#reg-spec').value || ''),
+        createdAt: st.nowISO()
+      });
+      BA.registration.close();
+      if (BA.frame && BA.frame.showToast) BA.frame.showToast('Заявка принята — войдите, чтобы продолжить');
+      if (BA.frame && BA.frame.openLogin) setTimeout(BA.frame.openLogin, 280);
     });
 
     _el.querySelector('#reg-done').addEventListener('click', BA.registration.close);

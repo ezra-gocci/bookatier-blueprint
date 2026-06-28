@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Сообщество — β→α академия</title>
+  <!-- ============================================================================
+       community.html — 2nd-level SECTION FRAME (Tier 2): the Community.
+       Feature areas: 12 (Members & Community) · 8 (Reactions & Discussion) ·
+       10 (Reading Clubs) · 18 (Publishing/Post) · 19 (News) · 17 (Pulse).
+       Spec refs: system-model §4.2/§4.8 (Community tabs MemberBoard · Discussion ·
+       ReadingClub · Post · News · Pulse), §6.2; specs §1.9 (Reaction/Vote/Thread),
+       §3.3 (weighted voting), §3.8 (Reviews Professional-only), §2 (events).
+       All tabs consume BA.store (real, sim-populated). Reading is open; WRITE
+       actions + the Post surface are session-gated (CON-01 / §3.5d). Tokens-only. -->
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/chrome.css">
+  <link rel="stylesheet" href="../styles/book-card.css">
+  <style>
+    .sec-main { min-height: 100vh; }
+    .sec-head { background: var(--ink); color: var(--paper); border-bottom: var(--hairline) solid var(--line); }
+    .sec-head-inner { padding: var(--space-8, 32px) 0 var(--space-6, 24px); display: flex;
+      align-items: flex-end; justify-content: space-between; gap: var(--space-5); flex-wrap: wrap; }
+    .sec-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em; color: color-mix(in srgb, var(--accent) 88%, var(--paper)); margin: 0 0 var(--space-1); }
+    .sec-title { font-family: var(--font-serif); font-size: 2rem; font-weight: 600; color: var(--paper); margin: 0; letter-spacing: -0.01em; }
+    .sec-sub { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: color-mix(in srgb, var(--paper) 70%, transparent); margin: var(--space-2) 0 0; max-width: 56ch; }
+    .sec-stats { display: flex; align-items: center; gap: var(--space-5, 20px); }
+    .sec-stat { text-align: center; }
+    .sec-stat-val { display: block; font-family: var(--font-serif); font-size: 1.5rem; font-weight: 600; color: var(--paper); }
+    .sec-stat-lbl { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); text-transform: uppercase; letter-spacing: 0.04em; color: color-mix(in srgb, var(--paper) 60%, transparent); }
+    .sec-tabs { position: sticky; top: var(--header-height, 64px); z-index: 80; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px); border-bottom: var(--hairline) solid var(--line); }
+    .sec-tabs-inner { display: flex; gap: var(--space-1, 4px); overflow-x: auto; }
+    .sec-tab { font-family: var(--font-sans); font-size: var(--fs-body, 16px); font-weight: 500; color: var(--ink-soft); background: none; border: none; border-bottom: 2px solid transparent; padding: var(--space-4, 16px); cursor: pointer; white-space: nowrap; transition: color 140ms, border-color 140ms; }
+    .sec-tab:hover { color: var(--ink); }
+    .sec-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
+    .sec-tab-count { font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin-left: 4px; }
+    #sec-content { min-height: 50vh; padding-bottom: var(--space-12); }
+    /* write-gate notice */
+    .gate-note { background: var(--surface-sunk); border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px);
+      padding: var(--space-4, 16px); margin: var(--space-5, 20px) 0; font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
+    .gate-note .btn { white-space: nowrap; }
+    .empty { font-family: var(--font-sans); color: var(--ink-faint); font-style: italic; padding: var(--space-8) 0; text-align: center; }
+    /* member grid */
+    .mb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4, 16px); padding: var(--space-6) 0; }
+    @media (max-width: 860px){ .mb-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px){ .mb-grid { grid-template-columns: 1fr; } }
+    .mb-card { display: flex; gap: var(--space-4, 16px); padding: var(--space-4, 16px); align-items: flex-start;
+      border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); text-decoration: none; transition: border-color 140ms, box-shadow 140ms; }
+    .mb-card:hover { border-color: var(--accent); box-shadow: var(--shadow-soft); }
+    .mb-av { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid var(--line); background: var(--surface-sunk); flex-shrink: 0; }
+    .mb-info { min-width: 0; flex: 1; }
+    .mb-name { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--ink); margin: 0; line-height: 1.25; }
+    .mb-spec { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: 2px 0 0; }
+    .mb-foot { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-3, 12px); flex-wrap: wrap; }
+    .rep-pill { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600;
+      padding: 3px 9px; border-radius: var(--radius-pill, 999px); border: var(--hairline) solid var(--line); color: var(--amber); font-variant-numeric: tabular-nums; }
+    .role-badge { display: inline-flex; align-items: center; font-family: var(--font-sans); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: var(--radius-pill, 999px); border: var(--hairline) solid var(--line); color: var(--ink-soft); }
+    .role-badge--pro { color: var(--sage); border-color: var(--sage); }
+    .role-badge--mod { color: var(--slate); border-color: var(--slate); }
+    .role-badge--adm { color: var(--accent); border-color: var(--accent); }
+    /* discussion list */
+    .disc-list { display: flex; flex-direction: column; gap: var(--space-4, 16px); padding: var(--space-5) 0; }
+    .disc-item { border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); padding: var(--space-4, 16px); }
+    .disc-head { display: flex; align-items: center; gap: var(--space-3, 12px); margin-bottom: var(--space-2, 8px); }
+    .disc-av { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: var(--hairline) solid var(--line); background: var(--surface-sunk); }
+    .disc-who { font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink); }
+    .disc-where { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); }
+    .disc-where a { color: var(--accent); text-decoration: none; }
+    .disc-when { margin-left: auto; font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); }
+    .disc-text { font-family: var(--font-serif); font-size: var(--fs-body, 16px); line-height: 1.6; color: var(--ink); margin: 0 0 var(--space-3); }
+    .disc-foot { display: flex; align-items: center; gap: var(--space-4, 16px); }
+    .vote-ctl { display: inline-flex; align-items: center; gap: var(--space-2, 8px); }
+    .vote-btn { background: var(--surface-sunk); border: var(--hairline) solid var(--line); color: var(--ink-soft); border-radius: var(--radius-pill, 999px);
+      width: 30px; height: 30px; cursor: pointer; font-size: 15px; line-height: 1; transition: all 120ms; }
+    .vote-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .vote-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .vote-score { font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; min-width: 22px; text-align: center; }
+    .disc-reply-btn { background: none; border: none; color: var(--ink-soft); font-family: var(--font-sans); font-size: var(--fs-small, 14px); cursor: pointer; }
+    .disc-reply-btn:hover { color: var(--accent); }
+    .badge-review { display: inline-flex; font-family: var(--font-sans); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--accent); border: var(--hairline) solid var(--accent); border-radius: var(--radius-pill, 999px); padding: 1px 7px; margin-left: var(--space-2); }
+    .disc-replies { margin-top: var(--space-3); padding-left: var(--space-5, 20px); border-left: 2px solid var(--line); display: flex; flex-direction: column; gap: var(--space-2); }
+    .disc-reply { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); }
+    .disc-reply b { color: var(--ink); font-weight: 600; }
+    .compose { display: flex; gap: var(--space-2, 8px); margin-top: var(--space-3); }
+    .compose textarea { flex: 1; resize: vertical; min-height: 38px; font-family: var(--font-sans); font-size: var(--fs-small, 14px);
+      padding: 8px 12px; border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface-sunk); color: var(--ink); }
+    .compose textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    /* clubs / news / post / pulse */
+    .clab-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4, 16px); padding: var(--space-5) 0; }
+    @media (max-width: 700px){ .clab-grid { grid-template-columns: 1fr; } }
+    .clab-card { border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); padding: var(--space-5, 20px); }
+    .clab-name { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--ink); margin: 0 0 var(--space-2); }
+    .clab-desc { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); line-height: 1.5; margin: 0 0 var(--space-3); }
+    .clab-meta { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); }
+    .clab-owners { display: flex; gap: 4px; margin-top: var(--space-3); }
+    .clab-owner-av { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--surface); margin-left: -8px; object-fit: cover; background: var(--surface-sunk); }
+    .clab-owner-av:first-child { margin-left: 0; }
+    .news-list { display: flex; flex-direction: column; gap: var(--space-4, 16px); padding: var(--space-5) 0; }
+    .news-item { border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); padding: var(--space-5, 20px); }
+    .news-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin: 0 0 var(--space-1); display: flex; align-items: center; gap: var(--space-2); }
+    .news-seal { width: 22px; height: 22px; border-radius: var(--radius-sm, 6px); background: var(--ink); color: var(--paper); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 11px; font-weight: 700; }
+    .news-title { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--ink); margin: 0 0 var(--space-2); }
+    .news-body { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); line-height: 1.6; margin: 0; }
+    .news-when { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin-top: var(--space-2); }
+    .post-form { max-width: 600px; padding: var(--space-6) 0; }
+    .post-form label { display: block; font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink); margin: var(--space-4) 0 var(--space-2); }
+    .post-form textarea, .post-form select, .post-form input { width: 100%; box-sizing: border-box; font-family: var(--font-sans); font-size: var(--fs-small, 14px);
+      padding: 9px 13px; border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface-sunk); color: var(--ink); }
+    .post-form textarea { min-height: 110px; resize: vertical; }
+    .post-row { display: flex; gap: var(--space-4); flex-wrap: wrap; }
+    .post-row > div { flex: 1; min-width: 180px; }
+    .pulse-feed { display: flex; flex-direction: column; gap: 2px; padding: var(--space-5) 0; }
+    .pulse-row { display: flex; align-items: baseline; gap: var(--space-3, 12px); padding: var(--space-3, 12px) 0; border-bottom: var(--hairline) solid var(--line); }
+    .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; align-self: center; }
+    .pulse-dot--resource { background: var(--slate); }
+    .pulse-dot--personal { background: var(--sage); }
+    .pulse-text { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink); flex: 1; }
+    .pulse-text b { font-weight: 600; }
+    .pulse-when { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); white-space: nowrap; }
+    .pulse-dom { font-family: var(--font-sans); font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-faint); border: var(--hairline) solid var(--line); border-radius: var(--radius-pill, 999px); padding: 1px 6px; }
+  </style>
+</head>
+<body>
+  <main id="main-content" data-page-body class="sec-main">
+    <section class="sec-head">
+      <div class="container sec-head-inner">
+        <div>
+          <p class="sec-eyebrow">Сообщество</p>
+          <h1 class="sec-title">Сообщество</h1>
+          <p class="sec-sub">Профессиональная среда: участники, обсуждения, читательские клубы, публикации и пульс платформы.</p>
+        </div>
+        <div class="sec-stats" id="sec-stats"></div>
+      </div>
+    </section>
+    <nav class="sec-tabs" aria-label="Разделы сообщества">
+      <div class="container sec-tabs-inner" id="sec-tabs"></div>
+    </nav>
+    <div class="container" id="sec-content"></div>
+  </main>
+
+  <script src="../components/session.js"></script>
+  <!-- data + engine (load order: data → member-data → store → sim) -->
+  <script src="../components/book-data.js"></script>
+  <script src="../components/author-data.js"></script>
+  <script src="../components/publisher-data.js"></script>
+  <script src="../components/member-data.js"></script>
+  <script src="../components/store.js"></script>
+  <script src="../components/sim.js"></script>
+  <script src="../components/frame.js"></script>
+  <script src="../components/avatar-menu.js"></script>
+  <script src="../components/notifications.js"></script>
+  <script src="../components/search.js"></script>
+  <script src="../components/pulse.js"></script>
+  <script src="../components/debug.js"></script>
+  <script src="../components/registration.js"></script>
+  <script src="../components/demo.js"></script>
+  <script src="../components/reader-engine.js"></script>
+  <script src="../components/book-card.js"></script>
+  <script src="../components/member-card.js"></script>
+  <script src="../components/remark-card.js"></script>
+  <script src="../components/author-card.js"></script>
+
+  <script>
+    /* ── Community section frame — every tab consumes BA.store (sim-populated). ── */
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+    var TABS = [
+      { key:'member-board', label:'Участники' }, { key:'discussion', label:'Обсуждения' },
+      { key:'reading-club', label:'Клубы' }, { key:'post', label:'Публикация' },
+      { key:'news', label:'Новости' }, { key:'pulse', label:'Пульс' }
+    ];
+    var SAVED_KEY = 'com-tab';
+    var ST = function(){ return window.BA.store; };
+
+    /* ── shared helpers ── */
+    function memberName(id){ var m = ST().memberRecord(id); return m ? m.displayName : id; }
+    function bookTitle(slug){ var b = BA.bookData.get(slug); return b ? b.title : slug; }
+    function timeAgo(iso){
+      if (!iso) return '';
+      var s = Math.floor((Date.now() - new Date(iso).getTime())/1000);
+      if (s < 60) return 'только что';
+      var m = Math.floor(s/60); if (m < 60) return m+' мин. назад';
+      var h = Math.floor(m/60); if (h < 24) return h+' ч. назад';
+      var d = Math.floor(h/24); if (d < 30) return d+' дн. назад';
+      return new Date(iso).toLocaleDateString('ru-RU');
+    }
+    function roleBadge(pp){
+      if (pp.role==='Admin') return '<span class="role-badge role-badge--adm">Админ</span>';
+      if (pp.role==='Moderator') return '<span class="role-badge role-badge--mod">Модератор</span>';
+      if (pp.role==='Professional') return '<span class="role-badge role-badge--pro">Профессионал</span>';
+      return '';
+    }
+    function repPill(pp){ return '<span class="rep-pill">★ '+pp.reputationScore+' · '+esc(pp.rank)+'</span>'; }
+    function gateNote(msg){
+      return '<div class="gate-note"><span>'+esc(msg)+'</span><button class="btn btn-primary" type="button" onclick="BA.frame.openLogin()">Войти</button></div>';
+    }
+
+    /* ── MemberBoard (area 12) ── */
+    function renderMemberBoard(host){
+      var people = BA.memberData.people(); // humans incl. mock; excludes bot/system
+      var cards = people.map(function(m){
+        var pp = ST().publicProfileOf(m.id);
+        return '<a class="mb-card" href="member.html?member='+esc(m.id)+'">' +
+          '<img class="mb-av" src="'+esc(BA.memberData.avatar(m))+'" alt="" loading="lazy">' +
+          '<span class="mb-info"><p class="mb-name">'+esc(pp.displayName)+'</p>' +
+          '<p class="mb-spec">'+esc(m.specialisation||'')+'</p>' +
+          '<span class="mb-foot">'+roleBadge(pp)+repPill(pp)+'</span></span>' +
+        '</a>';
+      }).join('');
+      host.innerHTML = (BA.session.isPrivate()? '' : gateNote('Войдите, чтобы подписываться на коллег и писать сообщения.')) +
+        '<div class="mb-grid">'+cards+'</div>';
+    }
+
+    /* ── Discussion (area 8) — recent comments + reviews with weighted votes ── */
+    function discItem(r){
+      var pp = ST().publicProfileOf(r.authorId) || { displayName: r.authorId, reputationScore:0, rank:'' };
+      var tally = ST().weightedTally('reaction', r.id);
+      var canVote = ST().can('vote');
+      var replies = ST().repliesOf(r.id);
+      var isReview = r.form==='review';
+      var text = r.piece ? r.piece.text : '';
+      var repliesHTML = replies.slice(0,3).map(function(rp){
+        return '<div class="disc-reply"><b>'+esc(memberName(rp.authorId))+'</b>: '+esc(rp.piece?rp.piece.text:'')+'</div>';
+      }).join('');
+      return '<div class="disc-item" data-rid="'+esc(r.id)+'">' +
+        '<div class="disc-head">' +
+          '<img class="disc-av" src="'+esc(BA.memberData.avatar(ST().memberRecord(r.authorId)||{id:r.authorId}))+'" alt="">' +
+          '<span><span class="disc-who">'+esc(pp.displayName)+'</span>'+(isReview?'<span class="badge-review">Рецензия'+(r.rating?' ★'+r.rating:'')+'</span>':'')+
+          '<br><span class="disc-where">о книге «<a href="book.html?book='+esc(r.targetId)+'">'+esc(bookTitle(r.targetId))+'</a>»</span></span>' +
+          '<span class="disc-when">'+esc(timeAgo(r.createdAt))+'</span>' +
+        '</div>' +
+        '<p class="disc-text">'+esc(text)+'</p>' +
+        '<div class="disc-foot">' +
+          '<span class="vote-ctl"><button class="vote-btn" data-vote="up" '+(canVote?'':'disabled')+' title="За" aria-label="Голос за">▲</button>' +
+          '<span class="vote-score">'+(tally.score||0)+'</span>' +
+          '<button class="vote-btn" data-vote="down" '+(canVote?'':'disabled')+' title="Против" aria-label="Голос против">▼</button></span>' +
+          '<button class="disc-reply-btn" data-reply '+(ST().can('reply')?'':'disabled style="opacity:.5"')+'>Ответить'+(replies.length?' · '+replies.length:'')+'</button>' +
+        '</div>' +
+        (repliesHTML?'<div class="disc-replies">'+repliesHTML+'</div>':'') +
+      '</div>';
+    }
+    function renderDiscussion(host){
+      var rx = ST().find('reactions', function(r){ return (r.form==='comment'||r.form==='review') && r.targetType==='publication' && !r.deleted; })
+        .sort(function(a,b){ return (b.createdAt||'').localeCompare(a.createdAt||''); }).slice(0,24);
+      host.innerHTML = (BA.session.isPrivate()? '' : gateNote('Войдите, чтобы голосовать и отвечать. Рецензии доступны профессионалам.')) +
+        (rx.length? '<div class="disc-list">'+rx.map(discItem).join('')+'</div>' : '<p class="empty">Обсуждений пока нет.</p>');
+      if (host._discWired) return;
+      host._discWired = true;
+      host.addEventListener('click', function(e){
+        if (!document.querySelector('.disc-list')) return;       // only act while Discussion is shown
+        var item = e.target.closest('.disc-item'); if (!item) return;
+        var rid = item.getAttribute('data-rid');
+        var rec = ST().first('reactions', function(r){ return r.id===rid; });
+        var vb = e.target.closest('.vote-btn');
+        if (vb && rec){ if(!ST().can('vote')){ BA.frame.openLogin(); return; }
+          ST().castVote({ target:{type:'reaction', id:rid}, direction: vb.getAttribute('data-vote'), recipientId: rec.authorId });
+          renderDiscussion(host); return; }
+        if (e.target.closest('[data-reply]') && rec){ if(!ST().can('reply')){ BA.frame.openLogin(); return; }
+          toggleReply(item, rid); }
+      });
+    }
+    function toggleReply(item, rid){
+      if (item.querySelector('.compose')) return;
+      var box = document.createElement('div'); box.className='compose';
+      box.innerHTML = '<textarea placeholder="Ваш ответ…"></textarea><button class="btn btn-primary" type="button">Отправить</button>';
+      item.appendChild(box);
+      box.querySelector('button').addEventListener('click', function(){
+        var t = box.querySelector('textarea').value.trim(); if(!t) return;
+        ST().addReply({ parentReactionId: rid, text: t });
+        BA.frame.showToast('Ответ опубликован');
+        renderDiscussion(document.getElementById('sec-content'));
+      });
+    }
+
+    /* ── Reading Clubs (area 10) ── */
+    var CLUBS = [
+      { id:'bion-field', name:'Бионианское поле', desc:'Совместное чтение Биона и постбионианцев: внимание, контейнирование, теория мышления.', owners:['u3','u6'], members:14 },
+      { id:'italian', name:'Итальянская школа', desc:'Ферро, Николи и аналитическое поле — обсуждаем перевод и клинику.', owners:['u2','u7'], members:11 },
+      { id:'clinic', name:'Клинический семинар', desc:'Разбор виньеток, техника интерпретации, перенос и контрперенос.', owners:['u5'], members:9 }
+    ];
+    function renderClubs(host){
+      var canCreate = ST().can('create_club');
+      var cards = CLUBS.map(function(c){
+        var owners = c.owners.map(function(id){ return '<img class="clab-owner-av" src="'+esc(BA.memberData.avatar(ST().memberRecord(id)||{id:id}))+'" alt="'+esc(memberName(id))+'" title="'+esc(memberName(id))+'">'; }).join('');
+        return '<div class="clab-card"><p class="clab-name">'+esc(c.name)+'</p>' +
+          '<p class="clab-desc">'+esc(c.desc)+'</p>' +
+          '<p class="clab-meta">'+c.members+' участников · ведут: '+c.owners.map(memberName).map(esc).join(', ')+'</p>' +
+          '<div class="clab-owners">'+owners+'</div></div>';
+      }).join('');
+      host.innerHTML = '<div class="gate-note"><span>Читательский клуб — именованное подмножество участников с собственными обсуждениями. Создавать клубы могут профессионалы (Verified).</span>' +
+        (canCreate? '<button class="btn btn-primary" type="button" onclick="BA.frame.showToast(\'Создание клуба — заглушка Primer\')">Создать клуб</button>' : '<button class="btn btn-ghost" type="button" disabled title="Только для профессионалов">Создать клуб</button>') +
+        '</div><div class="clab-grid">'+cards+'</div>';
+    }
+
+    /* ── Post (area 18) — publish surface ── */
+    function renderPost(host){
+      if (!BA.session.isPrivate()){ host.innerHTML = gateNote('Войдите, чтобы опубликовать заметку или подборку.'); return; }
+      host.innerHTML = '<form class="post-form" id="post-form">' +
+        '<label for="pf-title">Заголовок</label><input id="pf-title" type="text" placeholder="Краткий заголовок">' +
+        '<label for="pf-text">Текст (частная заметка → публичная)</label><textarea id="pf-text" placeholder="Поделитесь мыслью с сообществом…"></textarea>' +
+        '<div class="post-row"><div><label for="pf-dest">Куда</label><select id="pf-dest">' +
+          '<option value="discussions">В обсуждения</option><option value="club">В клуб</option></select></div>' +
+        '<div><label for="pf-vis">Кому</label><select id="pf-vis"><option value="public">Всем</option><option value="member-only">Только участникам</option></select></div></div>' +
+        '<div style="margin-top:var(--space-5)"><button class="btn btn-primary" type="submit">Опубликовать</button></div>' +
+        '<p class="clab-meta" style="margin-top:var(--space-3)">Публикация делает частный материал публичным (Post — действие, не сущность; принцип §1.12). Новости (β→α) публикует Ресурс.</p>' +
+      '</form>';
+      document.getElementById('post-form').addEventListener('submit', function(e){
+        e.preventDefault();
+        var title = document.getElementById('pf-title').value.trim();
+        var text = document.getElementById('pf-text').value.trim();
+        if (!text){ return; }
+        ST().publishPost({ itemKind:'piece', title:title, text:text, destination:document.getElementById('pf-dest').value, visibility:document.getElementById('pf-vis').value });
+        BA.frame.showToast('Опубликовано в сообществе');
+        e.target.reset();
+      });
+    }
+
+    /* ── News (area 19) — Resource posts via Bot ── */
+    function renderNews(host){
+      var news = ST().find('events', function(e){ return e.action.codename==='post.published' && e.action.params && e.action.params.destination==='public-news'; })
+        .sort(function(a,b){ return (b.timestamp||'').localeCompare(a.timestamp||''); });
+      host.innerHTML = news.length? '<div class="news-list">'+news.map(function(e){
+        var p = e.action.params;
+        return '<div class="news-item"><p class="news-eyebrow"><span class="news-seal">β→α</span> Новость издательства</p>' +
+          '<p class="news-title">'+esc(p.title||'Новость')+'</p>' +
+          '<p class="news-body">'+esc(p.text||'')+'</p>' +
+          '<p class="news-when">'+esc(timeAgo(e.timestamp))+'</p></div>';
+      }).join('')+'</div>' : '<p class="empty">Новостей пока нет.</p>';
+    }
+
+    /* ── Pulse (area 17) — mixed-domain event stream ── */
+    function eventLine(e){
+      var who = e.who && e.who.entity==='bot' ? 'β→α' : memberName(e.who.entity_id);
+      var c = e.action.codename, w = e.with_what, p = e.action.params||{};
+      var tgt = w ? (w.entity==='publication'? '«'+esc(bookTitle(w.entity_id))+'»' : w.entity==='member'? esc(memberName(w.entity_id)) : esc(w.entity)) : '';
+      switch(c){
+        case 'comment.created': return '<b>'+esc(who)+'</b> прокомментировал(а) '+tgt;
+        case 'review.created': return '<b>'+esc(who)+'</b> написал(а) рецензию на '+tgt+(p.rating?' · ★'+p.rating:'');
+        case 'reply.created': return '<b>'+esc(who)+'</b> ответил(а) в обсуждении';
+        case 'vote.cast': return '<b>'+esc(who)+'</b> проголосовал(а) за '+(w&&w.entity==='reaction'?'комментарий':tgt);
+        case 'reputation.changed': return 'репутация <b>'+esc(memberName(p.recipient_id))+'</b> '+(p.delta>=0?'+':'')+p.delta+(p.rank_crossed?' · новый ранг '+esc(p.new_rank):'');
+        case 'shelf.status.changed': return '<b>'+esc(who)+'</b> отметил(а) '+tgt+' — '+esc(p.status==='reading'?'читает':p.status);
+        case 'post.published': return p.destination==='public-news'? '<b>β→α</b>: '+esc(p.title||'новость') : '<b>'+esc(who)+'</b> опубликовал(а) запись';
+        case 'book.opened': return '<b>'+esc(who)+'</b> открыл(а) '+tgt;
+        case 'track.added': return '<b>'+esc(who)+'</b> подписался(ась) на '+tgt;
+        default: return '<b>'+esc(who)+'</b> · '+esc(c);
+      }
+    }
+    function renderPulse(host){
+      var viewer = ST().activeId();
+      var evs = ST().pulse(viewer).slice(0, 60);
+      if (!evs.length){ host.innerHTML = '<p class="empty">Пульс пока тих.</p>'; return; }
+      host.innerHTML = '<div class="pulse-feed">'+evs.map(function(e){
+        var dom = ST().domainOf(e, viewer);
+        var cls = dom==='Resource'?' pulse-dot--resource':dom==='Personal'?' pulse-dot--personal':'';
+        var label = dom==='Resource'?'Ресурс':dom==='Personal'?'Личное':'Сообщество';
+        return '<div class="pulse-row"><span class="pulse-dot'+cls+'"></span>' +
+          '<span class="pulse-text">'+eventLine(e)+'</span>' +
+          '<span class="pulse-dom">'+label+'</span>' +
+          '<span class="pulse-when">'+esc(timeAgo(e.timestamp))+'</span></div>';
+      }).join('')+'</div>';
+    }
+
+    /* ── frame ── */
+    function renderStats(){
+      var members = BA.memberData.people().length;
+      var disc = ST().find('reactions', function(r){ return r.form==='comment'||r.form==='review'; }).length;
+      document.getElementById('sec-stats').innerHTML =
+        '<div class="sec-stat"><span class="sec-stat-val">'+members+'</span><span class="sec-stat-lbl">участников</span></div>' +
+        '<div class="sec-stat"><span class="sec-stat-val">'+disc+'</span><span class="sec-stat-lbl">обсуждений</span></div>';
+    }
+    function renderTabs(active){
+      document.getElementById('sec-tabs').innerHTML = TABS.map(function(t){
+        return '<button class="sec-tab'+(t.key===active?' is-active':'')+'" data-tab="'+t.key+'">'+esc(t.label)+'</button>';
+      }).join('');
+    }
+    function showTab(key){
+      var host = document.getElementById('sec-content'); host.innerHTML='';
+      renderTabs(key);
+      try { BA.store.set(SAVED_KEY, key); } catch(e){}
+      var url = new URL(location.href); url.searchParams.set('tab', key); history.replaceState(null,'',url);
+      if (key==='member-board') renderMemberBoard(host);
+      else if (key==='discussion') renderDiscussion(host);
+      else if (key==='reading-club') renderClubs(host);
+      else if (key==='post') renderPost(host);
+      else if (key==='news') renderNews(host);
+      else renderPulse(host);
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+      BA.frame.init({ page: 'community' });
+      if (BA.sim) BA.sim.ensure();
+      renderStats();
+      document.getElementById('sec-tabs').addEventListener('click', function(e){
+        var t = e.target.closest('.sec-tab'); if (t) showTab(t.getAttribute('data-tab'));
+      });
+      document.addEventListener('ba:session-change', function(){ renderStats(); var a=document.querySelector('.sec-tab.is-active'); if(a) showTab(a.getAttribute('data-tab')); });
+      var params = new URLSearchParams(location.search);
+      var saved = null; try { saved = BA.store.get(SAVED_KEY); } catch(e){}
+      var initial = params.get('tab') || saved || 'member-board';
+      if (!TABS.some(function(t){ return t.key===initial; })) initial = 'member-board';
+      showTab(initial);
+    });
+  </script>
+</body>
+</html>

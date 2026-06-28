@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кабинет — β→α академия</title>
+  <!-- ============================================================================
+       cabinet.html — 2nd-level SECTION FRAME (Tier 2): the Cabinet.
+       Feature areas: 15 (Personal Home & Cabinet) · 14 (Shelf) · 4 (Annotations &
+       Citations) · 11 (Messaging) · 9 (Reputation) · 13 (Following).
+       Spec refs: system-model §4.2/§4.8 (tabs: Poster=site Home [default] ·
+       Overview · Profile · Shelf · Excerpt · Correspondence), §6.2; specs §1.14
+       (ShelfStatus/Progress/Track), §1.11 (Fragment/Excerpt/Citation), §1.9
+       (Chat/Message), §3.2 (Rank). All tabs consume BA.store. Personal surfaces →
+       session-gated (CON-01 / §3.5d). Tokens-only. -->
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/chrome.css">
+  <link rel="stylesheet" href="../styles/book-card.css">
+  <style>
+    .sec-main { min-height: 100vh; }
+    .sec-head { background: var(--surface); border-bottom: var(--hairline) solid var(--line); }
+    .sec-head-inner { padding: var(--space-7, 28px) 0 var(--space-5, 20px); display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-5); flex-wrap: wrap; }
+    .sec-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin: 0 0 var(--space-1); }
+    .sec-title { font-family: var(--font-serif); font-size: 2rem; font-weight: 600; color: var(--ink); margin: 0; letter-spacing: -0.01em; }
+    .sec-sub { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); margin: var(--space-2) 0 0; max-width: 56ch; }
+    .sec-id { display: flex; align-items: center; gap: var(--space-3, 12px); }
+    .sec-id-av { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid var(--line); background: var(--surface-sunk); }
+    .sec-id-name { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--ink); margin: 0; }
+    .sec-id-meta { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: 2px 0 0; }
+    .sec-tabs { position: sticky; top: var(--header-height, 64px); z-index: 80; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px); border-bottom: var(--hairline) solid var(--line); }
+    .sec-tabs-inner { display: flex; gap: var(--space-1, 4px); overflow-x: auto; }
+    .sec-tab { font-family: var(--font-sans); font-size: var(--fs-body, 16px); font-weight: 500; color: var(--ink-soft); background: none; border: none; border-bottom: 2px solid transparent; padding: var(--space-4, 16px); cursor: pointer; white-space: nowrap; transition: color 140ms, border-color 140ms; }
+    .sec-tab:hover { color: var(--ink); }
+    .sec-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
+    #sec-content { min-height: 50vh; padding-bottom: var(--space-12); }
+    .sec-gate { padding: var(--space-16, 64px) var(--space-4); text-align: center; max-width: 44ch; margin: 0 auto; }
+    .sec-gate h2 { font-family: var(--font-serif); font-size: var(--fs-h2, 22px); color: var(--ink); margin: 0 0 var(--space-3); }
+    .sec-gate p { font-family: var(--font-sans); font-size: var(--fs-body, 16px); color: var(--ink-soft); line-height: 1.6; margin: 0 0 var(--space-5); }
+    .empty { font-family: var(--font-sans); color: var(--ink-faint); font-style: italic; padding: var(--space-6) 0; }
+    /* generic section heading inside a tab */
+    .cb-block { padding: var(--space-6) 0 0; }
+    .cb-block-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-4); }
+    .cb-block-title { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--ink); margin: 0; }
+    .cb-block-link { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--accent); text-decoration: none; white-space: nowrap; }
+    /* book rail */
+    .cb-rail { display: flex; gap: var(--space-4, 16px); overflow-x: auto; padding-bottom: var(--space-2); }
+    .cb-bcard { min-width: 150px; max-width: 150px; text-decoration: none; }
+    .cb-bcard-cover { width: 150px; height: 210px; object-fit: cover; border-radius: var(--radius-sm, 6px); border: var(--hairline) solid var(--line); box-shadow: var(--shadow-soft); display: block; }
+    .cb-bcard-title { font-family: var(--font-serif); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink); margin: var(--space-2) 0 0; line-height: 1.25; }
+    .cb-bcard-sub { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: 2px 0 0; }
+    .cb-progress { height: 4px; border-radius: 2px; background: var(--surface-sunk); margin-top: var(--space-2); overflow: hidden; }
+    .cb-progress span { display: block; height: 100%; background: var(--accent); }
+    /* feed */
+    .cb-feed { display: flex; flex-direction: column; }
+    .cb-feed-row { display: flex; align-items: baseline; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: var(--hairline) solid var(--line); font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink); }
+    .cb-feed-row b { font-weight: 600; }
+    .cb-feed-when { margin-left: auto; color: var(--ink-faint); font-size: var(--fs-caption, 12px); white-space: nowrap; }
+    /* overview stats */
+    .cb-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4, 16px); padding: var(--space-6) 0; }
+    @media (max-width: 720px){ .cb-stats { grid-template-columns: repeat(2, 1fr); } }
+    .cb-stat { border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); padding: var(--space-5, 20px); text-align: center; }
+    .cb-stat-val { font-family: var(--font-serif); font-size: 2rem; font-weight: 600; color: var(--ink); display: block; }
+    .cb-stat-lbl { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.04em; }
+    .cb-rank { border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); padding: var(--space-5, 20px); margin-top: var(--space-2); }
+    .cb-rank-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-3); }
+    .cb-rank-name { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--ink); }
+    .cb-rank-xp { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+    .cb-rank-bar { height: 8px; border-radius: 4px; background: var(--surface-sunk); overflow: hidden; }
+    .cb-rank-bar span { display: block; height: 100%; background: var(--accent); }
+    .cb-rank-note { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin-top: var(--space-2); }
+    /* profile form */
+    .cb-form { max-width: 620px; padding: var(--space-6) 0; }
+    .cb-form label { display: block; font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink); margin: var(--space-4) 0 var(--space-2); }
+    .cb-form input, .cb-form textarea, .cb-form select { width: 100%; box-sizing: border-box; font-family: var(--font-sans); font-size: var(--fs-small, 14px); padding: 9px 13px; border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface-sunk); color: var(--ink); }
+    .cb-form textarea { min-height: 90px; resize: vertical; }
+    .cb-twocol { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6); }
+    @media (max-width: 820px){ .cb-twocol { grid-template-columns: 1fr; } }
+    .cb-preview { border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); padding: var(--space-5); }
+    .cb-pp-row { display: flex; align-items: center; gap: var(--space-3); }
+    .cb-pp-av { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid var(--line); }
+    .role-badge { display: inline-flex; font-family: var(--font-sans); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; border-radius: var(--radius-pill, 999px); border: var(--hairline) solid var(--line); color: var(--ink-soft); }
+    .role-badge--pro { color: var(--sage); border-color: var(--sage); }
+    .rep-pill { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; padding: 3px 9px; border-radius: var(--radius-pill, 999px); border: var(--hairline) solid var(--line); color: var(--amber); }
+    .cb-stub-card { border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface-sunk); padding: var(--space-5); margin-top: var(--space-4); font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); }
+    /* shelf */
+    .cb-shelf-group { padding: var(--space-6) 0 0; }
+    .cb-shelf-title { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-faint); margin: 0 0 var(--space-3); }
+    .cb-shelf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-4); }
+    /* excerpt */
+    .cb-exc { border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); padding: var(--space-5); margin-bottom: var(--space-4); }
+    .cb-exc-text { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); line-height: 1.6; color: var(--ink); margin: 0 0 var(--space-3); font-style: italic; }
+    .cb-exc-cite { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: 0 0 var(--space-3); }
+    .cb-exc-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+    .cb-exc-btn { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); padding: 6px 12px; border-radius: var(--radius-pill, 999px); border: var(--hairline) solid var(--line); background: var(--surface); color: var(--ink-soft); cursor: pointer; text-decoration: none; }
+    .cb-exc-btn:hover { border-color: var(--accent); color: var(--accent); }
+    /* correspondence */
+    .cb-chat-layout { display: grid; grid-template-columns: 240px 1fr; gap: var(--space-5); padding: var(--space-6) 0; }
+    @media (max-width: 700px){ .cb-chat-layout { grid-template-columns: 1fr; } }
+    .cb-chat-list { display: flex; flex-direction: column; gap: var(--space-2); }
+    .cb-chat-item { display: flex; gap: var(--space-3); align-items: center; padding: var(--space-3); border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); cursor: pointer; }
+    .cb-chat-item.is-active { border-color: var(--accent); }
+    .cb-chat-av { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: var(--surface-sunk); }
+    .cb-chat-name { font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink); }
+    .cb-msgs { border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); min-height: 240px; }
+    .cb-msg { max-width: 75%; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md, 10px); font-family: var(--font-sans); font-size: var(--fs-small, 14px); line-height: 1.5; }
+    .cb-msg--in { align-self: flex-start; background: var(--surface-sunk); color: var(--ink); }
+    .cb-msg--out { align-self: flex-end; background: var(--accent-tint); color: var(--ink); }
+    .cb-msg-when { font-size: 10px; color: var(--ink-faint); margin-top: 2px; }
+    .cb-msg-compose { display: flex; gap: var(--space-2); margin-top: var(--space-4); }
+    .cb-msg-compose input { flex: 1; font-family: var(--font-sans); font-size: var(--fs-small, 14px); padding: 9px 13px; border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface-sunk); color: var(--ink); }
+  </style>
+</head>
+<body>
+  <main id="main-content" data-page-body class="sec-main">
+    <section class="sec-head"><div class="container sec-head-inner" id="sec-head"></div></section>
+    <nav class="sec-tabs" aria-label="Разделы кабинета"><div class="container sec-tabs-inner" id="sec-tabs"></div></nav>
+    <div class="container" id="sec-content"></div>
+  </main>
+
+  <script src="../components/session.js"></script>
+  <script src="../components/book-data.js"></script>
+  <script src="../components/author-data.js"></script>
+  <script src="../components/publisher-data.js"></script>
+  <script src="../components/member-data.js"></script>
+  <script src="../components/store.js"></script>
+  <script src="../components/sim.js"></script>
+  <script src="../components/frame.js"></script>
+  <script src="../components/avatar-menu.js"></script>
+  <script src="../components/notifications.js"></script>
+  <script src="../components/search.js"></script>
+  <script src="../components/pulse.js"></script>
+  <script src="../components/debug.js"></script>
+  <script src="../components/registration.js"></script>
+  <script src="../components/demo.js"></script>
+  <script src="../components/reader-engine.js"></script>
+  <script src="../components/book-card.js"></script>
+
+  <script>
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+    var ST = function(){ return window.BA.store; };
+    var TABS = [
+      { key:'poster', label:'Афиша' }, { key:'overview', label:'Сводка' }, { key:'profile', label:'Профиль' },
+      { key:'shelf', label:'Полка' }, { key:'excerpt', label:'Выдержки' }, { key:'correspondence', label:'Переписка' }
+    ];
+    var SAVED_KEY = 'cab-tab';
+    var SHELF_GROUPS = [
+      { key:'reading', label:'Читаю' }, { key:'to_read', label:'Хочу прочитать' },
+      { key:'read', label:'Прочитано' }, { key:'favourite', label:'Избранное' }
+    ];
+
+    function uid(){ return ST().activeId(); }
+    function bookTitle(slug){ var b=BA.bookData.get(slug); return b?b.title:slug; }
+    function timeAgo(iso){ if(!iso) return ''; var s=Math.floor((Date.now()-new Date(iso).getTime())/1000); if(s<60)return 'только что'; var m=Math.floor(s/60); if(m<60)return m+' мин. назад'; var h=Math.floor(m/60); if(h<24)return h+' ч. назад'; var d=Math.floor(h/24); if(d<30)return d+' дн. назад'; return new Date(iso).toLocaleDateString('ru-RU'); }
+    function memberName(id){ var m=ST().memberRecord(id); return m?m.displayName:id; }
+    function eventLine(e){
+      var who = e.who && e.who.entity==='bot' ? 'β→α' : memberName(e.who.entity_id);
+      var c=e.action.codename, w=e.with_what, p=e.action.params||{};
+      var tgt = w&&w.entity==='publication' ? '«'+bookTitle(w.entity_id)+'»' : w&&w.entity==='member'? memberName(w.entity_id):'';
+      switch(c){
+        case 'comment.created': return '<b>'+esc(who)+'</b> прокомментировал(а) '+esc(tgt);
+        case 'review.created': return '<b>'+esc(who)+'</b> написал(а) рецензию на '+esc(tgt)+(p.rating?' · ★'+p.rating:'');
+        case 'reply.created': return '<b>'+esc(who)+'</b> ответил(а) в обсуждении';
+        case 'vote.cast': return '<b>'+esc(who)+'</b> проголосовал(а) за '+(w&&w.entity==='reaction'?'комментарий':esc(tgt));
+        case 'shelf.status.changed': return '<b>'+esc(who)+'</b> отметил(а) '+esc(tgt);
+        case 'post.published': return p.destination==='public-news'?'<b>β→α</b>: '+esc(p.title||'новость'):'<b>'+esc(who)+'</b> опубликовал(а) запись';
+        case 'book.opened': return '<b>'+esc(who)+'</b> открыл(а) '+esc(tgt);
+        case 'track.added': return '<b>'+esc(who)+'</b> подписался(ась) на '+esc(tgt);
+        default: return '<b>'+esc(who)+'</b> · '+esc(c);
+      }
+    }
+    function bookCard(slug, sub, progressPct, href){
+      var b = BA.bookData.get(slug); if(!b) return '';
+      return '<a class="cb-bcard" href="'+(href||('book.html?book='+esc(slug)))+'">' +
+        '<img class="cb-bcard-cover" src="'+esc(b.covers.medium)+'" alt="Обложка: '+esc(b.title)+'" loading="lazy">' +
+        '<p class="cb-bcard-title">'+esc(b.title)+'</p>' +
+        '<p class="cb-bcard-sub">'+esc(sub||b.author||'')+'</p>' +
+        (progressPct!=null?'<div class="cb-progress"><span style="width:'+Math.max(4,progressPct)+'%"></span></div>':'') +
+      '</a>';
+    }
+
+    /* ── Poster = site Home (default) ── */
+    function renderPoster(host){
+      var u = uid();
+      var cont = ST().continueReading(u).slice(0,5);
+      var contHTML = cont.length ? cont.map(function(p){ return bookCard(p.publicationId, 'стр. '+p.page+' · '+(p.percent||0)+'%', p.percent||0, 'reader.html?book='+encodeURIComponent(p.publicationId)+'&v='+encodeURIComponent(p.editionId||'free')+'&p='+(p.page||1)); }).join('') : '<p class="empty">Вы ещё ничего не читаете. Откройте каталог.</p>';
+      var arrivals = BA.bookData.all().slice(0,6).map(function(b){ return bookCard(b.slug, b.editor?b.editor+' (ред.)':b.author); }).join('');
+      var feed = ST().activityFeed(u).slice(0,6);
+      var feedHTML = feed.length ? feed.map(function(e){ return '<div class="cb-feed-row">'+eventLine(e)+'<span class="cb-feed-when">'+esc(timeAgo(e.timestamp))+'</span></div>'; }).join('') : '<p class="empty">Подпишитесь на коллег и авторов, чтобы видеть их активность.</p>';
+      var news = ST().find('events', function(e){ return e.action.codename==='post.published' && e.action.params && e.action.params.destination==='public-news'; }).sort(function(a,b){return (b.timestamp||'').localeCompare(a.timestamp||'');}).slice(0,2);
+      var newsHTML = news.map(function(e){ return '<div class="cb-feed-row"><b>β→α</b> · '+esc(e.action.params.title||'новость')+'<span class="cb-feed-when">'+esc(timeAgo(e.timestamp))+'</span></div>'; }).join('');
+      host.innerHTML =
+        '<section class="cb-block"><div class="cb-block-head"><h2 class="cb-block-title">Продолжить чтение</h2><a class="cb-block-link" href="cabinet.html?tab=shelf">Полка →</a></div><div class="cb-rail">'+contHTML+'</div></section>' +
+        '<section class="cb-block"><div class="cb-block-head"><h2 class="cb-block-title">Новые поступления</h2><a class="cb-block-link" href="library.html">Каталог →</a></div><div class="cb-rail">'+arrivals+'</div></section>' +
+        '<section class="cb-block"><div class="cb-block-head"><h2 class="cb-block-title">Лента сообщества</h2><a class="cb-block-link" href="community.html?tab=pulse">Пульс →</a></div><div class="cb-feed">'+feedHTML+'</div></section>' +
+        (newsHTML?'<section class="cb-block"><div class="cb-block-head"><h2 class="cb-block-title">Новости β→α</h2><a class="cb-block-link" href="community.html?tab=news">Все новости →</a></div><div class="cb-feed">'+newsHTML+'</div></section>':'');
+    }
+
+    /* ── Overview = member stats ── */
+    function renderOverview(host){
+      var u = uid();
+      var st = ST().readingStats(u);
+      var xp = ST().xpOf(u);
+      var rank = ST().rankOf(xp);
+      var ths = ST().settings().rankThresholds;
+      var next = ths.filter(function(t){ return t.min > xp; })[0];
+      var pct = next ? Math.round(((xp - rank.min) / (next.min - rank.min)) * 100) : 100;
+      host.innerHTML =
+        '<div class="cb-stats">' +
+          '<div class="cb-stat"><span class="cb-stat-val">'+st.sessions+'</span><span class="cb-stat-lbl">сессий чтения</span></div>' +
+          '<div class="cb-stat"><span class="cb-stat-val">'+st.pages+'</span><span class="cb-stat-lbl">страниц</span></div>' +
+          '<div class="cb-stat"><span class="cb-stat-val">'+st.minutes+'</span><span class="cb-stat-lbl">минут</span></div>' +
+          '<div class="cb-stat"><span class="cb-stat-val">'+st.comments+'</span><span class="cb-stat-lbl">комментариев</span></div>' +
+        '</div>' +
+        '<div class="cb-rank"><div class="cb-rank-head"><span class="cb-rank-name">Ранг: '+esc(rank.name)+' ×'+rank.multiplier+'</span><span class="cb-rank-xp">★ '+xp+' XP</span></div>' +
+          '<div class="cb-rank-bar"><span style="width:'+pct+'%"></span></div>' +
+          '<p class="cb-rank-note">'+(next?('До ранга «'+esc(next.name)+'»: '+(next.min-xp)+' XP'):'Высший ранг достигнут.')+' Репутация растёт от полученных голосов (specs §3.2).</p></div>' +
+        '<section class="cb-block"><h2 class="cb-block-title">Недавняя активность</h2><div class="cb-feed">' +
+          (ST().memberEvents(u).slice(0,8).map(function(e){ return '<div class="cb-feed-row">'+eventLine(e)+'<span class="cb-feed-when">'+esc(timeAgo(e.timestamp))+'</span></div>'; }).join('') || '<p class="empty">Активности пока нет.</p>') +
+        '</div></section>';
+    }
+
+    /* ── Profile (editable display + PublicProfile preview + stubs) ── */
+    function renderProfile(host){
+      var u = uid();
+      var m = ST().memberRecord(u) || {};
+      var pp = ST().publicProfileOf(u);
+      host.innerHTML = '<div class="cb-twocol">' +
+        '<form class="cb-form" id="cb-profile-form">' +
+          '<label for="pf-name">Имя</label><input id="pf-name" value="'+esc(m.displayName||'')+'">' +
+          '<label for="pf-spec">Специализация</label><input id="pf-spec" value="'+esc(m.specialisation||'')+'">' +
+          '<label for="pf-title">Регалии</label><input id="pf-title" value="'+esc(m.title||'')+'">' +
+          '<label for="pf-aff">Аффилиация</label><input id="pf-aff" value="'+esc(m.affiliation||'')+'">' +
+          '<label for="pf-bio">О себе</label><textarea id="pf-bio">'+esc(m.bio||'')+'</textarea>' +
+          '<div style="margin-top:var(--space-5)"><button class="btn btn-primary" type="submit">Сохранить</button></div>' +
+        '</form>' +
+        '<div>' +
+          '<p class="cb-block-title" style="margin-bottom:var(--space-3)">Публичная карточка</p>' +
+          '<div class="cb-preview"><div class="cb-pp-row">' +
+            '<img class="cb-pp-av" src="'+esc(pp.avatar)+'" alt="">' +
+            '<div><p class="sec-id-name">'+esc(pp.displayName)+'</p>' +
+            '<p class="sec-id-meta">'+esc(m.specialisation||'')+'</p>' +
+            '<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">'+(pp.privileges.indexOf('Verified')>=0?'<span class="role-badge role-badge--pro">Профессионал</span>':'')+'<span class="rep-pill">★ '+pp.reputationScore+' · '+esc(pp.rank)+'</span></div></div>' +
+          '</div></div>' +
+          '<div class="cb-stub-card"><b>Настройки</b><br>Видимость профиля: публичный · Видимость полки: публичная · Уведомления: включены <span style="opacity:.6">(заглушка Primer)</span></div>' +
+          '<div class="cb-stub-card"><b>Подписка</b><br>Статус: не активна — оплата появится на этапе Launching <span style="opacity:.6">(заглушка)</span></div>' +
+        '</div>' +
+      '</div>';
+      document.getElementById('cb-profile-form').addEventListener('submit', function(e){
+        e.preventDefault();
+        var rec = ST().memberRecord(u);
+        if (rec){ rec.displayName=document.getElementById('pf-name').value; rec.specialisation=document.getElementById('pf-spec').value; rec.title=document.getElementById('pf-title').value; rec.affiliation=document.getElementById('pf-aff').value; rec.bio=document.getElementById('pf-bio').value; ST().persist(); }
+        var sess = BA.session.get(); if (sess){ sess.name = document.getElementById('pf-name').value; BA.session.set(sess); }
+        BA.frame.showToast('Профиль сохранён');
+        renderProfile(host); renderHead();
+      });
+    }
+
+    /* ── Shelf (status groups) ── */
+    function renderShelf(host){
+      var u = uid();
+      var shelf = ST().shelfOf(u);
+      var byStatus = {}; shelf.forEach(function(s){ (byStatus[s.status]=byStatus[s.status]||[]).push(s); });
+      var html = SHELF_GROUPS.map(function(g){
+        var items = byStatus[g.key]||[];
+        if (!items.length) return '';
+        return '<section class="cb-shelf-group"><p class="cb-shelf-title">'+esc(g.label)+' · '+items.length+'</p><div class="cb-shelf-grid">' +
+          items.map(function(s){ return bookCard(s.publicationId); }).join('') + '</div></section>';
+      }).join('');
+      host.innerHTML = html || '<p class="empty">Полка пуста. Откройте каталог и добавьте книги.</p>';
+    }
+
+    /* ── Excerpt (saved Fragments — the citation chain) ── */
+    function renderExcerpt(host){
+      var u = uid();
+      var excs = ST().all('excerpts').filter(function(e){ return e.memberId===u; });
+      if (!excs.length){ host.innerHTML = '<p class="empty">Сохранённых выдержек пока нет. Выделяйте фрагменты в читалке, чтобы цитировать их.</p>'; return; }
+      host.innerHTML = '<div style="padding:var(--space-6) 0">'+excs.map(function(e){
+        var f = ST().first('fragments', function(x){ return x.id===e.fragmentId; }); if(!f) return '';
+        var slug = f.publicationId; var b = BA.bookData.get(slug);
+        var page = f.range ? f.range.startPage : 1;
+        var cite = b ? BA.bookData.citation(b, f.editionId, page) : '';
+        var link = 'reader.html?book='+encodeURIComponent(slug)+'&v='+encodeURIComponent(f.editionId||'free')+'&p='+page;
+        return '<div class="cb-exc"><p class="cb-exc-text">«'+esc(f.text)+'»</p>' +
+          '<p class="cb-exc-cite">'+esc(cite)+'</p>' +
+          '<div class="cb-exc-actions">' +
+            '<a class="cb-exc-btn" href="'+link+'">Открыть в читалке ↗</a>' +
+            '<button class="cb-exc-btn" type="button" data-cite="'+esc(cite)+'">Скопировать цитату</button>' +
+          '</div></div>';
+      }).join('')+'</div>';
+      host.addEventListener('click', function(ev){
+        var b = ev.target.closest('[data-cite]'); if(!b) return;
+        try { navigator.clipboard.writeText(b.getAttribute('data-cite')); BA.frame.showToast('Цитата скопирована'); } catch(e){ BA.frame.showToast('Цитата: '+b.getAttribute('data-cite')); }
+      });
+    }
+
+    /* ── Correspondence (Chats of Messages) ── */
+    var _activeChat = null;
+    function renderCorrespondence(host){
+      var u = uid();
+      var chats = ST().all('chats').filter(function(c){ return (c.memberIds||[]).indexOf(u)>=0; });
+      if (!chats.length){ host.innerHTML = '<p class="empty">Личных диалогов пока нет. Напишите коллеге из <a href="community.html?tab=member-board">сообщества</a>.</p>'; return; }
+      if (!_activeChat || chats.map(function(c){return c.id;}).indexOf(_activeChat)<0) _activeChat = chats[0].id;
+      var listHTML = chats.map(function(c){
+        var peer = (c.memberIds||[]).filter(function(id){ return id!==u; })[0];
+        return '<div class="cb-chat-item'+(c.id===_activeChat?' is-active':'')+'" data-chat="'+esc(c.id)+'">' +
+          '<img class="cb-chat-av" src="'+esc(BA.memberData.avatar(ST().memberRecord(peer)||{id:peer}))+'" alt="">' +
+          '<span class="cb-chat-name">'+esc(memberName(peer))+'</span></div>';
+      }).join('');
+      var msgs = ST().find('reactions', function(r){ return r.form==='message' && r.chatId===_activeChat; }).sort(function(a,b){return (a.createdAt||'').localeCompare(b.createdAt||'');});
+      var msgsHTML = msgs.map(function(mm){ var out = mm.authorId===u;
+        return '<div class="cb-msg cb-msg--'+(out?'out':'in')+'">'+esc(mm.piece?mm.piece.text:'')+'<div class="cb-msg-when">'+esc(timeAgo(mm.createdAt))+'</div></div>'; }).join('');
+      host.innerHTML = '<div class="cb-chat-layout"><div class="cb-chat-list">'+listHTML+'</div>' +
+        '<div><div class="cb-msgs" id="cb-msgs">'+(msgsHTML||'<p class="empty">Нет сообщений.</p>')+'</div>' +
+        '<form class="cb-msg-compose" id="cb-msg-form"><input id="cb-msg-input" placeholder="Сообщение…" autocomplete="off"><button class="btn btn-primary" type="submit">Отправить</button></form></div></div>';
+      host.querySelectorAll('[data-chat]').forEach(function(el){ el.addEventListener('click', function(){ _activeChat = el.getAttribute('data-chat'); renderCorrespondence(host); }); });
+      document.getElementById('cb-msg-form').addEventListener('submit', function(e){ e.preventDefault();
+        var inp = document.getElementById('cb-msg-input'); var t = inp.value.trim(); if(!t) return;
+        var chat = ST().first('chats', function(c){ return c.id===_activeChat; });
+        var peer = (chat.memberIds||[]).filter(function(id){ return id!==u; })[0];
+        ST().sendMessage({ recipientId: peer, chatId: _activeChat, text: t });
+        renderCorrespondence(host);
+      });
+    }
+
+    /* ── frame ── */
+    function renderHead(){
+      var s = BA.session.get(); var host = document.getElementById('sec-head');
+      if (s){ var av=(window.BA&&BA.avatars)?BA.avatars.pick(s.id):'';
+        host.innerHTML = '<div><p class="sec-eyebrow">Кабинет</p><h1 class="sec-title">Здравствуйте, '+esc((s.name||'').split(' ')[0]||'коллега')+'</h1>' +
+          '<p class="sec-sub">Личное пространство: чтение, полка, выдержки, переписка и репутация.</p></div>' +
+          '<div class="sec-id">'+(av?'<img class="sec-id-av" src="'+esc(av)+'" alt="">':'')+'<div><p class="sec-id-name">'+esc(s.name||'')+'</p><p class="sec-id-meta">'+esc(s.role||'Member')+' · ★ '+esc(String(s.rep!=null?s.rep:0))+'</p></div></div>';
+      } else host.innerHTML = '<div><p class="sec-eyebrow">Кабинет</p><h1 class="sec-title">Кабинет</h1><p class="sec-sub">Личное пространство участника сообщества.</p></div>';
+    }
+    function renderTabs(active){ document.getElementById('sec-tabs').innerHTML = TABS.map(function(t){ return '<button class="sec-tab'+(t.key===active?' is-active':'')+'" data-tab="'+t.key+'">'+esc(t.label)+'</button>'; }).join(''); }
+    function showTab(key){
+      var host = document.getElementById('sec-content'); host.innerHTML=''; renderTabs(key);
+      try { BA.store.set(SAVED_KEY, key); } catch(e){}
+      var url = new URL(location.href); url.searchParams.set('tab', key); history.replaceState(null,'',url);
+      if (!BA.session.isPrivate()){
+        host.innerHTML = '<div class="sec-gate"><h2>Войдите, чтобы открыть кабинет</h2><p>Полка, выдержки, переписка и статистика чтения доступны участникам сообщества.</p><button class="btn btn-primary" type="button" onclick="BA.frame.openLogin()">Войти</button></div>';
+        return;
+      }
+      if (key==='poster') renderPoster(host);
+      else if (key==='overview') renderOverview(host);
+      else if (key==='profile') renderProfile(host);
+      else if (key==='shelf') renderShelf(host);
+      else if (key==='excerpt') renderExcerpt(host);
+      else renderCorrespondence(host);
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      BA.frame.init({ page: 'cabinet' });
+      if (BA.sim) BA.sim.ensure();
+      renderHead();
+      document.getElementById('sec-tabs').addEventListener('click', function(e){ var t=e.target.closest('.sec-tab'); if(t) showTab(t.getAttribute('data-tab')); });
+      document.addEventListener('ba:session-change', function(){ renderHead(); var a=document.querySelector('.sec-tab.is-active'); if(a) showTab(a.getAttribute('data-tab')); });
+      var params = new URLSearchParams(location.search);
+      var saved=null; try { saved=BA.store.get(SAVED_KEY); } catch(e){}
+      var initial = params.get('tab') || saved || 'poster';
+      if (!TABS.some(function(t){ return t.key===initial; })) initial='poster';
+      showTab(initial);
+    });
+  </script>
+</body>
+</html>

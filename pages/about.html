@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>О проекте — beta→alpha академия</title>
+  <!-- ============================================================================
+       about.html — the About page, 1st-level (master frame). Public.
+       Feature area: 24 (Onboarding & First-run). Spec refs: system-model §4.5
+       (public guest page), B-7 (lead with the COMMUNITY, then the publisher);
+       design-axioms §9.6.1 (About wash + seal; no illustration). Tokens-only. -->
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/chrome.css">
+  <style>
+    .ab-main { min-height: 100vh; }
+    .ab-hero { position: relative; overflow: hidden; border-bottom: var(--hairline) solid var(--line); }
+    .ab-hero-bg { position: absolute; inset: 0; background-image: url('../assets/backgrounds/hero-bg-01-light.webp'); background-size: cover; background-position: center; opacity: 0.55; pointer-events: none; }
+    html[data-theme="night"] .ab-hero-bg { background-image: url('../assets/backgrounds/hero-bg-01-dark.webp'); }
+    .ab-hero-inner { position: relative; max-width: 760px; margin: 0 auto; padding: var(--space-16, 64px) var(--gutter, 40px); text-align: center; }
+    @media (max-width: 700px){ .ab-hero-inner { padding: var(--space-12) var(--space-4); } }
+    .ab-seal { width: 72px; height: 72px; border-radius: var(--radius-md, 10px); background: var(--ink); color: var(--paper); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: var(--space-5); }
+    .ab-eyebrow { font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin: 0 0 var(--space-3); }
+    .ab-title { font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 600; color: var(--ink); margin: 0; line-height: 1.15; letter-spacing: -0.01em; }
+    .ab-lede { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); line-height: 1.7; color: var(--ink-soft); margin: var(--space-6) auto 0; max-width: 56ch; }
+    .ab-wrap { max-width: 720px; margin: 0 auto; padding: 0 var(--gutter, 40px); }
+    @media (max-width: 700px){ .ab-wrap { padding: 0 var(--space-4); } }
+    .ab-sec { padding: var(--space-12, 48px) 0; border-bottom: var(--hairline) solid var(--line); }
+    .ab-sec-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin: 0 0 var(--space-3); }
+    .ab-sec h2 { font-family: var(--font-serif); font-size: var(--fs-h2, 22px); font-weight: 600; color: var(--ink); margin: 0 0 var(--space-4); }
+    .ab-sec p { font-family: var(--font-serif); font-size: var(--fs-body, 16px); line-height: 1.8; color: var(--ink-soft); margin: 0 0 var(--space-4); }
+    .ab-sec p:last-child { margin-bottom: 0; }
+    .ab-list { list-style: none; padding: 0; margin: var(--space-4) 0 0; display: flex; flex-direction: column; gap: var(--space-3); }
+    .ab-list li { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); line-height: 1.6; padding-left: var(--space-5); position: relative; }
+    .ab-list li::before { content: '—'; position: absolute; left: 0; color: var(--accent); }
+    .ab-cta { text-align: center; padding: var(--space-12) 0; }
+    .ab-btn { font-family: var(--font-sans); font-size: var(--fs-body, 16px); font-weight: 600; padding: 13px 28px; border-radius: var(--radius-md, 10px); cursor: pointer; border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent, #fff); text-decoration: none; }
+    .ab-btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  </style>
+</head>
+<body>
+  <main id="main-content" data-page-body class="ab-main">
+    <section class="ab-hero">
+      <div class="ab-hero-bg" aria-hidden="true"></div>
+      <div class="ab-hero-inner">
+        <span class="ab-seal" aria-hidden="true">β→α</span>
+        <p class="ab-eyebrow">О проекте</p>
+        <h1 class="ab-title">Сообщество, собранное вокруг книг</h1>
+        <p class="ab-lede">beta→alpha.academy — профессиональная читательская среда для психотерапевтов, психоаналитиков и супервизоров. Сначала — люди и разговор; издательство и каталог служат им.</p>
+      </div>
+    </section>
+
+    <div class="ab-wrap">
+      <section class="ab-sec">
+        <p class="ab-sec-eyebrow">Сообщество</p>
+        <h2>Профессиональная среда, а не магазин</h2>
+        <p>В центре проекта — сообщество специалистов, которые читают одни и те же тексты и обсуждают их всерьёз. Это не витрина и не лента: это место, где профессиональное чтение становится общим делом, а дискуссия сохраняет достоинство.</p>
+        <p>Качество разговора держится на простой идее: вес голоса соответствует профессиональной репутации. Аналогия — римский ценз: голос опытного супервизора звучит весомее, чем реплика первокурсника, — но услышан каждый.</p>
+        <ul class="ab-list">
+          <li>Взвешенные голоса и репутация как основа дискуссии</li>
+          <li>Рецензии — от профессионалов; комментировать может каждый участник</li>
+          <li>Цитирование с академической точностью: автор, год, издание, страница</li>
+          <li>Личные заметки, выдержки и читательские клубы</li>
+        </ul>
+      </section>
+
+      <section class="ab-sec">
+        <p class="ab-sec-eyebrow">Издательство</p>
+        <h2>beta→alpha (β→α)</h2>
+        <p>Независимое издательство, выпускающее профессиональную литературу по психоанализу и психотерапии — около 30–35 книг в год. Мы переводим и издаём ключевые тексты постбионианской традиции и современной итальянской школы: Биона, Ферро, Николи и их собеседников, — стремясь к выверенному переводу и точной терминологии.</p>
+        <p>На платформе издательство выступает «голосом Ресурса»: ведёт каталог и редакционные подборки, публикует новости и честно делит доход с правообладателями — пропорционально реальной вовлечённости читателей.</p>
+      </section>
+
+      <section class="ab-sec">
+        <p class="ab-sec-eyebrow">Принципы</p>
+        <h2>Что для нас важно</h2>
+        <p>Текст — герой. Тёплая, книжная атмосфера вместо коммерческой суеты. Уважение к читателю и к автору. Прозрачность к правообладателям. Спокойная, вдумчивая среда, в которую хочется возвращаться.</p>
+      </section>
+
+      <div class="ab-cta">
+        <a class="ab-btn" href="library.html">Открыть библиотеку →</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="../components/session.js"></script>
+  <script src="../components/book-data.js"></script>
+  <script src="../components/author-data.js"></script>
+  <script src="../components/publisher-data.js"></script>
+  <script src="../components/member-data.js"></script>
+  <script src="../components/store.js"></script>
+  <script src="../components/sim.js"></script>
+  <script src="../components/frame.js"></script>
+  <script src="../components/avatar-menu.js"></script>
+  <script src="../components/notifications.js"></script>
+  <script src="../components/search.js"></script>
+  <script src="../components/pulse.js"></script>
+  <script src="../components/debug.js"></script>
+  <script src="../components/demo.js"></script>
+  <script src="../components/registration.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){ BA.frame.init({ page: 'about' }); if (BA.sim) BA.sim.ensure(); });
+  </script>
+</body>
+</html>

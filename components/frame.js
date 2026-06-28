@@ -87,8 +87,12 @@
     '.footer-inner{display:flex;align-items:center;justify-content:space-between;',
     'gap:var(--space-4,1rem);padding:calc(var(--space-6,1.5rem) * 0.75) 0;}',
     '.footer-brand{display:flex;align-items:center;gap:var(--space-4,1rem);}',
+    '.footer-end{display:flex;align-items:center;gap:var(--space-4,1rem);}',
+    '.footer-link{font-family:var(--font-sans);font-size:var(--fs-small,0.875rem);',
+    'color:var(--ink-soft,#5C5249);text-decoration:none;white-space:nowrap;transition:color 140ms;}',
+    '.footer-link:hover{color:var(--accent,#B85138);}',
     '.text-mark{font-family:var(--font-serif);font-size:var(--fs-h3,1.125rem);font-weight:600;}',
-    '.footer-tagline,.build-tag{font-size:var(--fs-caption,0.75rem);}',
+    '.footer-tagline,.build-tag{font-size:var(--fs-caption,0.75rem);color:var(--ink-faint,#8B8073);}',
     '.arrow{/* inherited per context */}',
 
     /* FAB */
@@ -255,6 +259,29 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
+  /* ── Login (debug-managed STUB) — verify against seeded members ── */
+  function _findMemberByEmail(email) {
+    var list = (window.BA && BA.memberData) ? BA.memberData.all() : [];
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].email && String(list[i].email).toLowerCase() === email) return list[i];
+    }
+    return null;
+  }
+  function _isMockMember(m) { return (window.BA && BA.memberData) ? BA.memberData.isMock(m) : false; }
+  function _establishSession(member) {
+    var st = window.BA && BA.store;
+    var privs = (member.privileges || []).map(function (g) { return g.privilege; });
+    var role = (st && st.roleOf) ? st.roleOf(privs) : 'Member';
+    var rep = (st && st.xpOf) ? st.xpOf(member.id) : (member.reputationScore || 0);
+    BA.session.set({ id: member.id, name: member.displayName, role: role, rep: rep });
+    if (st && st.emit) st.emit('session.login', { who: { entity: 'member', entity_id: member.id }, with_what: { entity: 'member', entity_id: member.id }, visibility: 'self' });
+  }
+  /* expose so the avatar menu / debug console can drive login programmatically */
+  function _loginAs(memberId) {
+    var m = (window.BA && BA.memberData) ? BA.memberData.get(memberId) : null;
+    if (m && !_isMockMember(m)) _establishSession(m);
+  }
+
   var _SVG_SEARCH = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>';
   var _SVG_BELL   = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
   var _SVG_PULSE  = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>';
@@ -278,22 +305,23 @@
     var el = document.createElement('header');
     el.className = 'site-header';
     el.setAttribute('data-ba-frame', '');
+    /* Guest nav is narrow: О проекте + the Library badge (guests may browse the
+       whole catalogue, free editions only — B-9 / CON-01) + Войти/Присоединиться.
+       Кабинет/Сообщество are session-gated, so they are not offered to guests. */
     el.innerHTML = [
       '<a class="skip-link" href="#main-content">Перейти к содержимому</a>',
       '<div class="header-inner container">',
         '<div class="header-left">',
-          '<a class="wordmark" href="' + _pp() + 'pages/pub-landing.html" aria-label="β→α академия">',
+          '<a class="wordmark" href="' + _pp() + 'pages/landing.html" aria-label="β→α академия">',
             '<img class="wordmark-img" src="' + _pp() + 'assets/decor/b2a-academy.svg" alt="β→α" width="100" height="28">',
           '</a>',
-          '<a class="nav-link header-about" href="' + _pp() + 'pages/pub-about.html">О проекте</a>',
+          '<a class="nav-link header-about" href="' + _pp() + 'pages/about.html">О проекте</a>',
         '</div>',
         '<nav class="primary-nav" aria-label="Основная навигация">',
-          '<a class="nav-link" href="' + _pp() + 'pages/pub-landing.html">Кабинет</a>',
           '<span class="nav-lib-wrap">',
-            '<a class="nav-link nav-link-home" href="' + _pp() + 'pages/pub-library.html">β<span class="arrow">→</span>α</a>',
+            '<a class="nav-link nav-link-home" href="' + _pp() + 'pages/library.html" aria-label="Библиотека">β<span class="arrow">→</span>α</a>',
             '<span class="nav-lib-icon"><img class="nav-books-img" src="' + _pp() + 'assets/decor/books-pile.png" alt="" aria-hidden="true" width="24" height="24"></span>',
           '</span>',
-          '<a class="nav-link" href="' + _pp() + 'pages/pub-news.html">Сообщество</a>',
           '<span class="nav-strip" aria-hidden="true"></span>',
           '<span class="nav-dot" aria-hidden="true"></span>',
         '</nav>',
@@ -308,6 +336,10 @@
 
   function _buildPrivateHeader(session) {
     var initials = _initials(session.name);
+    /* derived from the store where present (rep XP + unread notification groups) */
+    var st = window.BA && BA.store;
+    var rep = (st && st.xpOf) ? st.xpOf(session.id) : (session.rep != null ? session.rep : 0);
+    var unread = (st && st.unreadCount) ? st.unreadCount(session.id) : 0;
     var el = document.createElement('header');
     el.className = 'site-header';
     el.setAttribute('data-ba-frame', '');
@@ -315,7 +347,7 @@
       '<a class="skip-link" href="#main-content">Перейти к содержимому</a>',
       '<div class="header-inner container">',
         '<div class="header-left">',
-          '<a class="wordmark" href="' + _pp() + 'pages/home.html" aria-label="β→α академия">',
+          '<a class="wordmark" href="' + _pp() + 'pages/cabinet.html?tab=poster" aria-label="β→α академия">',
             '<img class="wordmark-img" src="' + _pp() + 'assets/decor/b2a-academy.svg" alt="β→α" width="100" height="28">',
           '</a>',
           '<a class="nav-link header-about" href="' + _pp() + 'pages/about.html">О проекте</a>',
@@ -323,14 +355,14 @@
             '<button class="ba-burger-btn" type="button" aria-label="Меню навигации" aria-haspopup="menu" aria-expanded="false">β<span class="arrow">→</span>α</button>',
             '<div class="ba-burger-menu" role="menu" aria-label="Навигация">',
               '<a class="ba-burger-item" href="' + _pp() + 'pages/about.html" role="menuitem">О проекте</a>',
-              '<a class="ba-burger-item" href="' + _pp() + 'pages/home.html" role="menuitem">Кабинет</a>',
+              '<a class="ba-burger-item" href="' + _pp() + 'pages/cabinet.html?tab=poster" role="menuitem">Кабинет</a>',
               '<a class="ba-burger-item" href="' + _pp() + 'pages/library.html" role="menuitem">Библиотека</a>',
               '<a class="ba-burger-item" href="' + _pp() + 'pages/community.html" role="menuitem">Сообщество</a>',
             '</div>',
           '</div>',
         '</div>',
         '<nav class="primary-nav" aria-label="Основная навигация">',
-          '<a class="nav-link" href="' + _pp() + 'pages/home.html">Кабинет</a>',
+          '<a class="nav-link" href="' + _pp() + 'pages/cabinet.html?tab=poster">Кабинет</a>',
           '<span class="nav-lib-wrap">',
             '<a class="nav-link nav-link-home" href="' + _pp() + 'pages/library.html">β<span class="arrow">→</span>α</a>',
             '<span class="nav-lib-icon"><img class="nav-books-img" src="' + _pp() + 'assets/decor/books-pile.png" alt="" aria-hidden="true" width="24" height="24"></span>',
@@ -343,17 +375,17 @@
           '<button class="icon-btn ba-search-btn" type="button" aria-label="Поиск">' + _SVG_SEARCH + '</button>',
           '<button class="icon-btn ba-notif-btn" type="button" aria-label="Уведомления" style="position:relative">',
             _SVG_BELL,
-            '<span class="notif-count" aria-label="4 уведомления">4</span>',
+            (unread > 0 ? '<span class="notif-count" aria-label="' + unread + ' уведомлений">' + unread + '</span>' : ''),
           '</button>',
           '<div class="ba-avatar-wrap" style="position:relative">',
             '<button class="avatar-rep ba-avatar-btn" type="button" aria-label="Меню аккаунта" aria-haspopup="menu" aria-expanded="false">',
               '<span class="avatar-rep__face' + (_avatarUrl(session) ? ' has-avatar' : '') + '"' + _avatarStyle(session) + ' aria-hidden="true">' + _esc(initials) + '</span>',
               '<span class="avatar-rep__score">',
                 '<span aria-hidden="true">★</span>',
-                '<span class="avatar-rep__num">' + _esc(String(session.rep)) + '</span>',
+                '<span class="avatar-rep__num">' + _esc(String(rep)) + '</span>',
               '</span>',
             '</button>',
-            '<span class="ba-avatar-notif has-notifs" aria-hidden="true">4</span>',
+            (unread > 0 ? '<span class="ba-avatar-notif has-notifs" aria-hidden="true">' + unread + '</span>' : ''),
             '<div class="ba-avatar-menu" role="menu" aria-label="Меню аккаунта"></div>',
           '</div>',
           '<span class="pulse-sep" aria-hidden="true"></span>',
@@ -517,7 +549,10 @@
             '<span class="text-mark">β<span class="arrow">→</span>α</span>',
             '<span class="footer-tagline">© 2026 beta→alpha · Для профессионального сообщества</span>',
           '</div>',
-          '<span class="build-tag">v0.5.0-primer · components</span>',
+          '<div class="footer-end">',
+            '<a class="footer-link" href="' + _pp() + 'pages/about.html">О проекте</a>',
+            '<span class="build-tag">v0.5.0-primer</span>',
+          '</div>',
         '</div>',
       '</div>',
     ].join('');
@@ -569,14 +604,16 @@
         '<form id="ba-login-form" novalidate>',
           '<div class="ba-login-field">',
             '<label for="ba-login-email">Эл. почта</label>',
-            '<input id="ba-login-email" type="email" value="a.ivanova@example.com" autocomplete="email">',
+            '<input id="ba-login-email" type="email" value="a.ivanova@beta2alpha.academy" autocomplete="email">',
           '</div>',
-          '<div class="ba-login-field" style="margin-bottom:24px">',
+          '<div class="ba-login-field" style="margin-bottom:8px">',
             '<label for="ba-login-pass">Пароль</label>',
             '<input id="ba-login-pass" type="password" value="demo1234" autocomplete="current-password">',
           '</div>',
+          '<p id="ba-login-err" role="alert" style="display:none;margin:0 0 16px;font-size:13px;color:var(--danger,#A8412E)"></p>',
           '<button type="submit" class="btn btn-primary" style="width:100%">Войти</button>',
         '</form>',
+        '<p style="margin:14px 0 0;font-size:12px;color:var(--ink-faint);line-height:1.5">Демо-аккаунты: <b>a.ivanova@beta2alpha.academy</b> / demo1234 (участник) · <b>admin@beta2alpha.academy</b> / admin</p>',
         '<p style="margin:16px 0 0;text-align:center;font-size:13px;color:var(--ink-faint)">',
           'Нет аккаунта? ',
           '<button class="ba-to-reg" type="button" style="background:none;border:none;',
@@ -591,9 +628,21 @@
 
     m.querySelector('#ba-login-form').addEventListener('submit', function (e) {
       e.preventDefault();
+      var email = (document.getElementById('ba-login-email').value || '').trim().toLowerCase();
+      var pass = document.getElementById('ba-login-pass').value || '';
+      var errEl = document.getElementById('ba-login-err');
+      var member = _findMemberByEmail(email);
+      /* Debug-managed login STUB (session decision; no AAA/WebCrypto in Phase 1).
+         Verify email+password against the seeded members; Mock members cannot log
+         in (specs §3.1 / §4.5 / CON-01). */
+      if (!member || member.password !== pass || _isMockMember(member)) {
+        if (errEl) { errEl.textContent = 'Неверная почта или пароль.'; errEl.style.display = 'block'; }
+        return;
+      }
+      if (errEl) errEl.style.display = 'none';
       _closeLogin();
-      BA.session.set(_defaultUser);
-      _showToast('Добро пожаловать, ' + _defaultUser.name.split(' ')[0] + '!');
+      _establishSession(member);
+      _showToast('Добро пожаловать, ' + member.displayName.split(' ')[0] + '!');
     });
 
     m.querySelector('.ba-modal-close').addEventListener('click', _closeLogin);
@@ -735,6 +784,21 @@
   }
 
   /* ============================================================
+     Saved position — a GLOBAL localStorage marker the master-frame entry
+     (index.html) reads to land an authed visitor back where they were
+     (system-model §4.1: "injects by auth state + saved position"). Recorded
+     only for authed sessions and never for the public/entry pages.
+     ============================================================ */
+  function _recordLast() {
+    try {
+      var s = window.BA && BA.session ? BA.session.get() : null;
+      if (!s) return;
+      if (/\/(index|landing)\.html?$/i.test(location.pathname)) return;
+      localStorage.setItem('ba:last', location.pathname + location.search);
+    } catch (e) {}
+  }
+
+  /* ============================================================
      Public API
      ============================================================ */
   window.BA.frame = {
@@ -744,12 +808,16 @@
       _render();
       _watchHeaderNarrow();
       _initScrollHeader();
+      _recordLast();
       document.addEventListener('ba:session-change', function () {
         _renderHeader(); // only header needs re-render on session change
+        _recordLast();
       });
     },
     openLogin: _openLogin,
     closeLogin: _closeLogin,
-    showToast: _showToast
+    showToast: _showToast,
+    loginAs: _loginAs,
+    logout: function () { var st = window.BA && BA.store; var id = st && st.activeId && st.activeId(); if (st && st.emit && id) st.emit('session.logout', { who: { entity: 'member', entity_id: id }, with_what: { entity: 'member', entity_id: id }, visibility: 'self' }); BA.session.clear(); }
   };
 })();

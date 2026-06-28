@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>beta→alpha академия — профессиональное чтение</title>
+  <!-- ============================================================================
+       landing.html — the public Landing (Вербовка), 1st-level (master frame).
+       Feature area: 24 (Onboarding & First-run). Spec refs: system-model §4.5
+       (anonymous frame: Landing + About + Login/Registration; gated News teaser),
+       §2.8 (Landing ≠ Cabinet Poster); design-axioms §2 (text-as-hero), §9.6.1
+       (hero = treated book-page wash + seal; no illustration). B-5 (news cards →
+       gated news), B-9/CON-01 (guests may browse catalogue free-only). Tokens-only. -->
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/chrome.css">
+  <style>
+    .ld-main { min-height: 100vh; }
+    /* Hero — text as hero, treated book-page wash behind (design-axioms §9.6.1) */
+    .ld-hero { position: relative; overflow: hidden; border-bottom: var(--hairline) solid var(--line); }
+    .ld-hero-bg { position: absolute; inset: 0; background-image: url('../assets/backgrounds/hero-bg-01-light.webp');
+      background-size: cover; background-position: center right; opacity: 0.9; pointer-events: none; }
+    html[data-theme="night"] .ld-hero-bg { background-image: url('../assets/backgrounds/hero-bg-01-dark.webp'); }
+    .ld-hero-inner { position: relative; max-width: 1100px; margin: 0 auto; padding: var(--space-16, 64px) var(--gutter, 40px) var(--space-16, 64px); }
+    @media (max-width: 700px){ .ld-hero-inner { padding: var(--space-12, 48px) var(--space-4, 16px); } }
+    .ld-eyebrow { font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin: 0 0 var(--space-4); }
+    .ld-title { font-family: var(--font-serif); font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 600; line-height: 1.12; color: var(--ink); margin: 0; max-width: 18ch; letter-spacing: -0.015em; }
+    .ld-lede { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); line-height: 1.7; color: var(--ink-soft); margin: var(--space-6) 0 0; max-width: 52ch; }
+    .ld-cta { display: flex; gap: var(--space-3, 12px); margin-top: var(--space-8, 32px); flex-wrap: wrap; }
+    .ld-btn { font-family: var(--font-sans); font-size: var(--fs-body, 16px); font-weight: 600; padding: 13px 28px; border-radius: var(--radius-md, 10px); cursor: pointer; border: var(--hairline) solid transparent; text-decoration: none; transition: all 150ms; }
+    .ld-btn--primary { background: var(--accent); color: var(--on-accent, #fff); border-color: var(--accent); }
+    .ld-btn--primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .ld-btn--ghost { background: color-mix(in srgb, var(--surface) 70%, transparent); color: var(--ink); border-color: var(--line); }
+    .ld-btn--ghost:hover { border-color: var(--ink-soft); }
+    .ld-hint { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-faint); margin: var(--space-4) 0 0; }
+    .ld-hint a { color: var(--accent); }
+    /* sections */
+    .ld-wrap { max-width: 1100px; margin: 0 auto; padding: 0 var(--gutter, 40px); }
+    @media (max-width: 700px){ .ld-wrap { padding: 0 var(--space-4, 16px); } }
+    .ld-sec { padding: var(--space-12, 48px) 0; border-bottom: var(--hairline) solid var(--line); }
+    .ld-sec-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin: 0 0 var(--space-2); }
+    .ld-sec-title { font-family: var(--font-serif); font-size: var(--fs-h2, 22px); font-weight: 600; color: var(--ink); margin: 0 0 var(--space-6); }
+    .ld-sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-6); }
+    .ld-sec-link { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--accent); text-decoration: none; white-space: nowrap; }
+    /* featured strip */
+    .ld-books { display: flex; gap: var(--space-5, 20px); overflow-x: auto; padding-bottom: var(--space-2); }
+    .ld-book { min-width: 160px; max-width: 160px; text-decoration: none; }
+    .ld-book-cover { width: 160px; height: 224px; object-fit: cover; border-radius: var(--radius-sm, 6px); border: var(--hairline) solid var(--line); box-shadow: var(--shadow-soft); display: block; transition: transform 160ms, box-shadow 160ms; }
+    .ld-book:hover .ld-book-cover { transform: translateY(-3px); box-shadow: var(--shadow-raise); }
+    .ld-book-title { font-family: var(--font-serif); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink); margin: var(--space-3) 0 0; line-height: 1.25; }
+    .ld-book-author { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: 2px 0 0; }
+    /* pull quote */
+    .ld-quote { text-align: center; padding: var(--space-16, 64px) 0; }
+    .ld-quote blockquote { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.4rem, 3vw, 2rem); line-height: 1.5; color: var(--ink); max-width: 26ch; margin: 0 auto; }
+    .ld-quote cite { display: block; font-family: var(--font-sans); font-style: normal; font-size: var(--fs-small, 14px); color: var(--ink-faint); margin-top: var(--space-5); }
+    /* mechanic pillars */
+    .ld-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5, 20px); }
+    @media (max-width: 760px){ .ld-pillars { grid-template-columns: 1fr; } }
+    .ld-pillar { border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); padding: var(--space-6, 24px); }
+    .ld-pillar h3 { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--ink); margin: 0 0 var(--space-2); }
+    .ld-pillar p { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); line-height: 1.6; margin: 0; }
+    /* news teaser (gated) */
+    .ld-news { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4, 16px); }
+    @media (max-width: 760px){ .ld-news { grid-template-columns: 1fr; } }
+    .ld-news-card { text-align: left; border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); padding: var(--space-5, 20px); cursor: pointer; position: relative; transition: border-color 140ms; }
+    .ld-news-card:hover { border-color: var(--accent); }
+    .ld-news-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin: 0 0 var(--space-2); display: flex; align-items: center; gap: var(--space-2); }
+    .ld-news-title { font-family: var(--font-serif); font-size: var(--fs-body, 16px); font-weight: 600; color: var(--ink); margin: 0; line-height: 1.35; }
+    .ld-news-lock { font-size: 12px; color: var(--ink-faint); }
+    /* about teaser w/ seal */
+    .ld-about { display: flex; align-items: center; gap: var(--space-8, 32px); flex-wrap: wrap; }
+    .ld-seal { width: 96px; height: 96px; border-radius: var(--radius-md, 10px); background: var(--ink); color: var(--paper); display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; flex-shrink: 0; }
+    .ld-about-text { flex: 1; min-width: 280px; }
+    .ld-about-text p { font-family: var(--font-sans); font-size: var(--fs-body, 16px); line-height: 1.7; color: var(--ink-soft); margin: 0 0 var(--space-4); max-width: 60ch; }
+  </style>
+</head>
+<body>
+  <main id="main-content" data-page-body class="ld-main">
+    <section class="ld-hero">
+      <div class="ld-hero-bg" aria-hidden="true"></div>
+      <div class="ld-hero-inner">
+        <p class="ld-eyebrow">Профессиональное сообщество · психоанализ и психотерапия</p>
+        <h1 class="ld-title">Тихая комната для тех, кто читает, чтобы понимать.</h1>
+        <p class="ld-lede">beta→alpha.academy — пространство профессионального чтения и разговора. Не книжный магазин, а читательская среда: первоисточники, бережные переводы и достойная дискуссия коллег.</p>
+        <div class="ld-cta">
+          <button class="ld-btn ld-btn--primary" type="button" id="ld-join">Присоединиться</button>
+          <button class="ld-btn ld-btn--ghost" type="button" id="ld-login">Войти</button>
+        </div>
+        <p class="ld-hint">Уже знакомы с библиотекой? <a href="library.html">Открыть каталог →</a> (свободные фрагменты доступны без входа)</p>
+      </div>
+    </section>
+
+    <div class="ld-wrap">
+      <section class="ld-sec">
+        <div class="ld-sec-head"><div><p class="ld-sec-eyebrow">Из библиотеки</p><h2 class="ld-sec-title" style="margin:0">Книги, с которых стоит начать</h2></div><a class="ld-sec-link" href="library.html">Весь каталог →</a></div>
+        <div class="ld-books" id="ld-books"></div>
+      </section>
+
+      <section class="ld-quote">
+        <blockquote>«Способность выдерживать неопределённость — условие подлинной встречи с пациентом.»</blockquote>
+        <cite>из книг издательства beta→alpha</cite>
+      </section>
+
+      <section class="ld-sec">
+        <p class="ld-sec-eyebrow">Как это устроено</p>
+        <h2 class="ld-sec-title">Среда, а не витрина</h2>
+        <div class="ld-pillars">
+          <div class="ld-pillar"><h3>Вес голоса по репутации</h3><p>Профессиональный опыт определяет влияние в дискуссии — голос старшего аналитика весит больше, чем голос первокурсника.</p></div>
+          <div class="ld-pillar"><h3>Честное деление дохода</h3><p>Правообладатели видят, что именно читают, и получают долю пропорционально реальной вовлечённости читателей.</p></div>
+          <div class="ld-pillar"><h3>Тёплая, книжная атмосфера</h3><p>Бумага и чернила, а не стекло и неон. Текст — герой; всё остальное отступает на второй план.</p></div>
+        </div>
+      </section>
+
+      <section class="ld-sec">
+        <div class="ld-sec-head"><div><p class="ld-sec-eyebrow">Новости издательства</p><h2 class="ld-sec-title" style="margin:0">Что происходит в β→α</h2></div></div>
+        <div class="ld-news" id="ld-news"></div>
+        <p class="ld-hint" style="margin-top:var(--space-5)">Полные новости и обсуждения — для участников. <a href="#" id="ld-news-more">Войдите, чтобы читать →</a></p>
+      </section>
+
+      <section class="ld-sec ld-about">
+        <div class="ld-seal" aria-hidden="true">β→α</div>
+        <div class="ld-about-text">
+          <p>Сообщество терапевтов, аналитиков и супервизоров собирается вокруг тщательно отобранной профессиональной литературы — чтобы читать, обсуждать и цитировать вместе. Издательство beta→alpha переводит и издаёт ключевые тексты постбионианской традиции и современной итальянской школы.</p>
+          <a class="ld-sec-link" href="about.html">О проекте подробнее →</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="../components/session.js"></script>
+  <script src="../components/book-data.js"></script>
+  <script src="../components/author-data.js"></script>
+  <script src="../components/publisher-data.js"></script>
+  <script src="../components/member-data.js"></script>
+  <script src="../components/store.js"></script>
+  <script src="../components/sim.js"></script>
+  <script src="../components/frame.js"></script>
+  <script src="../components/avatar-menu.js"></script>
+  <script src="../components/notifications.js"></script>
+  <script src="../components/search.js"></script>
+  <script src="../components/pulse.js"></script>
+  <script src="../components/debug.js"></script>
+  <script src="../components/demo.js"></script>
+  <script src="../components/registration.js"></script>
+
+  <script>
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+    function renderBooks(){
+      var picks = ['bion-learning','ferro-cabinet','nicoli-burning','bion-attention','ferro-emotions'].map(function(s){ return BA.bookData.get(s); }).filter(Boolean);
+      document.getElementById('ld-books').innerHTML = picks.map(function(b){
+        return '<a class="ld-book" href="book.html?book='+esc(b.slug)+'">' +
+          '<img class="ld-book-cover" src="'+esc(b.covers.medium)+'" alt="Обложка: '+esc(b.title)+'" loading="lazy">' +
+          '<p class="ld-book-title">'+esc(b.title)+'</p>' +
+          '<p class="ld-book-author">'+esc(b.editor?b.editor+' (ред.)':b.author)+'</p>' +
+        '</a>';
+      }).join('');
+    }
+    function renderNews(){
+      var news = BA.store.find('events', function(e){ return e.action.codename==='post.published' && e.action.params && e.action.params.destination==='public-news'; })
+        .sort(function(a,b){ return (b.timestamp||'').localeCompare(a.timestamp||''); }).slice(0,3);
+      var host = document.getElementById('ld-news');
+      if (!news.length){ host.innerHTML = '<p class="ld-hint">Скоро здесь появятся новости.</p>'; return; }
+      host.innerHTML = news.map(function(e){
+        return '<button class="ld-news-card" type="button"><p class="ld-news-eyebrow">β→α <span class="ld-news-lock">· только для участников 🔒</span></p>' +
+          '<p class="ld-news-title">'+esc(e.action.params.title||'Новость')+'</p></button>';
+      }).join('');
+      /* B-5: news cards are gated → clicking opens the login overlay */
+      host.querySelectorAll('.ld-news-card').forEach(function(c){ c.addEventListener('click', function(){ BA.frame.openLogin(); }); });
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+      BA.frame.init({ page: 'landing' });
+      if (BA.sim) BA.sim.ensure();
+      renderBooks(); renderNews();
+      document.getElementById('ld-join').addEventListener('click', function(){ if (BA.registration) BA.registration.open(); });
+      document.getElementById('ld-login').addEventListener('click', function(){ BA.frame.openLogin(); });
+      document.getElementById('ld-news-more').addEventListener('click', function(e){ e.preventDefault(); BA.frame.openLogin(); });
+      /* if already logged in, send them to their Home (Poster) */
+      if (BA.session.isPrivate()) location.replace('cabinet.html?tab=poster');
+    });
+  </script>
+</body>
+</html>

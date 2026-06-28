@@ -230,6 +230,9 @@
   </div>
 
   <script src="../components/session.js"></script>
+  <script src="../components/member-data.js"></script>
+  <script src="../components/store.js"></script>
+  <script src="../components/sim.js"></script>
   <script src="../components/frame.js"></script>
   <script src="../components/book-data.js"></script>
   <script src="../components/author-data.js"></script>
@@ -258,6 +261,22 @@
     function emit(evt){
       try { var log = JSON.parse(BA.store.get('ba_events')||'[]'); log.push(evt); BA.store.set('ba_events', JSON.stringify(log.slice(-200))); } catch(e){}
       try { console.info('[event] '+evt.type, evt); } catch(e){}
+      /* Bridge to the unified store so a real reader session feeds readingStats /
+         continueReading (specs §2.2f). Only when a member is active; guests reading
+         the free fragment write no traces. */
+      try {
+        var st = window.BA && BA.store, me = st && st.activeId && st.activeId();
+        if (st && st.emit && me) {
+          st.emit(evt.type, { who:{entity:'member',entity_id:me}, with_what:{entity:'publication',entity_id:evt.book_id},
+            visibility:'self', params:{ book_version_id:evt.book_version_id||null, page:evt.page, duration_seconds:evt.duration_seconds }, source:'real' });
+          if (evt.type==='page.viewed' && evt.page!=null) {
+            var pr = st.first('progress', function(p){ return p.memberId===me && p.publicationId===evt.book_id; });
+            if (pr) st.update('progress', pr.id, { editionId:evt.book_version_id||'free', page:evt.page, updatedAt: st.nowISO() });
+            else st.insert('progress', { memberId:me, publicationId:evt.book_id, editionId:evt.book_version_id||'free', page:evt.page, percent:0, updatedAt: st.nowISO() });
+            st.persist();
+          }
+        }
+      } catch(e){}
     }
     function emitOpened(){ emit({ type:'book.opened', book_id:slug, book_version_id: ed?ed.v:null, publisher_id:'beta-alpha', timestamp:new Date().toISOString() }); }
     /* Emit page.viewed for EVERY visible page — in two-page mode that is BOTH the

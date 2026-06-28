@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevDoc · Components — β→α</title>
+  <!-- DevDoc (feature area X). Live view over the component system — which BA.*
+       modules are loaded + the BA.store API surface. Tokens-only. -->
+  <link rel="stylesheet" href="../styles/tokens.css"><link rel="stylesheet" href="../styles/chrome.css">
+  <style>
+    .dd-wrap{max-width:880px;margin:0 auto;padding:var(--space-8,32px) var(--gutter,40px) var(--space-16);}
+    .dd-eyebrow{font-family:var(--font-sans);font-size:var(--fs-caption,12px);font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin:0 0 var(--space-1);}
+    .dd-title{font-family:var(--font-serif);font-size:2rem;font-weight:600;color:var(--ink);margin:0 0 var(--space-2);}
+    .dd-sub{font-family:var(--font-sans);font-size:var(--fs-small,14px);color:var(--ink-soft);margin:0 0 var(--space-6);max-width:62ch;}
+    .dd-nav{display:flex;gap:var(--space-2);flex-wrap:wrap;margin-bottom:var(--space-6);}
+    .dd-nav a{font-family:var(--font-sans);font-size:var(--fs-small,14px);padding:6px 14px;border-radius:var(--radius-pill,999px);border:var(--hairline) solid var(--line);color:var(--ink-soft);text-decoration:none;}
+    .dd-nav a:hover,.dd-nav a.is-on{border-color:var(--accent);color:var(--accent);}
+    .dd-sec{border-top:var(--hairline) solid var(--line);padding:var(--space-6) 0;}
+    .dd-sec h2{font-family:var(--font-serif);font-size:var(--fs-h3,18px);color:var(--ink);margin:0 0 var(--space-3);}
+    .dd-row{display:flex;gap:var(--space-3);align-items:center;padding:var(--space-2) 0;font-family:var(--font-sans);font-size:var(--fs-small,14px);color:var(--ink-soft);border-bottom:var(--hairline) solid var(--line);}
+    .dd-row:last-child{border-bottom:none;}
+    .dd-k{min-width:170px;font-family:var(--font-mono,ui-monospace,monospace);font-size:12px;color:var(--accent);}
+    .dd-ok{color:var(--success,#5B7553);}.dd-no{color:var(--ink-faint);}
+    .dd-api{font-family:var(--font-mono,ui-monospace,monospace);font-size:12px;color:var(--ink-soft);line-height:1.7;}
+    .dd-api b{color:var(--ink);}
+  </style>
+</head>
+<body>
+  <main id="main-content" data-page-body><div class="dd-wrap">
+    <p class="dd-eyebrow">DevDoc</p><h1 class="dd-title">Система компонентов</h1>
+    <p class="dd-sub">Живой обзор модулей <code>window.BA.*</code> (загружены на этой странице) и поверхность API единого стора. Каждый модуль — IIFE с самовнедряемым CSS, только токены.</p>
+    <nav class="dd-nav"><a href="dev-ux.html">UX</a><a href="dev-components.html" class="is-on">Компоненты</a><a href="dev-features.html">Фичи</a><a href="dev-model.html">Модель</a></nav>
+    <div id="dd-body"></div>
+  </div></main>
+  <script src="../components/session.js"></script><script src="../components/book-data.js"></script>
+  <script src="../components/author-data.js"></script><script src="../components/publisher-data.js"></script>
+  <script src="../components/member-data.js"></script><script src="../components/store.js"></script>
+  <script src="../components/sim.js"></script><script src="../components/frame.js"></script>
+  <script src="../components/avatar-menu.js"></script><script src="../components/notifications.js"></script>
+  <script src="../components/search.js"></script><script src="../components/pulse.js"></script>
+  <script src="../components/debug.js"></script><script src="../components/book-card.js"></script>
+  <script src="../components/member-card.js"></script><script src="../components/author-card.js"></script>
+  <script src="../components/remark-card.js"></script><script src="../components/reader-engine.js"></script>
+  <script src="../components/catalogue.js"></script><script src="../components/registration.js"></script><script src="../components/demo.js"></script>
+  <script>
+    var MODS=[
+      ['session','BA.session','состояние авторизации (sessionStorage)'],
+      ['store','BA.store','единый наблюдаемый стор: коллекции + селекторы + emit + действия'],
+      ['member-data','BA.memberData','посев участников (17)'],
+      ['book-data','BA.bookData','модель 7-книжного пака'],
+      ['author-data','BA.authorData','авторы (Пантеон)'],
+      ['publisher-data','BA.publisherData','издатель β→α'],
+      ['sim','BA.sim','симуляция (backfill + тики)'],
+      ['frame','BA.frame','мастер-фрейм: шапка/подвал/⚙/Login/Toast'],
+      ['reader-engine','BA.readerEngine','PDF-рендерер (Browse + Delve)'],
+      ['book-card','BA.bookCard','карточка книги + мини-читалка'],
+      ['member-card','BA.memberCard','карточка участника'],
+      ['author-card','BA.authorCard','карточка автора'],
+      ['remark-card','BA.remarkCard','реакции/комментарии'],
+      ['catalogue','BA.catalogue','сетка каталога'],
+      ['notifications','BA.notifications','уведомления (C, O-10)'],
+      ['search','BA.search','панель поиска (E)'],
+      ['pulse','BA.pulse','оверлей Пульс (G)'],
+      ['avatar-menu','BA.avatarMenu','меню аккаунта (D)'],
+      ['registration','BA.registration','регистрация-намерение (B-4)'],
+      ['demo','BA.demo','гайд-тур (лёгкий, B-1)'],
+      ['debug','BA.debug','консоль (H)']
+    ];
+    function present(ns){ try { return ns.split('.').reduce(function(o,k){return o&&o[k];}, window); } catch(e){ return null; } }
+    document.addEventListener('DOMContentLoaded',function(){ BA.frame.init({page:'dev-components'});
+      var rows = MODS.map(function(m){ var ok=!!present(m[1]);
+        return '<div class="dd-row"><span class="dd-k">'+m[1]+'</span><span class="'+(ok?'dd-ok':'dd-no')+'">'+(ok?'✓':'—')+'</span><span>'+m[2]+'</span></div>'; }).join('');
+      document.getElementById('dd-body').innerHTML =
+        '<section class="dd-sec"><h2>Модули ('+MODS.filter(function(m){return present(m[1]);}).length+'/'+MODS.length+' загружено)</h2>'+rows+'</section>'+
+        '<section class="dd-sec"><h2>BA.store — поверхность API</h2><div class="dd-api">'+
+          '<b>kv:</b> get·set·remove·clear (per-user)<br>'+
+          '<b>коллекции:</b> coll·all·mapOf·insert·update·find·first·persist·subscribe<br>'+
+          '<b>идентичность:</b> roleOf·tierOf·rankOf·xpOf·effectiveWeight·capabilitySet·can·publicProfileOf<br>'+
+          '<b>events:</b> emit(codename,{who,with_what,params,visibility,source}) — append-only, action_id<br>'+
+          '<b>действия:</b> castVote·addComment·addReview·addReply·sendMessage·publishPost·publishNews·readingSession·setShelf·addTrack<br>'+
+          '<b>производные:</b> thread·weightedTally·bookRating·notificationsFor·activityFeed·pulse·readingStats·continueReading·domainOf<br>'+
+          '<b>сим:</b> clearSim·recomputeReputation·resetAll'+
+        '</div></section>';
+    });
+  </script>
+</body>
+</html>

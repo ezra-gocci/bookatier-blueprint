@@ -2,8 +2,42 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>β→α академия</title>
-  <script>window.location.replace('pages/showroom.html');</script>
+  <!-- ============================================================================
+       index.html — 1st-level MASTER FRAME entry (Tier 1).
+       Feature areas: 21 (Accounts & Access) · 24 (Onboarding & First-run).
+       Spec refs: system-model §4.1 (composition model — master frame redirects +
+       injects by auth state + saved position), §4.8 (file inventory: index.html =
+       master frame), §4.5 (anon vs authed). The shared chrome (header/footer/⚙
+       console) is provided to every page by components/frame.js; this entry only
+       decides WHERE to land. No application server — auth state is the local
+       session marker (sessionStorage), saved position is a global localStorage key
+       written by frame.js on each authed page load.
+       ============================================================================ -->
+  <script>
+    (function () {
+      'use strict';
+      function session() {
+        try { return JSON.parse(sessionStorage.getItem('ba_session') || 'null'); }
+        catch (e) { return null; }
+      }
+      var s = session();
+      var target;
+      if (s) {
+        /* authed → saved position (last authed page), else the site Home (Poster) */
+        var last = null;
+        try { last = localStorage.getItem('ba:last'); } catch (e) {}
+        var ok = last && /\/pages\/[a-z0-9-]+\.html/i.test(last) &&
+          !/\/(landing|index)\.html/i.test(last);
+        target = ok ? last : 'pages/cabinet.html?tab=poster';
+      } else {
+        /* guest → the public Landing (Вербовка) */
+        target = 'pages/landing.html';
+      }
+      window.location.replace(target);
+    })();
+  </script>
 </head>
 <body></body>
 </html>

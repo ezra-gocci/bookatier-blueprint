@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Поиск — beta→alpha академия</title>
+  <!-- ============================================================================
+       search.html — Search results, 1st-level (master frame).
+       Feature area: 20 (Search). Spec refs: system-model §6.1 area 20 (results over
+       Publication/Edition/Author/Publisher/Comment/Review/Member); the panel form
+       is overlay E (search.js, wired in M6). Query from ?q=. Consumes the data
+       modules + BA.store (reactions). Tokens-only. -->
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/chrome.css">
+  <style>
+    .sr-main { min-height: 100vh; }
+    .sr-wrap { max-width: 880px; margin: 0 auto; padding: var(--space-8, 32px) var(--gutter, 40px) var(--space-16); }
+    @media (max-width: 700px){ .sr-wrap { padding: var(--space-6) var(--space-4) var(--space-12); } }
+    .sr-box { position: relative; margin-bottom: var(--space-6); }
+    .sr-input { width: 100%; box-sizing: border-box; font-family: var(--font-serif); font-size: var(--fs-h3, 18px); padding: 14px 18px 14px 48px; border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); background: var(--surface); color: var(--ink); }
+    .sr-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .sr-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--ink-faint); pointer-events: none; }
+    .sr-count { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-faint); margin: 0 0 var(--space-6); }
+    .sr-group { margin-bottom: var(--space-8, 32px); }
+    .sr-group-title { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin: 0 0 var(--space-3); display: flex; align-items: baseline; gap: var(--space-2); }
+    .sr-group-count { color: var(--ink-faint); font-weight: 500; }
+    .sr-item { display: flex; gap: var(--space-4, 16px); align-items: center; padding: var(--space-3, 12px); border-radius: var(--radius-md, 10px); text-decoration: none; transition: background 120ms; }
+    .sr-item:hover { background: var(--surface-sunk); }
+    .sr-cover { width: 44px; height: 62px; object-fit: cover; border-radius: var(--radius-sm, 6px); border: var(--hairline) solid var(--line); flex-shrink: 0; background: var(--surface-sunk); }
+    .sr-av { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: var(--hairline) solid var(--line); flex-shrink: 0; background: var(--surface-sunk); }
+    .sr-seal { width: 44px; height: 44px; border-radius: var(--radius-sm, 6px); background: var(--ink); color: var(--paper); display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 700; flex-shrink: 0; }
+    .sr-it-title { font-family: var(--font-serif); font-size: var(--fs-body, 16px); font-weight: 600; color: var(--ink); margin: 0; line-height: 1.3; }
+    .sr-it-sub { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: 2px 0 0; }
+    .sr-empty { font-family: var(--font-sans); color: var(--ink-faint); padding: var(--space-16) 0; text-align: center; font-style: italic; }
+    .sr-hint { font-family: var(--font-sans); color: var(--ink-faint); padding: var(--space-12) 0; text-align: center; }
+  </style>
+</head>
+<body>
+  <main id="main-content" data-page-body class="sr-main">
+    <div class="sr-wrap">
+      <div class="sr-box">
+        <span class="sr-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></span>
+        <input class="sr-input" id="sr-input" type="search" placeholder="Поиск по книгам, авторам, участникам и обсуждениям…" autocomplete="off">
+      </div>
+      <p class="sr-count" id="sr-count"></p>
+      <div id="sr-results"></div>
+    </div>
+  </main>
+
+  <script src="../components/session.js"></script>
+  <script src="../components/book-data.js"></script>
+  <script src="../components/author-data.js"></script>
+  <script src="../components/publisher-data.js"></script>
+  <script src="../components/member-data.js"></script>
+  <script src="../components/store.js"></script>
+  <script src="../components/sim.js"></script>
+  <script src="../components/frame.js"></script>
+  <script src="../components/avatar-menu.js"></script>
+  <script src="../components/notifications.js"></script>
+  <script src="../components/search.js"></script>
+  <script src="../components/pulse.js"></script>
+  <script src="../components/debug.js"></script>
+  <script src="../components/demo.js"></script>
+  <script src="../components/registration.js"></script>
+
+  <script>
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+    var ST = function(){ return window.BA.store; };
+    function bookTitle(slug){ var b=BA.bookData.get(slug); return b?b.title:slug; }
+
+    function search(q){
+      q = (q||'').trim().toLowerCase();
+      var host = document.getElementById('sr-results'), count = document.getElementById('sr-count');
+      if (!q){ count.textContent=''; host.innerHTML = '<p class="sr-hint">Введите запрос — например «Бион», «контейнирование» или имя коллеги.</p>'; return; }
+      function has(s){ return String(s||'').toLowerCase().indexOf(q)>=0; }
+
+      var books = BA.bookData.all().filter(function(b){ return has(b.title)||has(b.author)||has(b.editor)||has(b.year)||((b.chips||b.tags||[]).join(' ').toLowerCase().indexOf(q)>=0); });
+      var authors = BA.authorData.all().filter(function(a){ return has(a.name)||has(a.bio)||has(a.meta); });
+      var pubs = BA.publisherData.all().filter(function(p){ return has(p.name)||has(p.fullName)||has(p.blurb); });
+      var members = BA.memberData.people().filter(function(m){ return has(m.displayName)||has(m.specialisation)||has(m.title); });
+      var reactions = ST().find('reactions', function(r){ return (r.form==='comment'||r.form==='review') && r.piece && has(r.piece.text); }).slice(0,12);
+
+      var total = books.length+authors.length+pubs.length+members.length+reactions.length;
+      count.textContent = total ? ('Найдено: '+total+' по запросу «'+q+'»') : '';
+
+      var html = '';
+      if (books.length) html += group('Книги', books.length, books.map(function(b){
+        return item('book.html?book='+esc(b.slug), '<img class="sr-cover" src="'+esc(b.covers.small)+'" alt="">', b.title, (b.editor?b.editor+' (ред.)':b.author)+' · '+b.year);
+      }).join(''));
+      if (authors.length) html += group('Авторы', authors.length, authors.map(function(a){
+        var av=(BA.avatars?BA.avatars.pick(a.name):''); return item('author.html?author='+esc(a.id), '<img class="sr-av" src="'+esc(av)+'" alt="">', a.name, a.meta||'Автор');
+      }).join(''));
+      if (pubs.length) html += group('Издатели', pubs.length, pubs.map(function(p){
+        return item('publisher.html?publisher='+esc(p.id), '<span class="sr-seal">'+esc(p.mark||'β→α')+'</span>', p.name, p.tagline||'Издательство');
+      }).join(''));
+      if (members.length) html += group('Участники', members.length, members.map(function(m){
+        return item('member.html?member='+esc(m.id), '<img class="sr-av" src="'+esc(BA.memberData.avatar(m))+'" alt="">', m.displayName, m.specialisation||'Участник');
+      }).join(''));
+      if (reactions.length) html += group('Обсуждения', reactions.length, reactions.map(function(r){
+        var who = ST().memberRecord(r.authorId); var nm = who?who.displayName:r.authorId;
+        return item('book.html?book='+esc(r.targetId), '<span class="sr-seal" style="background:var(--surface-sunk);color:var(--ink-soft)">'+(r.form==='review'?'★':'»')+'</span>', '«'+esc(r.piece.text.slice(0,80))+(r.piece.text.length>80?'…':'')+'»', nm+' · о книге «'+bookTitle(r.targetId)+'»');
+      }).join(''));
+
+      host.innerHTML = html || '<p class="sr-empty">Ничего не найдено. Попробуйте другой запрос.</p>';
+    }
+    function group(title, n, inner){ return '<section class="sr-group"><p class="sr-group-title">'+esc(title)+' <span class="sr-group-count">'+n+'</span></p>'+inner+'</section>'; }
+    function item(href, media, title, sub){ return '<a class="sr-item" href="'+href+'">'+media+'<span><p class="sr-it-title">'+esc(title)+'</p><p class="sr-it-sub">'+esc(sub)+'</p></span></a>'; }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      BA.frame.init({ page: 'search' });
+      if (BA.sim) BA.sim.ensure();
+      var q0 = new URLSearchParams(location.search).get('q') || '';
+      var inp = document.getElementById('sr-input');
+      inp.value = q0; search(q0); inp.focus();
+      var t; inp.addEventListener('input', function(){ clearTimeout(t); t=setTimeout(function(){
+        var url=new URL(location.href); url.searchParams.set('q', inp.value); history.replaceState(null,'',url); search(inp.value);
+      }, 120); });
+    });
+  </script>
+</body>
+</html>

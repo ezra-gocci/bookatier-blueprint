@@ -368,103 +368,126 @@
     return url ? base + "background-image:url('" + url + "');background-size:cover;background-position:center;color:transparent;" : base;
   }
 
+  /* ── engine helpers (area 23/22) ── */
+  function _ts(iso){ try { return new Date(iso).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}); } catch(e){ return ''; } }
+  /* Impersonate (debug override, §3.5e): set the active member directly, bypassing
+     login — drives the whole UI through the session + store CapabilitySet. */
+  function _impersonate(id) {
+    if (!id) { if (BA.session) BA.session.clear(); return; }
+    var md = window.BA && BA.memberData, st = window.BA && BA.store;
+    var m = md && md.get(id); if (!m) return;
+    var privs = md.privNamesOf(m);
+    var role = st ? st.roleOf(privs) : 'Member';
+    var rep = st ? st.xpOf(id) : (m.reputationScore || 0);
+    BA.session.set({ id: m.id, name: m.displayName, role: role, rep: rep });
+  }
+
+  function _userRow(m, currentId) {
+    var md = BA.memberData, st = BA.store;
+    var active = currentId === m.id;
+    var privs = md.privNamesOf(m);
+    var role = st ? st.roleOf(privs) : '';
+    var rep = st ? st.xpOf(m.id) : (m.reputationScore || 0);
+    var tag = m.kind === 'bot' ? 'Bot' : m.kind === 'system' ? 'System' : md.isMock(m) ? 'Mock' : role;
+    return '<div class="dbg-user-row' + (active ? ' is-active' : '') + '" data-user-id="' + m.id + '">' +
+      '<div class="dbg-user-av" style="background-image:url(\'' + md.avatar(m) + '\');background-size:cover;background-position:center"></div>' +
+      '<div style="min-width:0;flex:1"><p class="dbg-user-name">' + m.displayName + '</p>' +
+      '<p class="dbg-user-meta">' + tag + ' · ★' + rep + '</p></div>' +
+      (active ? '<span class="dbg-user-badge">Active</span>' : '') + '</div>';
+  }
+
   function _usersPanel() {
-    var session = window.BA && BA.session ? BA.session.get() : null;
+    var md = window.BA && BA.memberData;
+    if (!md) return '<p class="dbg-label">Пользователи</p><p style="font-size:12px;color:rgba(236,227,214,.4);padding:0 16px">Стор не загружен на этой странице.</p>';
+    var session = BA.session ? BA.session.get() : null;
     var currentId = session && session.id;
-
-    var rows = USERS.map(function (u) {
-      var active = currentId === u.session.id;
-      return [
-        '<div class="dbg-user-row' + (active ? ' is-active' : '') + '" data-user-id="' + u.session.id + '">',
-          '<div class="dbg-user-av" style="' + _avStyle(u) + '">' + u.init + '</div>',
-          '<div style="min-width:0;flex:1">',
-            '<p class="dbg-user-name">' + u.name + '</p>',
-            '<p class="dbg-user-meta">' + u.email + ' · ' + u.session.role + ' · ★' + u.session.rep + '</p>',
-          '</div>',
-          active ? '<span class="dbg-user-badge">Active</span>' : '',
-        '</div>'
-      ].join('');
-    }).join('');
-
+    var humans = md.all().filter(function (m) { return m.kind === 'human' && !md.isMock(m); });
+    var mocks = md.mocks();
+    var sys = md.all().filter(function (m) { return m.kind !== 'human'; });
     var anonActive = !currentId;
-    return [
-      '<p class="dbg-label">Пользователи</p>',
-      rows,
-      '<div class="dbg-anon-row' + (anonActive ? ' is-active" style="color:#ECE3D6' : '') + '" id="dbg-anon">',
-        '<div class="dbg-user-av" style="background:rgba(236,227,214,.12)">?</div>',
-        '<div><p class="dbg-user-name">Анонимный</p><p class="dbg-user-meta">Без сессии</p></div>',
-        anonActive ? '<span class="dbg-user-badge">Active</span>' : '',
-      '</div>',
-    ].join('');
+    return '<p class="dbg-label">Войти как (impersonate)</p>' +
+      humans.map(function (m) { return _userRow(m, currentId); }).join('') +
+      '<p class="dbg-label">Mock — симуляция</p>' + mocks.map(function (m) { return _userRow(m, currentId); }).join('') +
+      '<p class="dbg-label">Системные</p>' + sys.map(function (m) { return _userRow(m, currentId); }).join('') +
+      '<div class="dbg-anon-row' + (anonActive ? ' is-active' : '') + '" id="dbg-anon">' +
+        '<div class="dbg-user-av" style="background:rgba(236,227,214,.12)">?</div>' +
+        '<div><p class="dbg-user-name">Гость</p><p class="dbg-user-meta">Без сессии</p></div>' +
+        (anonActive ? '<span class="dbg-user-badge">Active</span>' : '') + '</div>';
   }
 
   function _dataPanel() {
-    var session = window.BA && BA.session ? BA.session.get() : null;
+    var st = window.BA && BA.store, session = BA.session ? BA.session.get() : null;
     var theme = document.documentElement.getAttribute('data-theme') || 'light-clear';
-    var rows = [
-      { k: 'session.id',   v: session ? session.id : '—' },
-      { k: 'session.name', v: session ? session.name : '—' },
-      { k: 'session.role', v: session ? session.role : '—' },
-      { k: 'session.rep',  v: session ? String(session.rep) : '—' },
-      { k: 'theme',        v: theme },
-      { k: 'viewport',     v: window.innerWidth + ' × ' + window.innerHeight },
-      { k: 'books',        v: String(BOOKS.length) },
-      { k: 'events',       v: String(EVENTS.length) },
-    ];
-    var html = '<p class="dbg-label">Данные сессии и платформы</p>';
-    rows.forEach(function (r) {
-      html += '<div class="dbg-data-row"><span class="dbg-data-key">' + r.k + '</span><span class="dbg-data-val">' + r.v + '</span></div>';
-    });
-
-    html += '<p class="dbg-label" style="margin-top:8px">Книги</p>';
-    BOOKS.forEach(function (b) {
-      html += '<div class="dbg-data-row"><span class="dbg-data-key">' + b.title.slice(0, 20) + '…</span><span class="dbg-data-val">' + b.ver + ' · ' + b.reads + ' читателей</span></div>';
-    });
+    function row(k, v){ return '<div class="dbg-data-row"><span class="dbg-data-key">' + k + '</span><span class="dbg-data-val">' + v + '</span></div>'; }
+    var html = '<p class="dbg-label">Сессия</p>' +
+      row('id', session ? session.id : '—') + row('name', session ? session.name : '—') +
+      row('role', session ? session.role : 'Guest') + row('theme', theme);
+    if (st) {
+      var simN = st.all('events').filter(function(e){return e.source==='sim';}).length;
+      html += '<p class="dbg-label" style="margin-top:8px">Стор (localStorage ba_db_v1)</p>' +
+        row('events', st.all('events').length + ' (sim: ' + simN + ')') +
+        row('reactions', st.all('reactions').length) +
+        row('members', Object.keys(st.mapOf('members')).length) +
+        row('books', BA.bookData ? BA.bookData.SLUGS.length : 0) +
+        row('excerpts', st.all('excerpts').length) +
+        row('tracks', st.all('tracks').length) +
+        row('chats', st.all('chats').length);
+      html += '<p class="dbg-label" style="margin-top:8px">Книги · реакции</p>';
+      (BA.bookData ? BA.bookData.all() : []).forEach(function(b){
+        var rx = st.find('reactions', function(r){ return r.targetId===b.slug; }).length;
+        var rt = st.bookRating(b.slug);
+        html += row(b.title.slice(0,22), rx + ' · ' + (rt.score!=null?rt.score.toFixed(1)+'★':'—'));
+      });
+      html += '<div style="padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap">' +
+        '<button class="dbg-sim-btn" data-data="reseed" type="button">🌱 Пересеять</button>' +
+        '<button class="dbg-sim-btn" data-data="reset" type="button">⚠ Сбросить всё</button></div>';
+    }
     return html;
   }
 
   function _eventsPanel() {
-    var html = '<p class="dbg-label">Лог событий (' + EVENTS.length + ' записей)</p>';
-    EVENTS.forEach(function (ev) {
-      html += [
-        '<div class="dbg-ev-row">',
-          '<span class="dbg-ev-time">' + ev.time + '</span>',
-          '<span class="dbg-ev-type">' + ev.type + '</span>',
-          '<span class="dbg-ev-actor">' + ev.actor + '</span>',
-          '<span class="dbg-ev-body">' + ev.body + '</span>',
-        '</div>'
-      ].join('');
-    });
-    return html;
-  }
-
-  function _simPanel() {
-    var actions = [
-      '📖  Открыть книгу (bion, v1.0)',
-      '📄  Просмотреть страницу 15',
-      '💬  Создать комментарий',
-      '⭐  Поставить оценку ★★★★☆',
-      '✍️  Создать рецензию',
-      '⏱  Завершить сессию (12 мин.)',
-    ];
-    return '<p class="dbg-label">Симуляция активности</p>' +
-      '<p style="font-size:12px;color:rgba(236,227,214,.4);padding:0 16px 12px">Записывает событие в лог и обновляет счётчики.</p>' +
-      actions.map(function (a) {
-        return '<button class="dbg-sim-btn" type="button">' + a + '</button>';
+    var st = window.BA && BA.store; if (!st) return '<p class="dbg-label">Лог событий</p>';
+    var canView = st.can && st.can('view_events');   // Admin-only (§2.4 / §3.5a)
+    if (!canView) return '<p class="dbg-label">Лог событий</p>' +
+      '<p style="font-size:12px;color:rgba(236,227,214,.45);padding:0 16px">Append-only лог доступен только администратору. Войдите как <b>admin@beta2alpha.academy</b> (или импер­сонируйте Админа).</p>';
+    var all = st.all('events');
+    var evs = all.slice(-90).reverse();
+    return '<p class="dbg-label">Лог событий · ' + all.length + ' (append-only)</p>' +
+      evs.map(function (e) {
+        return '<div class="dbg-ev-row">' +
+          '<span class="dbg-ev-time">' + _ts(e.timestamp) + '</span>' +
+          '<span class="dbg-ev-type">' + e.action.codename + '</span>' +
+          '<span class="dbg-ev-actor">' + (e.who && e.who.entity_id || '') + '</span>' +
+          '<span class="dbg-ev-body">' + (e.source === 'sim' ? '·sim' : '') + '</span></div>';
       }).join('');
   }
 
+  function _simPanel() {
+    var st = window.BA && BA.store;
+    var running = window.BA && BA.sim && BA.sim.isRunning && BA.sim.isRunning();
+    var simN = st ? st.all('events').filter(function(e){return e.source==='sim';}).length : 0;
+    return '<p class="dbg-label">Симуляция активности</p>' +
+      '<p style="font-size:12px;color:rgba(236,227,214,.45);padding:0 16px 8px">Mock-участники эмитят события (source:sim) через тот же стор, что и реальные пользователи.</p>' +
+      '<button class="dbg-sim-btn" data-sim="toggle" type="button">' + (running ? '⏸  Остановить симуляцию' : '▶  Запустить симуляцию') + '</button>' +
+      '<button class="dbg-sim-btn" data-sim="tick" type="button">⚡  Один тик</button>' +
+      '<button class="dbg-sim-btn" data-sim="seed" type="button">🌱  Засеять историю (backfill)</button>' +
+      '<button class="dbg-sim-btn" data-sim="clear" type="button">🧹  Очистить симуляцию (' + simN + ')</button>' +
+      '<div class="dbg-data-row"><span class="dbg-data-key">Статус</span><span class="dbg-data-val" style="color:' + (running ? '#7CB342' : '#DB7B5D') + '">' + (running ? 'идёт' : 'остановлена') + '</span></div>';
+  }
+
   function _cohortsPanel() {
-    return [
-      '<p class="dbg-label">Когорты</p>',
-      '<div class="dbg-data-row"><span class="dbg-data-key">Профессионалы</span><span class="dbg-data-val">3 пользователя · ★ avg 311</span></div>',
-      '<div class="dbg-data-row"><span class="dbg-data-key">Участники</span><span class="dbg-data-val">2 пользователя · ★ avg 130</span></div>',
-      '<div class="dbg-data-row"><span class="dbg-data-key">Студенты</span><span class="dbg-data-val">0 пользователей</span></div>',
-      '<p class="dbg-label" style="margin-top:12px">Репутация</p>',
-      USERS.map(function (u) {
-        return '<div class="dbg-data-row"><span class="dbg-data-key">' + u.init + ' ' + u.name.split(' ')[0] + '</span><span class="dbg-data-val">★ ' + u.session.rep + '</span></div>';
-      }).join(''),
-    ].join('');
+    var st = window.BA && BA.store; if (!st) return '<p class="dbg-label">Когорты</p>';
+    var cohorts = st.all('cohorts');
+    var members = BA.memberData ? BA.memberData.people() : [];
+    var byRank = {}; members.forEach(function (m) { var r = st.tierOf(st.xpOf(m.id)); byRank[r] = (byRank[r] || 0) + 1; });
+    function row(k, v){ return '<div class="dbg-data-row"><span class="dbg-data-key">' + k + '</span><span class="dbg-data-val">' + v + '</span></div>'; }
+    return '<p class="dbg-label">Когорты</p>' +
+      cohorts.map(function (c) { return row(c.name, (c.memberIds ? c.memberIds.length : c.size) + ' · ' + c.mood); }).join('') +
+      '<p class="dbg-label" style="margin-top:12px">Распределение по рангам</p>' +
+      ['Новичок','Практик','Эксперт','Мэтр'].filter(function(r){return byRank[r];}).map(function (r) { return row(r, byRank[r]); }).join('') +
+      '<p class="dbg-label" style="margin-top:12px">Топ репутации</p>' +
+      members.slice().sort(function (a, b) { return st.xpOf(b.id) - st.xpOf(a.id); }).slice(0, 10)
+        .map(function (m) { return row(m.displayName.split(' ')[0], '★ ' + st.xpOf(m.id)); }).join('');
   }
 
   function _responsivityPanel() {
@@ -560,17 +583,19 @@
   function _wirePanel(panel, id) {
     if (id === 'users') {
       panel.querySelectorAll('.dbg-user-row').forEach(function (row) {
-        row.addEventListener('click', function () {
-          var uid = row.getAttribute('data-user-id');
-          var user = USERS.filter(function (u) { return u.session.id === uid; })[0];
-          if (user && window.BA && BA.session) BA.session.set(user.session);
-          _switchTab('users'); // re-render to update badge
-        });
+        row.addEventListener('click', function () { _impersonate(row.getAttribute('data-user-id')); _switchTab('users'); });
       });
       var anonRow = panel.querySelector('#dbg-anon');
-      if (anonRow) anonRow.addEventListener('click', function () {
-        if (window.BA && BA.session) BA.session.clear();
-        _switchTab('users');
+      if (anonRow) anonRow.addEventListener('click', function () { _impersonate(null); _switchTab('users'); });
+    }
+    if (id === 'data') {
+      panel.querySelectorAll('[data-data]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var a = btn.getAttribute('data-data');
+          if (a === 'reseed') { if (BA.store) BA.store.resetAll(); if (BA.sim) BA.sim.backfill(); }
+          else if (a === 'reset') { if (BA.store) BA.store.resetAll(); }
+          _switchTab('data');
+        });
       });
     }
     if (id === 'responsivity') {
@@ -608,10 +633,15 @@
       });
     }
     if (id === 'simulation') {
-      panel.querySelectorAll('.dbg-sim-btn').forEach(function (btn) {
+      panel.querySelectorAll('[data-sim]').forEach(function (btn) {
         btn.addEventListener('click', function () {
-          btn.style.opacity = '.4';
-          setTimeout(function () { btn.style.opacity = ''; }, 600);
+          var a = btn.getAttribute('data-sim');
+          if (!window.BA || !BA.sim) return;
+          if (a === 'toggle') { if (BA.sim.isRunning()) BA.sim.stop(); else BA.sim.start(); }
+          else if (a === 'tick') { BA.sim.oneTick(); }
+          else if (a === 'seed') { BA.sim.backfill(); }
+          else if (a === 'clear') { if (BA.store) BA.store.clearSim(); }
+          _switchTab('simulation');
         });
       });
     }
@@ -646,6 +676,12 @@
       '<div class="dbg-foot">',
         '<button class="dbg-foot-btn" id="dbg-reload" type="button">↺ Перезагрузить</button>',
         '<button class="dbg-foot-btn" id="dbg-clear-session" type="button">Очистить сессию</button>',
+      '</div>',
+      '<div class="dbg-foot" style="flex-wrap:wrap;gap:6px">',
+        '<a class="dbg-foot-btn" href="dev-ux.html">DevDoc·UX</a>',
+        '<a class="dbg-foot-btn" href="dev-components.html">Компоненты</a>',
+        '<a class="dbg-foot-btn" href="dev-features.html">Фичи</a>',
+        '<a class="dbg-foot-btn" href="dev-model.html">Модель</a>',
       '</div>',
     ].join('');
 

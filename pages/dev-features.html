@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevDoc · Feature areas — β→α</title>
+  <!-- DevDoc (feature area X). Generated view over the 24 feature areas
+       (scope-of-work + system-model §6.1: area ↔ entities ↔ surface). Tokens-only. -->
+  <link rel="stylesheet" href="../styles/tokens.css"><link rel="stylesheet" href="../styles/chrome.css">
+  <style>
+    .dd-wrap{max-width:980px;margin:0 auto;padding:var(--space-8,32px) var(--gutter,40px) var(--space-16);}
+    .dd-eyebrow{font-family:var(--font-sans);font-size:var(--fs-caption,12px);font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin:0 0 var(--space-1);}
+    .dd-title{font-family:var(--font-serif);font-size:2rem;font-weight:600;color:var(--ink);margin:0 0 var(--space-2);}
+    .dd-sub{font-family:var(--font-sans);font-size:var(--fs-small,14px);color:var(--ink-soft);margin:0 0 var(--space-6);max-width:60ch;}
+    .dd-nav{display:flex;gap:var(--space-2);flex-wrap:wrap;margin-bottom:var(--space-6);}
+    .dd-nav a{font-family:var(--font-sans);font-size:var(--fs-small,14px);padding:6px 14px;border-radius:var(--radius-pill,999px);border:var(--hairline) solid var(--line);color:var(--ink-soft);text-decoration:none;}
+    .dd-nav a:hover,.dd-nav a.is-on{border-color:var(--accent);color:var(--accent);}
+    table{width:100%;border-collapse:collapse;font-family:var(--font-sans);font-size:var(--fs-small,14px);}
+    th,td{text-align:left;padding:10px 12px;border-bottom:var(--hairline) solid var(--line);vertical-align:top;}
+    th{font-size:var(--fs-caption,12px);text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);font-weight:600;}
+    td:first-child{color:var(--accent);font-weight:600;width:34px;}
+    .dd-area{color:var(--ink);font-weight:600;}
+    .dd-ent{color:var(--ink-soft);}
+    .dd-surf{color:var(--ink-faint);}
+  </style>
+</head>
+<body>
+  <main id="main-content" data-page-body><div class="dd-wrap">
+    <p class="dd-eyebrow">DevDoc</p><h1 class="dd-title">Области функциональности (24)</h1>
+    <p class="dd-sub">Каждая из 24 областей (scope-of-work) ↔ её сущности ↔ поверхность (system-model §6.1). Технический мост между бизнес-каталогом и моделью.</p>
+    <nav class="dd-nav"><a href="dev-ux.html">UX</a><a href="dev-components.html">Компоненты</a><a href="dev-features.html" class="is-on">Фичи</a><a href="dev-model.html">Модель</a></nav>
+    <table><thead><tr><th>#</th><th>Область</th><th>Сущности</th><th>Поверхность</th></tr></thead><tbody id="dd-rows"></tbody></table>
+  </div></main>
+  <script src="../components/session.js"></script><script src="../components/book-data.js"></script>
+  <script src="../components/author-data.js"></script><script src="../components/publisher-data.js"></script>
+  <script src="../components/member-data.js"></script><script src="../components/store.js"></script>
+  <script src="../components/sim.js"></script><script src="../components/frame.js"></script>
+  <script src="../components/avatar-menu.js"></script><script src="../components/notifications.js"></script>
+  <script src="../components/search.js"></script><script src="../components/pulse.js"></script>
+  <script src="../components/debug.js"></script><script src="../components/registration.js"></script><script src="../components/demo.js"></script>
+  <script>
+    var AREAS=[
+     [1,'Каталог','Publication·Edition·Author·Publisher·Collection·rating','Library→Catalogue · карточка книги (F)'],
+     [2,'Книга','Publication·Edition·Comment·Review·Vote·Chapter·Citation','book.html · карточка + мини-читалка'],
+     [3,'Чтение','Edition·File·ReaderState·Progress·Mark/Fragment·Event','reader.html (Delve) · MiniReader'],
+     [4,'Аннотации и цитаты','Mark·Remark·Fragment·Excerpt·Citation·Reference','Reader · Cabinet→Excerpt'],
+     [5,'Авторы (Пантеон)','Author·Publication·Reaction·Track','Library→Pantheon · author.html'],
+     [6,'Издатели (Producers)','Publisher·Publication·News·Reaction·publisher_id','Library→Producers · publisher.html'],
+     [7,'Подборки','Collection·Publication·Post','Library→Collection · Shelf · Post'],
+     [8,'Реакции и обсуждение','Reaction·Piece·Thread·Vote·rating·Reputation','book.html Comments/Reviews · Community→Discussion'],
+     [9,'Репутация и ранг','Reputation·Rank·Vote·Capability·SystemSettings','ReputationBadge · VoteControl · Cabinet'],
+     [10,'Читательские клубы','Club·Member·Privilege·Thread·Post','Community→ReadingClub'],
+     [11,'Сообщения','Message·Chat·Reply·Piece','Cabinet→Correspondence'],
+     [12,'Участники и сообщество','Member·Profile·Reaction·Reputation·Track','Community→MemberBoard · member.html'],
+     [13,'Подписки/слежение','Track·Flag·все mains','карточки/страницы · Cabinet'],
+     [14,'Полка','ShelfStatus·Publication·threshold·Progress','Cabinet→Shelf'],
+     [15,'Личный дом и кабинет','Poster·Overview·Profile·Preferences·Subscription','Cabinet · Home'],
+     [16,'Уведомления','Notification·Event (− read)','дропдаун (C) · Toast'],
+     [17,'Пульс и лента','Event·Pulse·ActivityFeed·Track','Community→Pulse · оверлей (G)'],
+     [18,'Публикация (Post)','Post·Piece·Collection·Blogpost·News','Community→Post'],
+     [19,'Новости','News·Piece·Thread·Bot','Community→News · Landing teaser'],
+     [20,'Поиск','Publication·Author·Publisher·Comment·Review·Member','панель (E) · search.html'],
+     [21,'Аккаунты и доступ','Member·User·Session·Privilege·Role·Rank·Capability','Login/Reg · Avatar · guards'],
+     [22,'Администрирование','Member·Privilege·Rank·Event·Subscription','Debug console · Cabinet'],
+     [23,'Симуляция и отладка','DebugConfig·Cohort·SimulationConfig·Mock·Event','Debug console (H)'],
+     [24,'Онбординг и first-run','Landing·About·Demo·Registration·empty/loading/error','Landing+About · DemoTour · состояния']
+    ];
+    document.addEventListener('DOMContentLoaded',function(){ BA.frame.init({page:'dev-features'});
+      document.getElementById('dd-rows').innerHTML = AREAS.map(function(a){
+        return '<tr><td>'+a[0]+'</td><td class="dd-area">'+a[1]+'</td><td class="dd-ent">'+a[2]+'</td><td class="dd-surf">'+a[3]+'</td></tr>';
+      }).join('');
+    });
+  </script>
+</body>
+</html>
