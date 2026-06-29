@@ -57,8 +57,8 @@
     .lib-tabs-inner { display: flex; gap: var(--space-1, 4px); overflow-x: auto; }
     .lib-tab { font-family: var(--font-sans); font-size: var(--fs-body, 16px); font-weight: 500; color: var(--ink-soft);
       background: none; border: none; border-bottom: 2px solid transparent; padding: var(--space-4, 16px) var(--space-4, 16px);
-      cursor: pointer; white-space: nowrap; transition: color 140ms, border-color 140ms; }
-    .lib-tab:hover { color: var(--ink); }
+      cursor: pointer; white-space: nowrap; transition: color 140ms, border-color 140ms, background 140ms; }
+    .lib-tab:hover { color: var(--ink); background: color-mix(in srgb, var(--ink, #241F1B) 7%, transparent); border-radius: var(--radius-sm, 6px) var(--radius-sm, 6px) 0 0; }
     .lib-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
     .lib-tab-count { font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin-left: 4px; }
     /* Tab content + stubs */
@@ -231,7 +231,9 @@
       grid.innerHTML = BA.publisherData.all().map(function(p){
         var s = BA.publisherData.stats(p);
         return '<a class="prod-card" href="publisher.html?publisher='+esc(p.id)+'">' +
-          '<span class="prod-seal" aria-hidden="true">'+esc(p.mark||'β→α')+'</span>' +
+          (p.logo
+            ? '<span class="prod-seal" aria-hidden="true"><img src="'+esc(p.logo)+'" alt="'+esc(p.name)+'" style="max-width:84%;max-height:50%;object-fit:contain;"></span>'
+            : '<span class="prod-seal" aria-hidden="true">'+esc(p.mark||'β→α')+'</span>') +
           '<span class="prod-info">' +
             '<p class="prod-name">'+esc(p.name)+'</p>' +
             '<p class="prod-blurb">'+esc(p.blurb)+'</p>' +

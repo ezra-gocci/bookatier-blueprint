@@ -131,7 +131,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function(){
-      BA.frame.init({ page: 'library' });
+      BA.frame.init({ page: 'library', subpage: 'author' });
       build();
       document.addEventListener('ba:session-change', build);
     });

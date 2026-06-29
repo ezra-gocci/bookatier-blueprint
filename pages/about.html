@@ -36,9 +36,46 @@
     .ab-cta { text-align: center; padding: var(--space-12) 0; }
     .ab-btn { font-family: var(--font-sans); font-size: var(--fs-body, 16px); font-weight: 600; padding: 13px 28px; border-radius: var(--radius-md, 10px); cursor: pointer; border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent, #fff); text-decoration: none; }
     .ab-btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    /* Publisher tab — fixed under header, mirrors beta2alpha "Что там ещё?" */
+    .ab-switch-tab { position: fixed; top: var(--header-height, 64px); right: var(--gutter, 40px); z-index: 490;
+      display: inline-flex; align-items: center; gap: 7px; padding: 8px 18px 9px;
+      background: #1F1B18; color: #ECE3D6; font-family: var(--font-sans); font-size: 12px;
+      font-weight: 600; letter-spacing: .01em; text-decoration: none; white-space: nowrap; cursor: pointer; border: none;
+      border-radius: 0 0 var(--radius-md, 12px) var(--radius-md, 12px);
+      box-shadow: 0 7px 20px color-mix(in srgb,#1F1B18 30%,transparent);
+      transition: padding-bottom 200ms var(--ease-out-quart,cubic-bezier(.25,.46,.45,.94)), box-shadow 200ms ease; }
+    .ab-switch-tab__icon { color: var(--accent, #C1654B); display: inline-flex; }
+    .ab-switch-tab:hover { padding-bottom: 14px; box-shadow: 0 10px 26px color-mix(in srgb,#1F1B18 38%,transparent); }
+    .ab-switch-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    @media (prefers-reduced-motion: reduce) { .ab-switch-tab { transition: none; } }
+    @media (max-width: 460px) { .ab-switch-tab { font-size: 11px; padding: 7px 14px 8px; right: var(--space-4, 16px); } }
+    /* Publisher partnership section */
+    .ab-partner { background: var(--surface-sunk, #F0E8D8); border-radius: var(--radius-md, 10px); padding: var(--space-8, 32px); }
+    .ab-partner-title { font-family: var(--font-serif); font-size: var(--fs-h2, 1.375rem); font-weight: 600; color: var(--ink); margin: 0 0 var(--space-2, 8px); }
+    .ab-partner-sub { font-family: var(--font-sans); font-size: var(--fs-body, 16px); color: var(--ink-soft); margin: 0 0 var(--space-6, 24px); line-height: 1.6; }
+    .ab-perks { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4, 16px); margin: 0 0 var(--space-6, 24px); list-style: none; padding: 0; }
+    @media (max-width: 600px) { .ab-perks { grid-template-columns: 1fr; } }
+    .ab-perk { background: var(--surface, #FFFDF8); border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px); padding: var(--space-4, 16px); }
+    .ab-perk-title { font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: 600; color: var(--ink); margin: 0 0 4px; }
+    .ab-perk-body { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--ink-soft); margin: 0; line-height: 1.5; }
+    .ab-partner-contact { display: flex; align-items: center; gap: var(--space-3, 12px); flex-wrap: nowrap; margin: 0 0 var(--space-2, 8px); }
+    .ab-partner-contact a { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: var(--accent); text-decoration: none; white-space: nowrap; }
+    .ab-partner-contact a:hover { text-decoration: underline; }
+    .ab-partner-dm { font-family: var(--font-sans); font-size: var(--fs-small, 14px); font-weight: 500; background: none; border: var(--hairline) solid var(--line); border-radius: var(--radius-pill, 999px); padding: 6px 14px; cursor: pointer; color: var(--ink-soft); transition: border-color 140ms, color 140ms; white-space: nowrap; flex-shrink: 0; }
+    .ab-partner-dm:hover { border-color: var(--ink-soft); color: var(--ink); }
+    .ab-partner-sep { color: var(--ink-faint); font-size: var(--fs-small, 14px); flex-shrink: 0; }
+    .ab-partner-hint { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin: 0; line-height: 1.5; }
   </style>
 </head>
 <body>
+
+  <button class="ab-switch-tab" id="ab-partner-btn" type="button" aria-label="Для издателей — условия сотрудничества">
+    <span class="ab-switch-tab__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+    </span>
+    <span>Для издателей</span>
+  </button>
+
   <main id="main-content" data-page-body class="ab-main">
     <section class="ab-hero">
       <div class="ab-hero-bg" aria-hidden="true"></div>
@@ -77,6 +114,25 @@
         <p>Текст — герой. Тёплая, книжная атмосфера вместо коммерческой суеты. Уважение к читателю и к автору. Прозрачность к правообладателям. Спокойная, вдумчивая среда, в которую хочется возвращаться.</p>
       </section>
 
+      <section class="ab-sec" id="ab-partner" style="scroll-margin-top:80px">
+        <div class="ab-partner">
+          <h2 class="ab-partner-title">Сотрудничество с платформой</h2>
+          <p class="ab-partner-sub">beta→alpha академия открыта для издательств, чьи книги принадлежат профессиональному дискурсу в психотерапии и психоанализе. Вот что мы предлагаем партнёрам.</p>
+          <ul class="ab-perks">
+            <li class="ab-perk"><p class="ab-perk-title">Прозрачная атрибуция дохода</p><p class="ab-perk-body">Каждый рубль читательского интереса отслеживается по конкретной книге и читателю — вы видите реальную картину вовлечения, а не сводный пул.</p></li>
+            <li class="ab-perk"><p class="ab-perk-title">Профессиональная аудитория</p><p class="ab-perk-body">Терапевты, аналитики, супервизоры и студенты программ подготовки — люди, которые читают ваши книги по работе и рекомендуют их коллегам.</p></li>
+            <li class="ab-perk"><p class="ab-perk-title">Честное разделение выручки</p><p class="ab-perk-body">50% подписочного дохода каждого читателя распределяется пропорционально реальному чтению — без Spotify-пула, с пользовательской атрибуцией.</p></li>
+            <li class="ab-perk"><p class="ab-perk-title">PDF-нативная платформа</p><p class="ab-perk-body">Ваши книги отображаются так, как вы их издали: InDesign-вёрстка, кириллические шрифты, сложная типографика — без конвертации в EPUB.</p></li>
+          </ul>
+          <div class="ab-partner-contact">
+            <a href="mailto:publishing@beta2alpha.academy">publishing@beta2alpha.academy</a>
+            <span class="ab-partner-sep">·</span>
+            <button class="ab-partner-dm" type="button" id="ab-dm-btn">Написать в редакцию →</button>
+          </div>
+          <p class="ab-partner-hint">«Написать в редакцию» — личное сообщение администратору платформы через внутреннюю переписку.</p>
+        </div>
+      </section>
+
       <div class="ab-cta">
         <a class="ab-btn" href="library.html">Открыть библиотеку →</a>
       </div>
@@ -100,7 +156,28 @@
   <script src="../components/registration.js"></script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function(){ BA.frame.init({ page: 'about' }); if (BA.sim) BA.sim.ensure(); });
+    document.addEventListener('DOMContentLoaded', function(){
+      BA.frame.init({ page: 'about' });
+      if (BA.sim) BA.sim.ensure();
+      function placePartnerTab(){
+        var tab = document.getElementById('ab-partner-btn'), h = document.querySelector('.site-header[data-ba-frame]');
+        if (!tab || !h) return;
+        var z = parseFloat(getComputedStyle(document.body).zoom) || 1;
+        tab.style.top = (h.getBoundingClientRect().bottom / z) + 'px';
+      }
+      placePartnerTab();
+      window.addEventListener('resize', placePartnerTab);
+      document.getElementById('ab-partner-btn').addEventListener('click', function(){
+        document.getElementById('ab-partner').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      document.getElementById('ab-dm-btn').addEventListener('click', function(){
+        if (window.BA && BA.session && BA.session.get()) {
+          location.href = 'cabinet.html?tab=correspondence';
+        } else {
+          BA.frame.openLogin();
+        }
+      });
+    });
   </script>
 </body>
 </html>

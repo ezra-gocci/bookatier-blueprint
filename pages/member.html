@@ -160,7 +160,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function(){
-      BA.frame.init({ page: 'community' });
+      BA.frame.init({ page: 'community', subpage: 'member' });
       if (BA.sim) BA.sim.ensure();
       build();
       document.addEventListener('ba:session-change', build);

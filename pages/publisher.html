@@ -132,7 +132,9 @@
 
       document.getElementById('pub-root').innerHTML =
         '<section class="pub-hero">' +
-          '<div class="pub-seal" aria-hidden="true">'+esc(p.mark||'β→α')+'</div>' +
+          (p.logo
+            ? '<div class="pub-seal" aria-hidden="true"><img src="'+esc(p.logo)+'" alt="'+esc(p.name)+'" style="max-width:82%;max-height:52%;object-fit:contain;"></div>'
+            : '<div class="pub-seal" aria-hidden="true">'+esc(p.mark||'β→α')+'</div>') +
           '<div class="pub-hero-text">' +
             '<p class="pub-eyebrow">Издатель</p>' +
             '<h1 class="pub-name">'+esc(p.name)+'</h1>' +
@@ -173,7 +175,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function(){
-      BA.frame.init({ page: 'library' });
+      BA.frame.init({ page: 'library', subpage: 'publisher' });
       build();
       document.addEventListener('ba:session-change', build);
     });

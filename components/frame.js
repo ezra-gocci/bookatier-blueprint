@@ -30,17 +30,17 @@
     'backdrop-filter:saturate(140%) blur(8px);-webkit-backdrop-filter:saturate(140%) blur(8px);',
     'box-shadow:0 4px 24px color-mix(in srgb,#1F1B18 18%,transparent);}',
 
-    /* Header inner 3-col grid */
+    /* Header inner: 1fr / auto / 1fr grid — the center auto column is always
+       at the horizontal mid-point of the page regardless of left/right widths */
     '.header-inner{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;',
-    'gap:var(--space-4,1rem);height:var(--header-height,64px);}',
+    'gap:var(--space-4,1rem);height:var(--header-height,64px);position:relative;}',
 
     /* Wordmark */
     '.wordmark{display:flex;align-items:center;text-decoration:none;flex-shrink:0;}',
     '.wordmark-img{display:block;height:28px;width:auto;}',
 
     /* Primary nav */
-    '.primary-nav{display:flex;align-items:center;gap:var(--space-6,1.5rem);',
-    'justify-content:center;position:relative;}',
+    '.primary-nav{display:flex;align-items:center;gap:var(--space-6,1.5rem);position:relative;}',
 
     /* Nav links */
     '.nav-link{font-family:var(--font-sans);font-size:var(--fs-small,0.875rem);',
@@ -49,21 +49,23 @@
     '.nav-link:hover{color:var(--ink,#241F1B);}',
     '.nav-link[aria-current="page"]{color:var(--ink);font-weight:600;}',
 
-    /* Home badge */
+    /* Home badge — matches beta2alpha.html variant (compact, line-height:1) */
     '.nav-link-home{font-family:var(--font-serif);background:#1F1B18;color:#ECE3D6;',
-    'padding:calc(var(--space-1,0.25rem) * 0.75) var(--space-3,0.75rem) calc((var(--space-1,0.25rem) + 3px) * 0.75);',
-    'border-radius:var(--radius-md,10px);}',
+    'padding:var(--space-1,0.25rem) var(--space-3,0.75rem) calc(var(--space-1,0.25rem) + 3px);',
+    'border-radius:var(--radius-md,10px);line-height:1;}',
     '.nav-link-home:hover{color:#ECE3D6;opacity:.85;}',
     '.nav-link-home .arrow{color:#D2674A;}',
     /* Active page: keep β / α orange (not the dark .nav-link active colour) */
-    '.nav-link-home[aria-current="page"]{color:#D2674A;}',
+    '.nav-link.nav-link-home[aria-current="page"]{color:#FF8040;}',
     /* light-clear theme: the home badge is a cool gray, not warm near-black */
     'html[data-theme="light-clear"] .nav-link-home,html[data-theme="light-clear"] .ba-burger-btn{background:#5A6068;}',
 
     /* Header about link */
     '.header-about{white-space:nowrap;}',
+    /* Left group: logo + about */
+    '.header-left{display:flex;align-items:center;gap:var(--space-4,1rem);}',
 
-    /* Header actions */
+    /* Header actions — grid: push to far right of its 1fr column */
     '.header-actions{justify-self:end;display:flex;align-items:center;gap:var(--space-2,0.5rem);}',
 
     /* Buttons */
@@ -107,6 +109,33 @@
     '.text-mark{font-family:var(--font-serif);font-size:var(--fs-h3,1.125rem);font-weight:600;}',
     '.footer-tagline,.build-tag{font-size:var(--fs-caption,0.75rem);color:var(--ink-faint,#8B8073);}',
     '.arrow{/* inherited per context */}',
+    /* Footer page-loc breadcrumb + info popup */
+    '.footer-center{display:flex;align-items:center;}',
+    '.footer-page-loc{font-family:var(--font-sans);font-size:var(--fs-caption,0.75rem);color:var(--ink-faint,#8B8073);',
+    'background:none;border:none;cursor:pointer;padding:3px 8px;border-radius:4px;',
+    'white-space:nowrap;transition:color 140ms,background 140ms;letter-spacing:.02em;}',
+    '.footer-page-loc:hover{color:var(--ink-soft,#5C5249);background:rgba(0,0,0,.05);}',
+    '.footer-page-code{opacity:.55;font-size:.9em;margin-left:.35em;}',
+    '.ba-page-info-popup{position:fixed;z-index:900;',
+    'background:var(--surface,#FFFDF8);border:var(--hairline,1px solid) var(--line,#E4D9C6);',
+    'border-radius:var(--radius-md,10px);padding:var(--space-5,20px);',
+    'box-shadow:0 8px 32px rgba(0,0,0,.14);width:320px;max-width:calc(100vw - 24px);}',
+    '.ba-pip-code{font-family:var(--font-mono,monospace);font-size:11px;color:var(--ink-faint);',
+    'background:var(--surface-sunk,#F0E8D8);border-radius:4px;padding:2px 6px;margin:0 0 8px;display:inline-block;}',
+    '.ba-pip-crumb{font-family:var(--font-sans);font-size:10px;color:var(--ink-faint);',
+    'display:flex;align-items:center;gap:3px;margin:0 0 4px;text-transform:uppercase;letter-spacing:.05em;}',
+    '.ba-pip-sep{opacity:.5;}',
+    '.ba-pip-label{font-family:var(--font-serif);font-size:var(--fs-h3,1.125rem);font-weight:600;',
+    'color:var(--ink);margin:0 0 10px;}',
+    '.ba-pip-section{margin:0 0 8px;}',
+    '.ba-pip-section:last-child{margin-bottom:0;}',
+    '.ba-pip-sh{font-family:var(--font-sans);font-size:10px;font-weight:600;text-transform:uppercase;',
+    'letter-spacing:.06em;color:var(--accent);margin:0 0 3px;}',
+    '.ba-pip-body{font-family:var(--font-sans);font-size:var(--fs-small,0.875rem);color:var(--ink-soft);',
+    'margin:0;line-height:1.5;}',
+    '.ba-pip-close{position:absolute;top:8px;right:10px;background:none;border:none;',
+    'cursor:pointer;font-size:18px;color:var(--ink-faint);line-height:1;padding:2px 6px;}',
+    '.ba-pip-close:hover{color:var(--ink);}',
 
     /* FAB */
     /* z-index 9999: always above every overlay/modal — sidebar(780), toast(790),
@@ -191,25 +220,23 @@
     'cursor:pointer;text-align:left;box-sizing:border-box;transition:background 120ms,color 120ms;}',
     '.ba-burger-item:hover{background:var(--surface-sunk,rgba(26,20,16,.05));color:var(--ink);}',
     '.ba-burger-item[aria-current="page"]{color:var(--ink);font-weight:600;}',
+    /* Orange side-dot for the current item in the collapsed burger menu */
+    '.ba-burger-item::before{content:"";display:block;width:5px;height:5px;border-radius:50%;',
+    'background:transparent;flex-shrink:0;}',
+    '.ba-burger-item[aria-current="page"]::before{background:var(--accent,#C1654B);}',
 
     /* Narrow header — collapse every top-nav item into the home-badge menu.
-       Toggled by JS on the EFFECTIVE width (viewport ÷ page zoom), so it also
-       fires at normal (×1.5) size, not only in compact mode. */
+       Toggled by JS when layout width drops below the natural content minimum. */
     'html.ba-header-narrow .primary-nav{display:none;}',
     'html.ba-header-narrow .header-about{display:none;}',
+    /* The logo doubles as the dropdown button in narrow mode — hide the active
+       nav-indicator dot, which would otherwise float beneath it. */
+    'html.ba-header-narrow .nav-dot{display:none;}',
     'html.ba-header-narrow .header-actions .ba-search-btn,',
     'html.ba-header-narrow .header-actions .ba-notif-btn,',
     'html.ba-header-narrow .header-actions .ba-pulse-btn,',
     'html.ba-header-narrow .header-actions .pulse-sep{display:none;}',
-    /* Compact narrow layout: logo + badge-menu on the left (badge partly over
-       the logo), avatar pushed to the far right. */
-    'html.ba-header-narrow .header-inner{display:flex;justify-content:space-between;align-items:center;}',
     'html.ba-header-narrow .ba-burger-wrap{display:block;position:relative;z-index:2;margin-left:-44px;}',
-    /* Modest media (just above narrow): pull the nav items closer to the centre
-       home badge (smaller gap), and drop the secondary «О проекте» link so the
-       main nav has room and does not collide with it. */
-    'html.ba-header-modest .primary-nav{gap:var(--space-3,0.75rem);}',
-    'html.ba-header-modest .header-about{display:none;}',
 
     /* Library pill + books icon wrapper */
     '.nav-lib-wrap{position:relative;display:inline-flex;align-items:center;margin-top:calc(32.3px - 28.2px / var(--ba-zoom,1));}',
@@ -219,6 +246,8 @@
     /* Ensure nav positions correctly for indicator */
     '.primary-nav{position:relative;}',
     '.nav-dot{position:absolute;bottom:-2px;width:5px;height:5px;border-radius:50%;',
+    /* 1px ring in the header background colour — content-box so the orange stays 5px */
+    'box-sizing:content-box;border:1px solid var(--paper,#F7F1E6);',
     'background:var(--accent,#C1654B);transform:translateX(-50%);pointer-events:none;opacity:0;',
     'transition:left 320ms cubic-bezier(.34,1.56,.64,1),opacity 160ms;}',
     '.nav-strip{position:absolute;bottom:0;height:2px;border-radius:2px;',
@@ -227,8 +256,12 @@
     'width 240ms var(--ease-out-quart,cubic-bezier(.25,.46,.45,.94));}',
 
     /* Header: visual height stays fixed at 64px across all size modes;
-       content (text, icons, buttons) still scales with body zoom */
-    'html.ba-magnify .site-header{--header-height:calc(64px / var(--ba-zoom,1));}',
+       content (text, icons, buttons) still scales with body zoom.
+       Set on the root (not just .site-header) so header-relative elements that
+       are NOT header descendants — the sticky section/book tab bars
+       (top:var(--header-height)), book aside, scroll anchors — track the
+       magnified header height too and stay flush beneath it. */
+    'html.ba-magnify{--header-height:calc(64px / var(--ba-zoom,1));}',
     /* Footer: counter-zoomed to S-size; sticks to bottom of flex parent when content is short */
     'html.ba-magnify .site-footer{zoom:calc(1 / var(--ba-zoom,1));}',
     /* Flex body baseline: ensures margin-top:auto on footer works on all pages */
@@ -332,6 +365,7 @@
           '<div class="ba-burger-wrap">',
             '<button class="ba-burger-btn" type="button" aria-label="Меню навигации" aria-haspopup="menu" aria-expanded="false">β<span class="arrow">→</span>α</button>',
             '<div class="ba-burger-menu" role="menu" aria-label="Навигация">',
+              '<a class="ba-burger-item" href="' + _pp() + 'pages/beta2alpha.html" role="menuitem">Витрина</a>',
               '<a class="ba-burger-item" href="' + _pp() + 'pages/about.html" role="menuitem">О проекте</a>',
               '<a class="ba-burger-item" href="' + _pp() + 'pages/cabinet.html?tab=overview" role="menuitem">Кабинет</a>',
               '<a class="ba-burger-item" href="' + _pp() + 'pages/library.html" role="menuitem">Библиотека</a>',
@@ -340,19 +374,23 @@
           '</div>',
         '</div>',
         '<nav class="primary-nav" aria-label="Основная навигация">',
-          '<a class="nav-link" href="' + _pp() + 'pages/cabinet.html?tab=overview">Кабинет</a>',
+          '<span class="nav-side nav-side--l">',
+            '<a class="nav-link" href="' + _pp() + 'pages/cabinet.html?tab=overview">Кабинет</a>',
+          '</span>',
           '<span class="nav-lib-wrap">',
             '<a class="nav-link nav-link-home" href="' + _pp() + 'pages/library.html" aria-label="Библиотека">β<span class="arrow">→</span>α</a>',
             '<span class="nav-lib-icon"><img class="nav-books-img" src="' + _pp() + 'assets/decor/books-pile.png" alt="" aria-hidden="true" width="24" height="24"></span>',
           '</span>',
-          '<a class="nav-link" href="' + _pp() + 'pages/community.html">Лобби</a>',
+          '<span class="nav-side nav-side--r">',
+            '<a class="nav-link" href="' + _pp() + 'pages/community.html">Лобби</a>',
+          '</span>',
           '<span class="nav-strip" aria-hidden="true"></span>',
-          '<span class="nav-dot" aria-hidden="true"></span>',
         '</nav>',
         '<div class="header-actions">',
           '<button class="btn btn-ghost ba-login-trigger" type="button">Войти</button>',
           '<button class="btn-soft-fill ba-reg-trigger" type="button">Присоединиться</button>',
         '</div>',
+        '<span class="nav-dot" aria-hidden="true"></span>',
       '</div>',
     ].join('');
     return el;
@@ -371,13 +409,14 @@
       '<a class="skip-link" href="#main-content">Перейти к содержимому</a>',
       '<div class="header-inner container">',
         '<div class="header-left">',
-          '<a class="wordmark" href="' + _pp() + 'pages/cabinet.html?tab=overview" aria-label="β→α академия">',
+          '<a class="wordmark" href="' + _pp() + 'pages/beta2alpha.html" aria-label="β→α академия">',
             '<img class="wordmark-img" src="' + _pp() + 'assets/decor/b2a-academy.svg" alt="β→α" width="100" height="28">',
           '</a>',
           '<a class="nav-link header-about" href="' + _pp() + 'pages/about.html">О проекте</a>',
           '<div class="ba-burger-wrap">',
             '<button class="ba-burger-btn" type="button" aria-label="Меню навигации" aria-haspopup="menu" aria-expanded="false">β<span class="arrow">→</span>α</button>',
             '<div class="ba-burger-menu" role="menu" aria-label="Навигация">',
+              '<a class="ba-burger-item" href="' + _pp() + 'pages/beta2alpha.html" role="menuitem">Витрина</a>',
               '<a class="ba-burger-item" href="' + _pp() + 'pages/about.html" role="menuitem">О проекте</a>',
               '<a class="ba-burger-item" href="' + _pp() + 'pages/cabinet.html?tab=overview" role="menuitem">Кабинет</a>',
               '<a class="ba-burger-item" href="' + _pp() + 'pages/library.html" role="menuitem">Библиотека</a>',
@@ -386,14 +425,17 @@
           '</div>',
         '</div>',
         '<nav class="primary-nav" aria-label="Основная навигация">',
-          '<a class="nav-link" href="' + _pp() + 'pages/cabinet.html?tab=overview">Кабинет</a>',
+          '<span class="nav-side nav-side--l">',
+            '<a class="nav-link" href="' + _pp() + 'pages/cabinet.html?tab=overview">Кабинет</a>',
+          '</span>',
           '<span class="nav-lib-wrap">',
             '<a class="nav-link nav-link-home" href="' + _pp() + 'pages/library.html">β<span class="arrow">→</span>α</a>',
             '<span class="nav-lib-icon"><img class="nav-books-img" src="' + _pp() + 'assets/decor/books-pile.png" alt="" aria-hidden="true" width="24" height="24"></span>',
           '</span>',
-          '<a class="nav-link" href="' + _pp() + 'pages/community.html">Лобби</a>',
+          '<span class="nav-side nav-side--r">',
+            '<a class="nav-link" href="' + _pp() + 'pages/community.html">Лобби</a>',
+          '</span>',
           '<span class="nav-strip" aria-hidden="true"></span>',
-          '<span class="nav-dot" aria-hidden="true"></span>',
         '</nav>',
         '<div class="header-actions">',
           '<button class="icon-btn ba-search-btn" type="button" aria-label="Поиск">' + _SVG_SEARCH + '</button>',
@@ -415,6 +457,7 @@
           '<span class="pulse-sep" aria-hidden="true"></span>',
           '<button class="icon-btn ba-pulse-btn" type="button" aria-label="Пульс платформы" title="Пульс">' + _SVG_PULSE + '</button>',
         '</div>',
+        '<span class="nav-dot" aria-hidden="true"></span>',
       '</div>',
     ].join('');
     return el;
@@ -423,14 +466,25 @@
   /* ============================================================
      Nav indicator
      ============================================================ */
-  function _placeDot(dot, nav, linkEl) {
-    var navRect = nav.getBoundingClientRect();
+  function _placeDot(dot, ref, linkEl, instant) {
+    var refRect = ref.getBoundingClientRect();
     var linkRect = linkEl.getBoundingClientRect();
-    /* divide the rendered offset by the page zoom — the dot's own `left` is a
-       CSS px in the zoomed body, so far-left targets (the logo) land correctly */
     var z = parseFloat(getComputedStyle(document.body).zoom) || 1;
-    dot.style.left = ((linkRect.left + linkRect.width / 2 - navRect.left) / z) + 'px';
+    if (instant) dot.style.transition = 'none';
+    dot.style.left = ((linkRect.left + linkRect.width / 2 - refRect.left) / z) + 'px';
+    /* Vertical: pin the dot's centre to the bottom edge of the library badge
+       (independent of which nav item is active). Computed in JS — not fixed CSS —
+       so it tracks the badge as it scales across the S/M/L magnify modes, in the
+       same zoom-adjusted (/z) coordinate space of `ref` used for `left`. */
+    var badge = ref.querySelector('.nav-link-home');
+    if (badge) {
+      var badgeRect = badge.getBoundingClientRect();
+      var dotH = (dot.getBoundingClientRect().height / z) || 5;
+      dot.style.bottom = 'auto';
+      dot.style.top = ((badgeRect.bottom - refRect.top) / z - dotH / 2) + 'px';
+    }
     dot.style.opacity = '1';
+    if (instant) requestAnimationFrame(function () { dot.style.transition = ''; });
   }
 
   function _flashStrip(strip, nav, linkEl) {
@@ -444,8 +498,11 @@
 
   function _initNavIndicator(header) {
     var nav = header.querySelector('.primary-nav');
-    if (!nav) return;
-    var dot = nav.querySelector('.nav-dot');
+    var headerInner = header.querySelector('.header-inner');
+    if (!nav || !headerInner) return;
+    /* dot is a child of header-inner so it can reach both left-group (about/logo)
+       and right-group (nav) items without needing negative positioning */
+    var dot = headerInner.querySelector('.nav-dot');
     var strip = nav.querySelector('.nav-strip');
     if (!dot) return;
 
@@ -456,9 +513,6 @@
         .replace(/^.*\//, '').replace(/[?#].*$/, '').replace(/\.html$/, '');
     }
 
-    // The orange dot marks whichever TOP-MENU item matches the current page —
-    // the centred nav links (Кабинет/Библиотека/Лобби) OR the logo (home) or
-    // «О проекте» over in the header-left cluster.
     var targets = links.concat(
       [header.querySelector('.header-about'), header.querySelector('.wordmark')].filter(Boolean)
     );
@@ -469,20 +523,37 @@
       active = el;
     });
 
-    // Position the dot now (so it shows even if rAF is paused, e.g. a background
-    // tab) and refine once after layout/fonts settle.
+    // Mark the matching burger item so its ::before dot lights up in collapsed mode
+    [].slice.call(header.querySelectorAll('.ba-burger-item')).forEach(function (el) {
+      if (!page || _pageOf(el) !== page) return;
+      el.setAttribute('aria-current', 'page');
+    });
+
     if (active) {
-      _placeDot(dot, nav, active);
-      requestAnimationFrame(function () { _placeDot(dot, nav, active); });
-      if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { _placeDot(dot, nav, active); });
+      _placeDot(dot, headerInner, active);
+      requestAnimationFrame(function () { _placeDot(dot, headerInner, active); });
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(function () { _placeDot(dot, headerInner, active); });
+      }
+      /* Re-place on layout shifts. Nav items: the auto column's left edge moves when
+         the 1fr column changes (viewport resize / console sidebar). ResizeObserver
+         on nav catches sidebar dock (body margin-right → nav shifts in viewport).
+         All items: debounced resize as a reliable fallback. */
+      if (window.ResizeObserver && active.closest('.primary-nav') === nav) {
+        new ResizeObserver(function () { _placeDot(dot, headerInner, active); }).observe(nav);
+      }
+      var _rTimer;
+      window.addEventListener('resize', function () {
+        clearTimeout(_rTimer);
+        _rTimer = setTimeout(function () { _placeDot(dot, headerInner, active, true); }, 150);
+      });
     }
 
-    // Wire click flash
     links.forEach(function (link) {
       link.addEventListener('click', function () {
         links.forEach(function (l) { l.removeAttribute('aria-current'); });
         link.setAttribute('aria-current', 'page');
-        _placeDot(dot, nav, link);
+        _placeDot(dot, headerInner, link);
         if (strip) _flashStrip(strip, nav, link);
       });
     });
@@ -572,6 +643,52 @@
   }
 
   /* ============================================================
+     Page metadata (for footer breadcrumb popup)
+     ============================================================ */
+  var _PAGE_META = {
+    'library':    { label: 'Библиотека',  code: 'library',
+      crumb: ['β→α', 'Библиотека'],
+      target:  'Главный раздел платформы — точка входа в весь контент.',
+      content: 'Каталог книг с фильтрами и обложками; Пантеон авторов; вкладка Продюсеры (издатели); подборки и коллекции редакции.' },
+    'cabinet':    { label: 'Кабинет',     code: 'cabinet',
+      crumb: ['β→α', 'Кабинет'],
+      target:  'Персональное пространство участника — всё личное в одном месте.',
+      content: 'Постер (лента своей активности); Полка (прочитанное и в процессе); Выдержки (личные цитаты); Переписка; вкладка Репутации.' },
+    'community':  { label: 'Сообщество',  code: 'community',
+      crumb: ['β→α', 'Сообщество'],
+      target:  'Лобби профессионального сообщества — общий разговор вокруг книг.',
+      content: 'Пульс активности в реальном времени; Новости издательства; доска участников; клубы чтения; публикация постов.' },
+    'beta2alpha': { label: 'beta→alpha',  code: 'beta2alpha',
+      crumb: ['β→α'],
+      target:  'Публичная витрина издательства — для новых и потенциальных читателей.',
+      content: 'Миссия и описание издательства; избранные книги; лента новостей; отзывы читателей; форма вступления в платформу.' },
+    'about':      { label: 'О проекте',   code: 'about',
+      crumb: ['β→α', 'О проекте'],
+      target:  'Объяснение проекта — что это, зачем и для кого.',
+      content: 'Описание сообщества и принципов; раздел издательства; ценности платформы; условия сотрудничества с издателями.' },
+    'search':     { label: 'Поиск',       code: 'search',
+      crumb: ['β→α', 'Поиск'],
+      target:  'Единая точка поиска по всему контенту платформы.',
+      content: 'Поиск по книгам, авторам, издателям и материалам сообщества; фильтры по типу результата.' },
+    'book':       { label: 'Книга',       code: 'library/book',
+      crumb: ['β→α', 'Библиотека', 'Книга'],
+      target:  'Карточка конкретной книги — центр всего, что связано с этим изданием.',
+      content: 'Метаданные и обложка; оглавление; версии издания; бесплатный фрагмент; читать в ридере; обсуждения и рецензии; цитирование.' },
+    'author':     { label: 'Автор',       code: 'library/author',
+      crumb: ['β→α', 'Библиотека', 'Автор'],
+      target:  'Страница автора — профиль и его работы на платформе.',
+      content: 'Биография; список книг в каталоге; реакции профессионального сообщества.' },
+    'publisher':  { label: 'Издатель',    code: 'library/publisher',
+      crumb: ['β→α', 'Библиотека', 'Издатель'],
+      target:  'Страница издательства — профиль и его присутствие на платформе.',
+      content: 'Профиль и описание; полный каталог изданий; авторский состав; реакции сообщества; условия сотрудничества.' },
+    'member':     { label: 'Участник',    code: 'community/member',
+      crumb: ['β→α', 'Сообщество', 'Участник'],
+      target:  'Публичный профиль участника — его профессиональное лицо в сообществе.',
+      content: 'Активность и репутация; прочитанные книги; опубликованные рецензии; написать личное сообщение.' },
+  };
+
+  /* ============================================================
      Render: footer (once)
      ============================================================ */
   function _renderFooter() {
@@ -580,6 +697,15 @@
     el.className = 'site-footer';
     el.setAttribute('data-band', 'noir');
     el.setAttribute('data-ba-frame', '');
+
+    var pageKey = _opts.subpage || _opts.page;
+    var meta = _PAGE_META[pageKey];
+    var locHTML = meta
+      ? '<div class="footer-center"><button class="footer-page-loc" type="button" data-ba-page-info>' +
+          meta.label + '<span class="footer-page-code">· ' + meta.code + '</span>' +
+        '</button></div>'
+      : '';
+
     el.innerHTML = [
       '<div class="container">',
         '<div class="footer-inner">',
@@ -587,6 +713,7 @@
             '<img class="footer-wordmark" src="' + _pp() + 'assets/decor/b2a-academy.svg" alt="β→α академия">',
             '<span class="footer-tagline">© 2026 beta→alpha · Для профессионального сообщества</span>',
           '</div>',
+          locHTML,
           '<div class="footer-end">',
             '<a class="footer-link" href="' + _pp() + 'pages/about.html">О проекте</a>',
             '<span class="build-tag">v0.5.0-primer</span>',
@@ -595,6 +722,43 @@
       '</div>',
     ].join('');
     document.body.appendChild(el);
+
+    if (meta) {
+      var btn = el.querySelector('[data-ba-page-info]');
+      if (btn) btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        _togglePageInfoPopup(meta, btn);
+      });
+    }
+  }
+
+  function _togglePageInfoPopup(meta, anchor) {
+    var existing = document.getElementById('ba-page-info-popup');
+    if (existing) { existing.remove(); return; }
+    var pop = document.createElement('div');
+    pop.id = 'ba-page-info-popup';
+    pop.className = 'ba-page-info-popup';
+    var crumbHTML = meta.crumb.map(function (c) { return '<span>' + c + '</span>'; }).join('<span class="ba-pip-sep"> / </span>');
+    pop.innerHTML =
+      '<button class="ba-pip-close" type="button" aria-label="Закрыть">×</button>' +
+      '<div class="ba-pip-crumb">' + crumbHTML + '</div>' +
+      '<code class="ba-pip-code">' + meta.code + '</code>' +
+      '<p class="ba-pip-label">' + meta.label + '</p>' +
+      '<div class="ba-pip-section"><p class="ba-pip-sh">Назначение</p><p class="ba-pip-body">' + meta.target + '</p></div>' +
+      '<div class="ba-pip-section"><p class="ba-pip-sh">Содержимое</p><p class="ba-pip-body">' + meta.content + '</p></div>';
+    document.body.appendChild(pop);
+
+    /* Position flyout above the anchor, clamped within viewport */
+    var rect = anchor.getBoundingClientRect();
+    var popW = 320;
+    var left = Math.max(8, Math.min(window.innerWidth - popW - 8, rect.left + rect.width / 2 - popW / 2));
+    pop.style.left = left + 'px';
+    pop.style.bottom = (window.innerHeight - rect.top + 12) + 'px';
+
+    pop.querySelector('.ba-pip-close').addEventListener('click', function () { pop.remove(); });
+    setTimeout(function () {
+      document.addEventListener('click', function _d() { pop.remove(); document.removeEventListener('click', _d); });
+    }, 0);
   }
 
   /* ============================================================
@@ -749,16 +913,43 @@
     var zoom = parseFloat(getComputedStyle(document.body).zoom) || 1;
     return document.body.getBoundingClientRect().width / zoom;
   }
+  var _minContentW = 0;
   function _updateHeaderNarrow() {
-    var w = _layoutWidth(), html = document.documentElement;
-    html.classList.toggle('ba-header-narrow', w <= 600);
-    html.classList.toggle('ba-header-modest', w > 600 && w <= 820); // modest@×1.5 ≈ 600–800 layout
+    /* _layoutWidth() measures the body/viewport width — it is independent of
+       whether ba-header-narrow is set, so this function is idempotent.
+       classList.toggle with the same boolean is a no-op (no attribute mutation),
+       which breaks any MutationObserver feedback loop. */
+    document.documentElement.classList.toggle('ba-header-narrow', _layoutWidth() < _minContentW);
   }
   function _watchHeaderNarrow() {
+    var header = document.querySelector('.site-header[data-ba-frame]');
+    if (header) {
+      var z    = parseFloat(getComputedStyle(document.body).zoom) || 1;
+      var left = header.querySelector('.header-left');
+      var nav  = header.querySelector('.primary-nav');
+      var acts = header.querySelector('.header-actions');
+      var innerEl = header.querySelector('.header-inner');
+      if (left && nav && acts && innerEl) {
+        /* With a 1fr/auto/1fr grid the two 1fr columns share remaining space equally.
+           Collapse when either 1fr column can no longer fit its content:
+             1fr = (container − nav − 2×col_gap) / 2 ≥ max(leftW, actsW)
+           → _minContentW = nav + 2×max(left, acts) + 2×col_gap + container_padding */
+        var cs     = getComputedStyle(innerEl);
+        var leftW  = left.getBoundingClientRect().width / z;
+        var navW   = nav.getBoundingClientRect().width  / z;
+        var actsW  = acts.getBoundingClientRect().width  / z;
+        var colGap = parseFloat(cs.columnGap) || 16;
+        var pad    = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+        _minContentW = Math.ceil(navW + 2 * Math.max(leftW, actsW) + 2 * colGap + pad);
+      } else {
+        _minContentW = 720;
+      }
+    }
     if (window.ResizeObserver) new ResizeObserver(_updateHeaderNarrow).observe(document.body);
     window.addEventListener('resize', _updateHeaderNarrow);
-    // The console dock/band/magnify changes <html> class / inline --dbg-w-user;
-    // the body margin then animates, so recompute now AND after it settles.
+    /* MutationObserver catches zoom class (ba-magnify) and console sidebar class
+       changes that don't fire a resize event. Safe because _updateHeaderNarrow
+       is idempotent — a no-op toggle triggers no further mutation. */
     if (window.MutationObserver) {
       new MutationObserver(function () { _updateHeaderNarrow(); setTimeout(_updateHeaderNarrow, 320); })
         .observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style'] });

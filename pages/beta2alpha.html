@@ -90,7 +90,6 @@
       display: flex;
       align-items: center;
       gap: var(--space-8);
-      padding-bottom: 10px;
     }
     .wordmark {
       display: inline-flex;
@@ -125,7 +124,6 @@
       display: flex;
       align-items: center;
       gap: var(--space-6);
-      padding-bottom: 10px;
     }
     .nav-link {
       font-family: var(--font-sans);
@@ -2610,14 +2608,17 @@
     }
     function renderNews(){
       var host = document.getElementById('ld-news'); if (!host || !window.BA || !BA.store) return;
+      var isMember = !!(BA.session && BA.session.isPrivate());
       var news = BA.store.find('events', function(e){ return e.action.codename==='post.published' && e.action.params && e.action.params.destination==='public-news'; })
         .sort(function(a,b){ return (b.timestamp||'').localeCompare(a.timestamp||''); }).slice(0,3);
       if (!news.length){ host.innerHTML = '<p class="ld-hint">Скоро здесь появятся новости.</p>'; return; }
       host.innerHTML = news.map(function(e){
-        return '<button class="ld-news-card" type="button"><p class="ld-news-eyebrow">β→α <span class="ld-news-lock">· только для участников 🔒</span></p>' +
+        /* members read the news in full — guests see a login gate (🔒) */
+        var lock = isMember ? '' : ' <span class="ld-news-lock">· только для участников 🔒</span>';
+        return '<button class="ld-news-card" type="button"><p class="ld-news-eyebrow">β→α'+lock+'</p>' +
           '<p class="ld-news-title">'+esc(e.action.params.title||'Новость')+'</p></button>';
       }).join('');
-      host.querySelectorAll('.ld-news-card').forEach(function(c){ c.addEventListener('click', function(){ BA.frame.openLogin(); }); });
+      host.querySelectorAll('.ld-news-card').forEach(function(c){ c.addEventListener('click', function(){ if (isMember) location.href='community.html?tab=news'; else BA.frame.openLogin(); }); });
     }
     /* Keep the vertical hero label from sliding off the left edge — its left edge
        never crosses 25px from the viewport's left edge (measured at runtime). */
@@ -2650,7 +2651,13 @@
         if (!aside || !c) return;
         if (getComputedStyle(aside).position !== 'absolute'){ aside.style.right = ''; aside.style.top = ''; return; }
         var z = parseFloat(getComputedStyle(document.body).zoom) || 1;
-        aside.style.right = ((window.innerWidth - c.getBoundingClientRect().right) / z) + 'px';
+        /* Use offsetParent's right edge (inside the narrowed body) so the aside
+           position is unaffected by the debug console reserving body margin-right. */
+        var parentRight = aside.offsetParent ? aside.offsetParent.getBoundingClientRect().right : window.innerWidth;
+        /* Align the aside's right edge to the content-area right edge, but never let
+           it come closer than 15px to the content/viewport right edge (when the
+           container spans full width that distance would otherwise collapse to 0). */
+        aside.style.right = Math.max((parentRight - c.getBoundingClientRect().right) / z, 15) + 'px';
         /* drop the news block so the top card aligns with the hero title's top */
         if (title && aside.offsetParent) {
           aside.style.top = ((title.getBoundingClientRect().top - aside.offsetParent.getBoundingClientRect().top) / z) + 'px';
@@ -2662,14 +2669,31 @@
       window.addEventListener('load', layoutHero);
       if (window.ResizeObserver) new ResizeObserver(layoutHero).observe(document.body);
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(layoutHero);
-      var more = document.getElementById('ld-news-more');
-      if (more) more.addEventListener('click', function(e){ e.preventDefault(); BA.frame.openLogin(); });
-      /* Hero/closing primary CTAs open the registration overlay */
-      document.querySelectorAll('[data-action="register"]').forEach(function(el){
-        el.addEventListener('click', function(e){ e.preventDefault(); if (BA.registration) BA.registration.open(); });
-      });
-      /* Home ≠ Cabinet Poster (system-model §2.8): authed users go to their Poster. */
-      if (BA.session && BA.session.isPrivate()) location.replace('cabinet.html?tab=overview');
+      /* The showcase (Витрина) is shown to everyone — the logo links here for
+         guests and members alike (home-routing revised 2026-06-29). Guests get the
+         join/register flow; for a signed-in member the «Присоединиться» CTAs are
+         meaningless, so they become platform-news links and the news section opens up. */
+      if (BA.session && BA.session.isPrivate()) {
+        applyMemberView();
+      } else {
+        var more = document.getElementById('ld-news-more');
+        if (more) more.addEventListener('click', function(e){ e.preventDefault(); BA.frame.openLogin(); });
+        document.querySelectorAll('[data-action="register"]').forEach(function(el){
+          el.addEventListener('click', function(e){ e.preventDefault(); if (BA.registration) BA.registration.open(); });
+        });
+      }
+
+      function applyMemberView(){
+        var NEWS = 'community.html?tab=news';
+        var heroCta = document.querySelector('.hero-text [data-action="register"]');
+        if (heroCta){ heroCta.textContent = 'Что нового →'; heroCta.href = NEWS; heroCta.removeAttribute('data-action'); }
+        var closeCta = document.querySelector('.landing-cta-closing [data-action="register"]');
+        if (closeCta){ closeCta.textContent = 'Все новости →'; closeCta.href = NEWS; closeCta.removeAttribute('data-action'); }
+        /* news section hint: drop the login gate, point to the full feed */
+        var moreLink = document.getElementById('ld-news-more');
+        var hint = moreLink ? moreLink.parentNode : null;
+        if (hint){ hint.innerHTML = 'Свежие новости издательства и сообщества. <a href="'+NEWS+'">Все новости →</a>'; }
+      }
     });
   </script>
 </body>
