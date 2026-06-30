@@ -19,8 +19,30 @@
   <style>
     .sec-main { min-height: 100vh; }
     .sec-head { background: var(--ink); color: var(--paper); border-bottom: var(--hairline) solid var(--line); }
-    .sec-head-inner { padding: var(--space-8, 32px) 0 var(--space-6, 24px); display: flex;
-      align-items: flex-end; justify-content: space-between; gap: var(--space-5); flex-wrap: wrap; }
+    .sec-head-inner { height: 130px; box-sizing: border-box; padding: 0;
+      display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 0; align-items: stretch; }
+    .sec-head-inner > div { position: relative; display: flex; flex-direction: column; justify-content: center; }
+    .sec-tab-col { border-left: 1px solid color-mix(in srgb,var(--paper) 14%,transparent); border-right: 1px solid color-mix(in srgb,var(--paper) 14%,transparent); padding: 0 var(--space-6, 24px); text-align: left; }
+    /* Info buttons + flyover */
+    .hd-info-btn { position: absolute; top: 50%; right: 7px; transform: translateY(-50%); width: 27px; height: 27px; border-radius: 50%; padding: 0;
+      background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.42); color: rgba(255,255,255,0.7);
+      font-family: var(--font-sans); font-size: 14px; font-style: italic; font-weight: 700; line-height: 1;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2;
+      transition: border-color 100ms, color 100ms, background 100ms; }
+    .hd-info-btn:hover, .hd-info-btn[aria-expanded="true"] { border-color: rgba(255,255,255,0.65); color: rgba(255,255,255,0.85); }
+    .hd-flyover { position: fixed; z-index: 9100; width: 300px; background: var(--paper);
+      border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.07); padding: 16px 20px; font-family: var(--font-sans); }
+    .hd-flyover[hidden] { display: none; }
+    .hd-flt { font-family: var(--font-serif); font-size: 17px; font-weight: 600; color: var(--ink); margin: 0 0 8px; }
+    .hd-flb { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+    .hd-flb p { margin: 0 0 7px; }
+    .hd-flb p:last-child { margin: 0; }
+    .hd-flh { font-size: 12px; color: var(--ink-faint); border-top: var(--hairline) solid var(--line);
+      margin-top: 10px; padding-top: 10px; line-height: 1.5; font-style: italic; }
+    .sec-tab-lbl { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: color-mix(in srgb,var(--paper) 50%,transparent); margin: 0 0 var(--space-2); }
+    .sec-tab-name { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--paper); margin: 0 0 var(--space-2); }
+    .sec-tab-desc { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: color-mix(in srgb,var(--paper) 62%,transparent); margin: 0; line-height: 1.45; }
     .sec-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600;
       text-transform: uppercase; letter-spacing: 0.06em; color: color-mix(in srgb, var(--accent) 88%, var(--paper)); margin: 0 0 var(--space-1); }
     .sec-title { font-family: var(--font-serif); font-size: 2rem; font-weight: 600; color: var(--paper); margin: 0; letter-spacing: -0.01em; }
@@ -29,9 +51,14 @@
     .sec-stat { text-align: center; }
     .sec-stat-val { display: block; font-family: var(--font-serif); font-size: 1.5rem; font-weight: 600; color: var(--paper); }
     .sec-stat-lbl { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); text-transform: uppercase; letter-spacing: 0.04em; color: color-mix(in srgb, var(--paper) 60%, transparent); }
-    .sec-tabs { position: sticky; top: var(--header-height, 64px); z-index: 80; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px); border-bottom: var(--hairline) solid var(--line); }
+    .sec-tabs { position: sticky; top: var(--header-height, 64px); z-index: 80; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px); border-bottom: var(--hairline) solid var(--line); transition: background 200ms, border-color 200ms; }
+    .sec-tabs.is-stuck { background: var(--ink); border-bottom-color: color-mix(in srgb,var(--paper) 14%,transparent); backdrop-filter: none; }
+    .sec-tabs.is-stuck .sec-tab { color: color-mix(in srgb,var(--paper) 55%,transparent); }
+    .sec-tabs.is-stuck .sec-tab:hover { color: var(--paper); background: color-mix(in srgb,var(--paper) 10%,transparent); }
+    .sec-tabs.is-stuck .sec-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
+    .sec-tabs.is-stuck .sec-tab-count { color: color-mix(in srgb,var(--paper) 35%,transparent); }
     .sec-tabs-inner { display: flex; gap: var(--space-1, 4px); overflow-x: auto; }
-    .sec-tab { font-family: var(--font-sans); font-size: var(--fs-body, 16px); font-weight: 500; color: var(--ink-soft); background: none; border: none; border-bottom: 2px solid transparent; padding: var(--space-4, 16px); cursor: pointer; white-space: nowrap; transition: color 140ms, border-color 140ms, background 140ms; }
+    .sec-tab { font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: var(--ink-soft); background: none; border: none; border-bottom: 2px solid transparent; padding: var(--space-2, 8px) var(--space-3, 12px); cursor: pointer; white-space: nowrap; transition: color 140ms, border-color 140ms, background 140ms; }
     .sec-tab:hover { color: var(--ink); background: color-mix(in srgb, var(--ink, #241F1B) 7%, transparent); border-radius: var(--radius-sm, 6px) var(--radius-sm, 6px) 0 0; }
     .sec-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
     .sec-tab-count { font-size: var(--fs-caption, 12px); color: var(--ink-faint); margin-left: 4px; }
@@ -209,8 +236,10 @@
           <p class="sec-eyebrow">Сообщество</p>
           <h1 class="sec-title">Сообщество</h1>
           <p class="sec-sub">Профессиональная среда: участники, обсуждения, читательские клубы, публикации и пульс платформы.</p>
+          <button class="hd-info-btn" data-hd-info="page" aria-label="О сообществе" aria-expanded="false">i</button>
         </div>
-        <div class="sec-stats" id="sec-stats"></div>
+        <div class="sec-tab-col" id="sec-tab-col"></div>
+        <div class="sec-stats" id="sec-stats" style="justify-self:end"></div>
       </div>
     </section>
     <nav class="sec-tabs" aria-label="Разделы сообщества">
@@ -227,7 +256,7 @@
   <script src="../components/member-data.js"></script>
   <script src="../components/store.js"></script>
   <script src="../components/sim.js"></script>
-  <script src="../components/frame.js?v=4"></script>
+  <script src="../components/frame.js?v=5"></script>
   <script src="../components/avatar-menu.js"></script>
   <script src="../components/notifications.js"></script>
   <script src="../components/search.js"></script>
@@ -245,10 +274,18 @@
     /* ── Community section frame — every tab consumes BA.store (sim-populated). ── */
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
     var TABS = [
-      { key:'news', label:'Новости' },
-      { key:'member-board', label:'Участники' }, { key:'discussion', label:'Обсуждения' },
-      { key:'reading-club', label:'Клубы' }, { key:'post', label:'Публикация' },
-      { key:'pulse', label:'Пульс' }
+      { key:'news',         label:'Новости',     desc:'События платформы и издательства β→α',
+        info:'<p>Официальная лента платформы: выход книг, обновления, события издательства. Единственный таб, открытый гостям без авторизации.</p><p>Новости создаёт команда β→α — не алгоритм и не пользователи. Кураторский поток, не социальная сеть.</p><p class="hd-flh">↗ В Stage 2 планируется рассылка для подписчиков на основе этой ленты — новость живёт и как запись в платформе, и как письмо.</p>' },
+      { key:'member-board', label:'Участники',   desc:'Профессионалы, рейтинги и публичные профили',
+        info:'<p>Доска участников с репутационными профилями. Видно, кто здесь, какой профессиональный статус и какой вес голоса в обсуждениях.</p><p>Репутационный балл — взвешенная сумма голосов, которые сообщество отдало высказываниям участника. Не лайки — профессиональные оценки коллег.</p><p class="hd-flh">↗ Задумана аналогия с римской цензовой системой: не «один человек — один голос», а профессиональный вес определяет влияние. Это явная позиция платформы, не баг.</p>' },
+      { key:'discussion',   label:'Обсуждения',  desc:'Беседы о книгах, идеях и аналитической практике',
+        info:'<p>Треды к книгам и профессиональным темам. Рецензии, вопросы, разборы. Вложенность до двух уровней — достаточно для дискурса, не слишком много для навигации.</p><p>Ответы ранжируются по совокупному весу голосов — значимые мысли всплывают вверх, а не те, что появились первыми.</p><p class="hd-flh">↗ Длинная рецензия от профессионала с высокой репутацией — потенциальная публикация. Платформа сможет предложить перенести её в «Публикации» или даже в журнал-партнёр.</p>' },
+      { key:'reading-club', label:'Клубы',       desc:'Совместное чтение с расписанием и участниками',
+        info:'<p>Читательские клубы — совместное чтение одной книги с расписанием глав и встречами для обсуждения. Ограниченный состав, фиксированный срок.</p><p>Клуб привязан к конкретному изданию и версии книги — все участники читают один и тот же текст.</p><p class="hd-flh">↗ Клубы создают сильный сетевой эффект: люди, прошедшие книгу вместе, становятся ядром сообщества. Этот формат может быть важнее лент и комментариев для удержания профессиональной аудитории.</p>' },
+      { key:'post',         label:'Публикация',  desc:'Эссе, рецензии и заметки участников сообщества',
+        info:'<p>Публикации — формат между комментарием и статьёй. Участник пишет от своего имени, репутация видна. Может ссылаться на книгу или стоять отдельно.</p><p>В отличие от обсуждений, публикация — самостоятельный текст, не ответ на что-то.</p><p class="hd-flh">↗ Лучшие публикации могут попасть в кураторский дайджест платформы — или стать приглашением к диалогу с автором книги. Это и есть «профессиональное комьюнити», а не просто форум.</p>' },
+      { key:'pulse',        label:'Пульс',       desc:'Живая лента активности сообщества',
+        info:'<p>Пульс — живая лента всех событий: кто открыл книгу, написал рецензию, присоединился к клубу. Та же лента, что в overlay G (кнопка Пульс в шапке), но здесь — в полном экране.</p><p>Пульс показывает платформу как живой организм, а не каталог.</p><p class="hd-flh">↗ Для правообладателей Пульс — самый ценный сигнал: живой интерес к конкретным книгам в реальном времени, до того как появятся агрегированные отчёты.</p>' }
     ];
     var SAVED_KEY = 'com-tab';
     var ST = function(){ return window.BA.store; };
@@ -671,16 +708,27 @@
       var disc = ST().find('reactions', function(r){ return r.form==='comment'||r.form==='review'; }).length;
       document.getElementById('sec-stats').innerHTML =
         '<div class="sec-stat"><span class="sec-stat-val">'+members+'</span><span class="sec-stat-lbl">участников</span></div>' +
-        '<div class="sec-stat"><span class="sec-stat-val">'+disc+'</span><span class="sec-stat-lbl">обсуждений</span></div>';
+        '<div class="sec-stat"><span class="sec-stat-val">'+disc+'</span><span class="sec-stat-lbl">обсуждений</span></div>' +
+        '<button class="hd-info-btn" data-hd-info="stats" aria-label="О статистике" aria-expanded="false">i</button>';
     }
     function renderTabs(active){
       document.getElementById('sec-tabs').innerHTML = TABS.map(function(t){
         return '<button class="sec-tab'+(t.key===active?' is-active':'')+'" data-tab="'+t.key+'">'+esc(t.label)+'</button>';
       }).join('');
     }
+    var _activeTab = 'news';
+    function renderTabCol(key){
+      var t = TABS.find(function(x){ return x.key===key; }) || TABS[0];
+      document.getElementById('sec-tab-col').innerHTML =
+        '<p class="sec-tab-lbl">Раздел</p>' +
+        '<p class="sec-tab-name">'+esc(t.label)+'</p>' +
+        '<p class="sec-tab-desc">'+esc(t.desc)+'</p>' +
+        '<button class="hd-info-btn" data-hd-info="tab" aria-label="О разделе" aria-expanded="false">i</button>';
+    }
     function showTab(key){
+      _activeTab = key;
       var host = document.getElementById('sec-content'); host.innerHTML='';
-      renderTabs(key);
+      renderTabs(key); renderTabCol(key);
       try { BA.store.set(SAVED_KEY, key); } catch(e){}
       var url = new URL(location.href); url.searchParams.set('tab', key); history.replaceState(null,'',url);
       /* Lobby: News is public; every other tab needs login (same gate as cabinet) */
@@ -699,6 +747,44 @@
       BA.frame.init({ page: 'community' });
       if (BA.sim) BA.sim.ensure();
       renderStats();
+      /* ── info flyover ── */
+      var _fly = document.createElement('div'); _fly.className='hd-flyover'; _fly.setAttribute('hidden','');
+      document.body.appendChild(_fly);
+      var _flyBtn = null;
+      var COM_INFO = {
+        page: '<h3 class="hd-flt">Сообщество</h3><div class="hd-flb"><p>Лобби — пространство встречи трёх групп: издательства (β→α), профессионалы (психотерапевты, аналитики, супервизоры) и студенты или заинтересованные читатели.</p><p>Ключевая идея: не форум с равными голосами, а профессиональная среда, где репутация определяет вес суждения. Аналитик с 20-летней практикой читает Биона иначе, чем студент первого года — и его интерпретация должна быть услышана громче.</p><p class="hd-flh">↗ Репутация, накопленная здесь, может стать частью профессионального CV — верифицированным следом участия в профессиональном дискурсе, экспортируемым как ссылка или PDF.</p></div>',
+        stats: '<h3 class="hd-flt">Статистика сообщества</h3><div class="hd-flb"><p>Участники — только верифицированные пользователи с профессиональным профилем. Обсуждения — суммарное число реакций типа «комментарий» и «рецензия», не просмотров и не лайков.</p><p>Оба числа сейчас небольшие: платформа на стадии Primer, с командой и первыми приглашёнными. Качество важнее масштаба на этом этапе.</p><p class="hd-flh">↗ Ориентиры: Stage 2 — ~100 участников, Stage 3 — ~1000. При ~1000 активируется полноценная динамика взвешенного голосования и читательских клубов.</p></div>'
+      };
+      function _hdContent(id){
+        if (id==='tab'){
+          var t=TABS.find(function(x){return x.key===_activeTab;})||TABS[0];
+          return '<h3 class="hd-flt">'+esc(t.label)+'</h3><div class="hd-flb">'+t.info+'</div>';
+        }
+        return COM_INFO[id]||'';
+      }
+      function _openFly(btn, html){
+        if (_flyBtn===btn){_closeFly();return;}
+        if (_flyBtn) _flyBtn.setAttribute('aria-expanded','false');
+        _flyBtn=btn; btn.setAttribute('aria-expanded','true');
+        _fly.innerHTML=html; _fly.removeAttribute('hidden');
+        var r=btn.getBoundingClientRect(), fw=300;
+        var left=Math.min(r.right-fw, window.innerWidth-fw-12); if(left<12)left=12;
+        _fly.style.display='block'; var fh=_fly.offsetHeight; _fly.style.display='';
+        var top=r.bottom+6; if(top+fh+12>window.innerHeight) top=r.top-fh-6;
+        _fly.style.left=left+'px'; _fly.style.top=top+'px';
+      }
+      function _closeFly(){
+        _fly.setAttribute('hidden','');
+        if(_flyBtn)_flyBtn.setAttribute('aria-expanded','false');
+        _flyBtn=null;
+      }
+      document.addEventListener('click',function(e){
+        if(!e.target.closest('.hd-info-btn')&&!e.target.closest('.hd-flyover'))_closeFly();
+      });
+      document.querySelector('.sec-head').addEventListener('click',function(e){
+        var btn=e.target.closest('.hd-info-btn'); if(!btn)return;
+        e.stopPropagation(); _openFly(btn,_hdContent(btn.getAttribute('data-hd-info')));
+      });
       document.getElementById('sec-tabs').addEventListener('click', function(e){
         var t = e.target.closest('.sec-tab'); if (t) showTab(t.getAttribute('data-tab'));
       });
@@ -710,6 +796,14 @@
       /* a guest's remembered (gated) tab → land on the public News instead */
       if (!params.get('tab') && initial!=='news' && !BA.session.isPrivate()) initial = 'news';
       showTab(initial);
+      /* sticky tab bar → dark when sec-head scrolls behind site header */
+      (function(){
+        var tabBar = document.querySelector('.sec-tabs');
+        var banner = document.querySelector('.sec-head');
+        function _chk(){ tabBar.classList.toggle('is-stuck', banner.getBoundingClientRect().bottom <= 0); }
+        window.addEventListener('scroll', _chk, { passive: true });
+        _chk();
+      })();
     });
   </script>
 </body>

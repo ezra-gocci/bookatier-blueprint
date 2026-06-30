@@ -32,7 +32,11 @@
 
     /* Header inner: 1fr / auto / 1fr grid — the center auto column is always
        at the horizontal mid-point of the page regardless of left/right widths */
-    '.header-inner{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;',
+    /* Reserve scrollbar gutter on every page so the viewport width (and therefore
+       the header 1fr columns) stays identical whether the page scrolls or not. */
+    'html{scrollbar-gutter:stable;}',
+
+    '.header-inner{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;',
     'gap:var(--space-4,1rem);height:var(--header-height,64px);position:relative;}',
 
     /* Wordmark */
@@ -47,18 +51,13 @@
     'font-weight:var(--fw-medium,500);color:var(--ink-soft,#5C5249);',
     'text-decoration:none;white-space:nowrap;transition:color 140ms;}',
     '.nav-link:hover{color:var(--ink,#241F1B);}',
-    '.nav-link[aria-current="page"]{color:var(--ink);font-weight:600;}',
+    '.nav-link[aria-current="page"]{color:var(--ink);}',
 
-    /* Home badge — matches beta2alpha.html variant (compact, line-height:1) */
-    '.nav-link-home{font-family:var(--font-serif);background:#1F1B18;color:#ECE3D6;',
-    'padding:var(--space-1,0.25rem) var(--space-3,0.75rem) calc(var(--space-1,0.25rem) + 3px);',
-    'border-radius:var(--radius-md,10px);line-height:1;}',
-    '.nav-link-home:hover{color:#ECE3D6;opacity:.85;}',
-    '.nav-link-home .arrow{color:#D2674A;}',
-    /* Active page: keep β / α orange (not the dark .nav-link active colour) */
-    '.nav-link.nav-link-home[aria-current="page"]{color:#FF8040;}',
-    /* light-clear theme: the home badge is a cool gray, not warm near-black */
-    'html[data-theme="light-clear"] .nav-link-home,html[data-theme="light-clear"] .ba-burger-btn{background:#5A6068;}',
+    /* Wordmark active state: accent bottom + faded frame on other sides (box-shadow = no layout impact) */
+    '.wordmark[aria-current="page"]{border-radius:3px;box-shadow:inset 0 0 0 1px rgba(193,101,75,0.25),0 2px 0 0 var(--accent,#C1654B);}',
+
+    /* light-clear theme: the hamburger button matches header tone */
+    'html[data-theme="light-clear"] .ba-burger-btn{background:#5A6068;}',
 
     /* Header about link */
     '.header-about{white-space:nowrap;}',
@@ -238,22 +237,13 @@
     'html.ba-header-narrow .header-actions .pulse-sep{display:none;}',
     'html.ba-header-narrow .ba-burger-wrap{display:block;position:relative;z-index:2;margin-left:-44px;}',
 
-    /* Library pill + books icon wrapper */
-    '.nav-lib-wrap{position:relative;display:inline-flex;align-items:center;margin-top:calc(32.3px - 28.2px / var(--ba-zoom,1));}',
-    '.nav-lib-icon{position:absolute;top:-27px;right:1px;z-index:2;pointer-events:none;line-height:0;}',
-    '.nav-books-img{display:block;width:48px;height:48px;object-fit:contain;}',
 
     /* Ensure nav positions correctly for indicator */
     '.primary-nav{position:relative;}',
-    '.nav-dot{position:absolute;bottom:-2px;width:5px;height:5px;border-radius:50%;',
-    /* 1px ring in the header background colour — content-box so the orange stays 5px */
-    'box-sizing:content-box;border:1px solid var(--paper,#F7F1E6);',
-    'background:var(--accent,#C1654B);transform:translateX(-50%);pointer-events:none;opacity:0;',
-    'transition:left 320ms cubic-bezier(.34,1.56,.64,1),opacity 160ms;}',
+    '.nav-dot{position:absolute;bottom:-4px;height:2px;border-radius:2px;',
+    'background:var(--accent,#C1654B);pointer-events:none;opacity:0;}',
     '.nav-strip{position:absolute;bottom:0;height:2px;border-radius:2px;',
-    'background:var(--accent,#C1654B);pointer-events:none;',
-    'transition:left 240ms var(--ease-out-quart,cubic-bezier(.25,.46,.45,.94)),',
-    'width 240ms var(--ease-out-quart,cubic-bezier(.25,.46,.45,.94));}',
+    'background:var(--accent,#C1654B);pointer-events:none;}',
 
     /* Header: visual height stays fixed at 64px across all size modes;
        content (text, icons, buttons) still scales with body zoom.
@@ -377,10 +367,7 @@
           '<span class="nav-side nav-side--l">',
             '<a class="nav-link" href="' + _pp() + 'pages/cabinet.html?tab=overview">Кабинет</a>',
           '</span>',
-          '<span class="nav-lib-wrap">',
-            '<a class="nav-link nav-link-home" href="' + _pp() + 'pages/library.html" aria-label="Библиотека">β<span class="arrow">→</span>α</a>',
-            '<span class="nav-lib-icon"><img class="nav-books-img" src="' + _pp() + 'assets/decor/books-pile.png" alt="" aria-hidden="true" width="24" height="24"></span>',
-          '</span>',
+          '<a class="nav-link" href="' + _pp() + 'pages/library.html">Библиотека</a>',
           '<span class="nav-side nav-side--r">',
             '<a class="nav-link" href="' + _pp() + 'pages/community.html">Лобби</a>',
           '</span>',
@@ -428,10 +415,7 @@
           '<span class="nav-side nav-side--l">',
             '<a class="nav-link" href="' + _pp() + 'pages/cabinet.html?tab=overview">Кабинет</a>',
           '</span>',
-          '<span class="nav-lib-wrap">',
-            '<a class="nav-link nav-link-home" href="' + _pp() + 'pages/library.html">β<span class="arrow">→</span>α</a>',
-            '<span class="nav-lib-icon"><img class="nav-books-img" src="' + _pp() + 'assets/decor/books-pile.png" alt="" aria-hidden="true" width="24" height="24"></span>',
-          '</span>',
+          '<a class="nav-link" href="' + _pp() + 'pages/library.html">Библиотека</a>',
           '<span class="nav-side nav-side--r">',
             '<a class="nav-link" href="' + _pp() + 'pages/community.html">Лобби</a>',
           '</span>',
@@ -466,34 +450,17 @@
   /* ============================================================
      Nav indicator
      ============================================================ */
-  function _placeDot(dot, ref, linkEl, instant) {
+  function _placeDot(dot, ref, linkEl) {
     var refRect = ref.getBoundingClientRect();
     var linkRect = linkEl.getBoundingClientRect();
     var z = parseFloat(getComputedStyle(document.body).zoom) || 1;
-    if (instant) dot.style.transition = 'none';
-    dot.style.left = ((linkRect.left + linkRect.width / 2 - refRect.left) / z) + 'px';
-    /* Vertical: pin the dot's centre to the bottom edge of the library badge
-       (independent of which nav item is active). Computed in JS — not fixed CSS —
-       so it tracks the badge as it scales across the S/M/L magnify modes, in the
-       same zoom-adjusted (/z) coordinate space of `ref` used for `left`. */
-    var badge = ref.querySelector('.nav-link-home');
-    if (badge) {
-      var badgeRect = badge.getBoundingClientRect();
-      var dotH = (dot.getBoundingClientRect().height / z) || 5;
-      dot.style.bottom = 'auto';
-      dot.style.top = ((badgeRect.bottom - refRect.top) / z - dotH / 2) + 'px';
-    }
+    dot.style.left = ((linkRect.left - refRect.left) / z) + 'px';
+    dot.style.width = (linkRect.width / z) + 'px';
+    var navEl = ref.querySelector('.primary-nav');
+    var anchorRect = navEl ? navEl.getBoundingClientRect() : linkRect;
+    dot.style.top = ((anchorRect.bottom - refRect.top) / z + 2) + 'px';
+    dot.style.bottom = 'auto';
     dot.style.opacity = '1';
-    if (instant) requestAnimationFrame(function () { dot.style.transition = ''; });
-  }
-
-  function _flashStrip(strip, nav, linkEl) {
-    var navRect = nav.getBoundingClientRect();
-    var linkRect = linkEl.getBoundingClientRect();
-    strip.style.left = (linkRect.left - navRect.left) + 'px';
-    strip.style.width = linkRect.width + 'px';
-    strip.classList.add('nav-flash');
-    setTimeout(function () { strip.classList.remove('nav-flash'); }, 1000);
   }
 
   function _initNavIndicator(header) {
@@ -513,13 +480,14 @@
         .replace(/^.*\//, '').replace(/[?#].*$/, '').replace(/\.html$/, '');
     }
 
+    var wordmark = header.querySelector('.wordmark');
     var targets = links.concat(
-      [header.querySelector('.header-about'), header.querySelector('.wordmark')].filter(Boolean)
+      [header.querySelector('.header-about'), wordmark].filter(Boolean)
     );
     var active = null;
     targets.forEach(function (el) {
       if (active || !page || _pageOf(el) !== page) return;
-      if (el.classList.contains('nav-link')) el.setAttribute('aria-current', 'page');
+      el.setAttribute('aria-current', 'page');
       active = el;
     });
 
@@ -529,7 +497,7 @@
       el.setAttribute('aria-current', 'page');
     });
 
-    if (active) {
+    if (active && active !== wordmark) {
       _placeDot(dot, headerInner, active);
       requestAnimationFrame(function () { _placeDot(dot, headerInner, active); });
       if (document.fonts && document.fonts.ready) {
@@ -545,7 +513,7 @@
       var _rTimer;
       window.addEventListener('resize', function () {
         clearTimeout(_rTimer);
-        _rTimer = setTimeout(function () { _placeDot(dot, headerInner, active, true); }, 150);
+        _rTimer = setTimeout(function () { _placeDot(dot, headerInner, active); }, 150);
       });
     }
 
@@ -554,7 +522,6 @@
         links.forEach(function (l) { l.removeAttribute('aria-current'); });
         link.setAttribute('aria-current', 'page');
         _placeDot(dot, headerInner, link);
-        if (strip) _flashStrip(strip, nav, link);
       });
     });
   }

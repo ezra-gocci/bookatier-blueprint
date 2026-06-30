@@ -20,27 +20,49 @@
     .sec-main { min-height: 100vh; }
     /* Dark noir header — mirrors library.html style */
     .sec-head { background: var(--ink); color: var(--paper); border-bottom: var(--hairline) solid color-mix(in srgb,var(--paper) 12%,transparent); }
-    .sec-head-inner { padding: var(--space-10, 40px) 0; min-height: 180px; box-sizing: border-box;
-      display: grid; grid-template-columns: 1fr 1.3fr auto; gap: var(--space-8, 32px); align-items: center; }
-    @media (max-width: 820px) { .sec-head-inner { grid-template-columns: 1fr 1fr; min-height: 160px; } .sec-stat-col { display: none; } }
-    @media (max-width: 520px) { .sec-head-inner { grid-template-columns: 1fr; min-height: 0; } .sec-tab-col { display: none; } }
+    .sec-head-inner { height: 130px; box-sizing: border-box; padding: 0;
+      display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 0; align-items: stretch; }
+    .sec-head-inner > div { position: relative; display: flex; flex-direction: column; justify-content: center; }
+    /* Info buttons + flyover */
+    .hd-info-btn { position: absolute; top: 50%; right: 7px; transform: translateY(-50%); width: 27px; height: 27px; border-radius: 50%; padding: 0;
+      background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.42); color: rgba(255,255,255,0.7);
+      font-family: var(--font-sans); font-size: 14px; font-style: italic; font-weight: 700; line-height: 1;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2;
+      transition: border-color 100ms, color 100ms, background 100ms; }
+    .hd-info-btn:hover, .hd-info-btn[aria-expanded="true"] { border-color: rgba(255,255,255,0.65); color: rgba(255,255,255,0.85); }
+    .hd-flyover { position: fixed; z-index: 9100; width: 300px; background: var(--paper);
+      border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.07); padding: 16px 20px; font-family: var(--font-sans); }
+    .hd-flyover[hidden] { display: none; }
+    .hd-flt { font-family: var(--font-serif); font-size: 17px; font-weight: 600; color: var(--ink); margin: 0 0 8px; }
+    .hd-flb { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+    .hd-flb p { margin: 0 0 7px; }
+    .hd-flb p:last-child { margin: 0; }
+    .hd-flh { font-size: 12px; color: var(--ink-faint); border-top: var(--hairline) solid var(--line);
+      margin-top: 10px; padding-top: 10px; line-height: 1.5; font-style: italic; }
+    @media (max-width: 820px) { .sec-head-inner { grid-template-columns: 1fr 1fr; } .sec-stat-col { display: none; } }
+    @media (max-width: 520px) { .sec-head-inner { grid-template-columns: 1fr; } .sec-tab-col { display: none; } }
     /* Column 1 — identity */
     .sec-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin: 0 0 var(--space-1); }
     .sec-title { font-family: var(--font-serif); font-size: 2rem; font-weight: 600; color: var(--paper); margin: 0; letter-spacing: -0.01em; }
     .sec-tagline { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: color-mix(in srgb,var(--paper) 60%,transparent); margin: var(--space-2) 0 0; }
     /* Column 2 — current tab */
-    .sec-tab-col { border-left: 1px solid color-mix(in srgb,var(--paper) 14%,transparent); padding-left: var(--space-6, 24px); }
+    .sec-tab-col { border-left: 1px solid color-mix(in srgb,var(--paper) 14%,transparent); border-right: 1px solid color-mix(in srgb,var(--paper) 14%,transparent); padding: 0 var(--space-6, 24px); text-align: left; }
     .sec-tab-lbl { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: color-mix(in srgb,var(--paper) 50%,transparent); margin: 0 0 var(--space-2); }
     .sec-tab-name { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--paper); margin: 0 0 var(--space-2); }
     .sec-tab-desc { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: color-mix(in srgb,var(--paper) 62%,transparent); margin: 0; line-height: 1.55;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     /* Column 3 — stat */
-    .sec-stat-col { border-left: 1px solid color-mix(in srgb,var(--paper) 14%,transparent); padding-left: var(--space-6, 24px); }
+    .sec-stat-col { padding-left: var(--space-6, 24px); display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
     .sec-stat-val { display: block; font-family: var(--font-serif); font-size: 2.4rem; font-weight: 600; color: var(--paper); letter-spacing: -0.02em; line-height: 1; }
     .sec-stat-lbl { display: block; font-family: var(--font-sans); font-size: var(--fs-caption, 12px); text-transform: uppercase; letter-spacing: 0.04em; color: color-mix(in srgb,var(--paper) 50%,transparent); margin-top: var(--space-2); }
-    .sec-tabs { position: sticky; top: var(--header-height, 64px); z-index: 80; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px); border-bottom: var(--hairline) solid var(--line); }
+    .sec-tabs { position: sticky; top: var(--header-height, 64px); z-index: 80; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px); border-bottom: var(--hairline) solid var(--line); transition: background 200ms, border-color 200ms; }
+    .sec-tabs.is-stuck { background: var(--ink); border-bottom-color: color-mix(in srgb,var(--paper) 14%,transparent); backdrop-filter: none; }
+    .sec-tabs.is-stuck .sec-tab { color: color-mix(in srgb,var(--paper) 55%,transparent); }
+    .sec-tabs.is-stuck .sec-tab:hover { color: var(--paper); background: color-mix(in srgb,var(--paper) 10%,transparent); }
+    .sec-tabs.is-stuck .sec-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
     .sec-tabs-inner { display: flex; gap: var(--space-1, 4px); overflow-x: auto; }
-    .sec-tab { font-family: var(--font-sans); font-size: var(--fs-body, 16px); font-weight: 500; color: var(--ink-soft); background: none; border: none; border-bottom: 2px solid transparent; padding: var(--space-4, 16px); cursor: pointer; white-space: nowrap; transition: color 140ms, border-color 140ms, background 140ms; }
+    .sec-tab { font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: var(--ink-soft); background: none; border: none; border-bottom: 2px solid transparent; padding: var(--space-2, 8px) var(--space-3, 12px); cursor: pointer; white-space: nowrap; transition: color 140ms, border-color 140ms, background 140ms; }
     .sec-tab:hover { color: var(--ink); background: color-mix(in srgb, var(--ink, #241F1B) 7%, transparent); border-radius: var(--radius-sm, 6px) var(--radius-sm, 6px) 0 0; }
     .sec-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
     #sec-content { min-height: 50vh; padding-bottom: var(--space-12); }
@@ -135,7 +157,7 @@
   <script src="../components/member-data.js"></script>
   <script src="../components/store.js"></script>
   <script src="../components/sim.js"></script>
-  <script src="../components/frame.js?v=4"></script>
+  <script src="../components/frame.js?v=5"></script>
   <script src="../components/avatar-menu.js"></script>
   <script src="../components/notifications.js"></script>
   <script src="../components/search.js"></script>
@@ -156,11 +178,16 @@
     ];
     var SAVED_KEY = 'cab-tab';
     var TAB_META = {
-      overview:       { name:'Сводка',    desc:'Последняя активность, обзор чтения и репутация за последнее время.',              lbl:'событий',    fn:function(s){ var e=ST().all('events')||[]; return e.filter(function(x){return x.who&&x.who.entity_id===s.id;}).length; } },
-      profile:        { name:'Профиль',   desc:'Публичная карточка участника: имя, биография и профессиональный профиль.',         lbl:'репутации',  fn:function(s){ return s.rep||0; } },
-      shelf:          { name:'Полка',     desc:'Ваши книги по статусу: читаю, прочитано, хочу прочитать и избранное.',             lbl:'на полке',   fn:function(s){ var e=ST().all('events')||[]; return e.filter(function(x){return x.who&&x.who.entity_id===s.id&&x.action&&x.action.codename==='shelf.status.changed';}).length; } },
-      excerpt:        { name:'Выдержки',  desc:'Сохранённые фрагменты текста, личные аннотации и академические цитаты.',          lbl:'выдержек',   fn:function(s){ var e=ST().all('events')||[]; return e.filter(function(x){return x.who&&x.who.entity_id===s.id&&x.action&&x.action.codename==='annotation.created';}).length; } },
-      correspondence: { name:'Переписка', desc:'Личные сообщения с участниками сообщества и командой редакции.',                  lbl:'сообщений',  fn:function(s){ var e=ST().all('events')||[]; return e.filter(function(x){return x.who&&x.who.entity_id===s.id&&x.action&&x.action.codename==='message.sent';}).length; } },
+      overview:       { name:'Сводка',    desc:'Последняя активность, обзор чтения и репутация за последнее время.',              lbl:'событий',    fn:function(s){ var e=ST().all('events')||[]; return e.filter(function(x){return x.who&&x.who.entity_id===s.id;}).length; },
+        info:'<p>Сводка последней активности: что вы читали, что обсуждали, как изменился репутационный балл. Стартовый экран кабинета.</p><p>События фильтруются по вашему ID — только ваши действия, не общий пульс платформы.</p><p class="hd-flh">↗ В будущем здесь появятся персональные рекомендации на основе истории чтения и паттернов профессионального профиля.</p>' },
+      profile:        { name:'Профиль',   desc:'Публичная карточка участника: имя, биография и профессиональный профиль.',         lbl:'репутации',  fn:function(s){ return s.rep||0; },
+        info:'<p>Ваша публичная карточка: имя, роль, профессиональный профиль и репутационный балл. Именно это видят другие участники, когда заходят на вашу страницу.</p><p>Репутация — взвешенная сумма голосов сообщества за ваши высказывания. Не число комментариев, а оценка их профессионального веса.</p><p class="hd-flh">↗ Профиль участника — потенциальный инструмент верификации: «этот человек активен в профессиональном аналитическом сообществе» как часть профессионального портфолио.</p>' },
+      shelf:          { name:'Полка',     desc:'Ваши книги по статусу: читаю, прочитано, хочу прочитать и избранное.',             lbl:'на полке',   fn:function(s){ var e=ST().all('events')||[]; return e.filter(function(x){return x.who&&x.who.entity_id===s.id&&x.action&&x.action.codename==='shelf.status.changed';}).length; },
+        info:'<p>Читательская полка по статусам: «Читаю», «Прочитано», «Хочу прочитать», «Избранное». Личная библиотека на платформе.</p><p>Статусы хранятся локально до Phase 3, затем синхронизируются с сервером и становятся основой персональных рекомендаций.</p><p class="hd-flh">↗ Скрытый актив: агрегированные данные по статусам показывают издательству, сколько людей «хотят прочитать» конкретную книгу — ранний сигнал спроса до покупки.</p>' },
+      excerpt:        { name:'Выдержки',  desc:'Сохранённые фрагменты текста, личные аннотации и академические цитаты.',          lbl:'выдержек',   fn:function(s){ var e=ST().all('events')||[]; return e.filter(function(x){return x.who&&x.who.entity_id===s.id&&x.action&&x.action.codename==='annotation.created';}).length; },
+        info:'<p>Сохранённые фрагменты с привязкой к странице и версии книги, личные аннотации и готовые академические цитаты.</p><p>Цитата формируется автоматически: автор, год, название, версия, страница, смещение фрагмента. Воспроизводима по версии.</p><p class="hd-flh">↗ В академической среде правильная цитата — профессиональная необходимость. Это одна из функций, ради которой профессионалы готовы платить подписку.</p>' },
+      correspondence: { name:'Переписка', desc:'Личные сообщения с участниками сообщества и командой редакции.',                  lbl:'сообщений',  fn:function(s){ var e=ST().all('events')||[]; return e.filter(function(x){return x.who&&x.who.entity_id===s.id&&x.action&&x.action.codename==='message.sent';}).length; },
+        info:'<p>Личные сообщения с участниками сообщества и командой редакции. Приватный канал внутри платформы.</p><p>Переписка не индексируется и не влияет на репутацию — пространство вне публичного дискурса.</p><p class="hd-flh">↗ В будущем: прямой канал с автором или редактором через платформу — контекстуальный диалог с привязкой к конкретному изданию, не безликий email.</p>' },
     };
     var _activeTab = 'overview';
     var SHELF_GROUPS = [
@@ -347,10 +374,13 @@
       var s = BA.session.get(); var host = document.getElementById('sec-head');
       var meta = TAB_META[_activeTab] || TAB_META.overview;
       var col1 = '<div><p class="sec-eyebrow">Личное</p><h1 class="sec-title">Кабинет</h1>' +
-        '<p class="sec-tagline">'+(s ? esc((s.name||'').split(' ')[0]||'коллега')+' · '+esc(s.role||'Участник') : 'Войдите, чтобы открыть личное пространство.')+'</p></div>';
-      var col2 = '<div class="sec-tab-col"><p class="sec-tab-lbl">Раздел</p><p class="sec-tab-name">'+esc(meta.name)+'</p><p class="sec-tab-desc">'+esc(meta.desc)+'</p></div>';
+        '<p class="sec-tagline">'+(s ? esc((s.name||'').split(' ')[0]||'коллега')+' · '+esc(s.role||'Участник') : 'Войдите, чтобы открыть личное пространство.')+'</p>' +
+        '<button class="hd-info-btn" data-hd-info="page" aria-label="О кабинете" aria-expanded="false">i</button></div>';
+      var col2 = '<div class="sec-tab-col"><p class="sec-tab-lbl">Раздел</p><p class="sec-tab-name">'+esc(meta.name)+'</p><p class="sec-tab-desc">'+esc(meta.desc)+'</p>' +
+        '<button class="hd-info-btn" data-hd-info="tab" aria-label="О разделе" aria-expanded="false">i</button></div>';
       var statVal = s ? meta.fn(s) : '—';
-      var col3 = '<div class="sec-stat-col"><span class="sec-stat-val">'+esc(String(statVal))+'</span><span class="sec-stat-lbl">'+esc(meta.lbl)+'</span></div>';
+      var col3 = '<div class="sec-stat-col"><span class="sec-stat-val">'+esc(String(statVal))+'</span><span class="sec-stat-lbl">'+esc(meta.lbl)+'</span>' +
+        '<button class="hd-info-btn" data-hd-info="stats" aria-label="О статистике" aria-expanded="false">i</button></div>';
       host.innerHTML = col1 + col2 + col3;
     }
     function renderTabs(active){ document.getElementById('sec-tabs').innerHTML = TABS.map(function(t){ return '<button class="sec-tab'+(t.key===active?' is-active':'')+'" data-tab="'+t.key+'">'+esc(t.label)+'</button>'; }).join(''); }
@@ -373,6 +403,44 @@
 
     document.addEventListener('DOMContentLoaded', function(){
       BA.frame.init({ page: 'cabinet' });
+      /* ── info flyover ── */
+      var _fly = document.createElement('div'); _fly.className='hd-flyover'; _fly.setAttribute('hidden','');
+      document.body.appendChild(_fly);
+      var _flyBtn = null;
+      var CAB_INFO = {
+        page: '<h3 class="hd-flt">Кабинет</h3><div class="hd-flb"><p>Личное профессиональное пространство. Здесь сходится всё, что вы прочитали, отметили, процитировали и обсудили на платформе.</p><p>В отличие от публичного профиля, кабинет показывает неагрегированную картину вашей читательской активности — личная аналитика, недоступная другим участникам.</p><p class="hd-flh">↗ Данные кабинета — основа выплат правообладателям: платформа фиксирует, кто, что и сколько читал с точностью до страницы. Это не слежка — это честный роялти-расчёт вместо пула Spotify.</p></div>',
+        stats: '<h3 class="hd-flt">Показатель раздела</h3><div class="hd-flb"><p>Цифра справа — мгновенный срез активности в текущем разделе кабинета. В «Сводке» это число ваших событий; в «Профиле» — репутационный балл; в «Полке» — число отмеченных книг.</p><p>Репутационный балл — взвешенная сумма голосов, которые сообщество отдало вашим высказываниям. Это не счётчик комментариев, а оценка их профессионального веса.</p><p class="hd-flh">↗ Репутация определяет «ранг» участника и через него — набор доступных действий (capabilities). Высокая репутация открывает публикацию рецензий, модерацию и другие роли.</p></div>'
+      };
+      function _hdContent(id){
+        if (id==='tab'){
+          var m=TAB_META[_activeTab]||TAB_META.overview;
+          return '<h3 class="hd-flt">'+esc(m.name)+'</h3><div class="hd-flb">'+(m.info||'<p>'+esc(m.desc)+'</p>')+'</div>';
+        }
+        return CAB_INFO[id]||'';
+      }
+      function _openFly(btn, html){
+        if (_flyBtn===btn){_closeFly();return;}
+        if (_flyBtn) _flyBtn.setAttribute('aria-expanded','false');
+        _flyBtn=btn; btn.setAttribute('aria-expanded','true');
+        _fly.innerHTML=html; _fly.removeAttribute('hidden');
+        var r=btn.getBoundingClientRect(), fw=300;
+        var left=Math.min(r.right-fw, window.innerWidth-fw-12); if(left<12)left=12;
+        _fly.style.display='block'; var fh=_fly.offsetHeight; _fly.style.display='';
+        var top=r.bottom+6; if(top+fh+12>window.innerHeight) top=r.top-fh-6;
+        _fly.style.left=left+'px'; _fly.style.top=top+'px';
+      }
+      function _closeFly(){
+        _fly.setAttribute('hidden','');
+        if(_flyBtn)_flyBtn.setAttribute('aria-expanded','false');
+        _flyBtn=null;
+      }
+      document.addEventListener('click',function(e){
+        if(!e.target.closest('.hd-info-btn')&&!e.target.closest('.hd-flyover'))_closeFly();
+      });
+      document.querySelector('.sec-head').addEventListener('click',function(e){
+        var btn=e.target.closest('.hd-info-btn'); if(!btn)return;
+        e.stopPropagation(); _openFly(btn,_hdContent(btn.getAttribute('data-hd-info')));
+      });
       if (BA.sim) BA.sim.ensure();
       renderHead();
       document.getElementById('sec-tabs').addEventListener('click', function(e){ var t=e.target.closest('.sec-tab'); if(t) showTab(t.getAttribute('data-tab')); });
@@ -382,6 +450,13 @@
       var initial = params.get('tab') || saved || 'overview';
       if (!TABS.some(function(t){ return t.key===initial; })) initial='overview';
       showTab(initial);
+      (function(){
+        var tabBar = document.querySelector('.sec-tabs');
+        var banner = document.querySelector('.sec-head');
+        function _chk(){ tabBar.classList.toggle('is-stuck', banner.getBoundingClientRect().bottom <= 0); }
+        window.addEventListener('scroll', _chk, { passive: true });
+        _chk();
+      })();
     });
   </script>
 </body>

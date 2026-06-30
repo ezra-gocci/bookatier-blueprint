@@ -17,8 +17,30 @@
     .lib-main { min-height: 100vh; }
     /* Hero (noir band) */
     .lib-hero { background: var(--ink); color: var(--paper); border-bottom: var(--hairline) solid var(--line); }
-    .lib-hero-inner { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-6);
-      flex-wrap: wrap; padding: var(--space-8, 32px) 0 var(--space-6, 24px); }
+    .lib-hero-inner { height: 130px; box-sizing: border-box; padding: 0;
+      display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 0; align-items: stretch; }
+    .lib-hero-inner > div { position: relative; display: flex; flex-direction: column; justify-content: center; }
+    .lib-tab-col { border-left: 1px solid color-mix(in srgb,var(--paper) 14%,transparent); border-right: 1px solid color-mix(in srgb,var(--paper) 14%,transparent); padding: 0 var(--space-6, 24px); text-align: left; }
+    .lib-tab-lbl { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: color-mix(in srgb,var(--paper) 50%,transparent); margin: 0 0 var(--space-2); }
+    .lib-tab-name { font-family: var(--font-serif); font-size: var(--fs-h3, 18px); font-weight: 600; color: var(--paper); margin: 0 0 var(--space-2); }
+    .lib-tab-desc { font-family: var(--font-sans); font-size: var(--fs-small, 14px); color: color-mix(in srgb,var(--paper) 62%,transparent); margin: 0; line-height: 1.45; }
+    /* Info buttons + flyover */
+    .hd-info-btn { position: absolute; top: 50%; right: 7px; transform: translateY(-50%); width: 27px; height: 27px; border-radius: 50%; padding: 0;
+      background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.42); color: rgba(255,255,255,0.7);
+      font-family: var(--font-sans); font-size: 14px; font-style: italic; font-weight: 700; line-height: 1;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2;
+      transition: border-color 100ms, color 100ms, background 100ms; }
+    .hd-info-btn:hover, .hd-info-btn[aria-expanded="true"] { border-color: rgba(255,255,255,0.65); color: rgba(255,255,255,0.85); }
+    .hd-flyover { position: fixed; z-index: 9100; width: 300px; background: var(--paper);
+      border: var(--hairline) solid var(--line); border-radius: var(--radius-md, 10px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.07); padding: 16px 20px; font-family: var(--font-sans); }
+    .hd-flyover[hidden] { display: none; }
+    .hd-flt { font-family: var(--font-serif); font-size: 17px; font-weight: 600; color: var(--ink); margin: 0 0 8px; }
+    .hd-flb { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+    .hd-flb p { margin: 0 0 7px; }
+    .hd-flb p:last-child { margin: 0; }
+    .hd-flh { font-size: 12px; color: var(--ink-faint); border-top: var(--hairline) solid var(--line);
+      margin-top: 10px; padding-top: 10px; line-height: 1.5; font-style: italic; }
     .lib-hero h1 { font-family: var(--font-serif); font-size: 2rem; font-weight: 600; margin: 0;
       color: var(--paper); letter-spacing: -0.01em; }
     .lib-hero-sub { font-family: var(--font-sans); font-size: var(--fs-small, 14px); margin: var(--space-2) 0 0;
@@ -28,6 +50,8 @@
     .lib-stat-val { display: block; font-family: var(--font-serif); font-size: 1.5rem; font-weight: 600; color: var(--paper); }
     .lib-stat-lbl { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); text-transform: uppercase;
       letter-spacing: 0.04em; color: color-mix(in srgb, var(--paper) 60%, transparent); }
+    .lib-eyebrow { font-family: var(--font-sans); font-size: var(--fs-caption, 12px); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin: 0 0 var(--space-1); }
     /* Editorial / announcements strip */
     .lib-ed { background: var(--surface); border-bottom: var(--hairline) solid var(--line); }
     .lib-ed-inner { padding: var(--space-5, 20px) 0; }
@@ -53,10 +77,14 @@
     /* Tab bar */
     .lib-tabs { position: sticky; top: var(--header-height, 64px); z-index: 80;
       background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px);
-      border-bottom: var(--hairline) solid var(--line); }
+      border-bottom: var(--hairline) solid var(--line); transition: background 200ms, border-color 200ms; }
+    .lib-tabs.is-stuck { background: var(--ink); border-bottom-color: color-mix(in srgb,var(--paper) 14%,transparent); backdrop-filter: none; }
+    .lib-tabs.is-stuck .lib-tab { color: color-mix(in srgb,var(--paper) 55%,transparent); }
+    .lib-tabs.is-stuck .lib-tab:hover { color: var(--paper); background: color-mix(in srgb,var(--paper) 10%,transparent); }
+    .lib-tabs.is-stuck .lib-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
     .lib-tabs-inner { display: flex; gap: var(--space-1, 4px); overflow-x: auto; }
-    .lib-tab { font-family: var(--font-sans); font-size: var(--fs-body, 16px); font-weight: 500; color: var(--ink-soft);
-      background: none; border: none; border-bottom: 2px solid transparent; padding: var(--space-4, 16px) var(--space-4, 16px);
+    .lib-tab { font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: var(--ink-soft);
+      background: none; border: none; border-bottom: 2px solid transparent; padding: var(--space-2, 8px) var(--space-3, 12px);
       cursor: pointer; white-space: nowrap; transition: color 140ms, border-color 140ms, background 140ms; }
     .lib-tab:hover { color: var(--ink); background: color-mix(in srgb, var(--ink, #241F1B) 7%, transparent); border-radius: var(--radius-sm, 6px) var(--radius-sm, 6px) 0 0; }
     .lib-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
@@ -122,6 +150,19 @@
   <!-- frame.js injects header here -->
   <main id="main-content" data-page-body class="lib-main">
 
+    <section class="lib-hero" aria-label="Библиотека">
+      <div class="container lib-hero-inner">
+        <div>
+          <p class="lib-eyebrow">Библиотека</p>
+          <h1>Библиотека</h1>
+          <p class="lib-hero-sub">Издания β→α — книги, авторы, издатели и подборки.</p>
+          <button class="hd-info-btn" data-hd-info="page" aria-label="О библиотеке" aria-expanded="false">i</button>
+        </div>
+        <div class="lib-tab-col" id="lib-tab-col"></div>
+        <div class="lib-stats" id="lib-stats" style="justify-self:end"></div>
+      </div>
+    </section>
+
     <nav class="lib-tabs" aria-label="Разделы библиотеки">
       <div class="container lib-tabs-inner" id="lib-tabs"></div>
     </nav>
@@ -138,7 +179,7 @@
   <script src="../components/member-data.js"></script>
   <script src="../components/store.js"></script>
   <script src="../components/sim.js"></script>
-  <script src="../components/frame.js?v=4"></script>
+  <script src="../components/frame.js?v=5"></script>
   <script src="../components/avatar-menu.js"></script>
   <script src="../components/notifications.js"></script>
   <script src="../components/search.js"></script>
@@ -162,10 +203,14 @@
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 
     var TABS = [
-      { key:'catalogue', label:'Каталог' },
-      { key:'pantheon',  label:'Пантеон' },
-      { key:'producers', label:'Издатели' },
-      { key:'collection',label:'Подборки' }
+      { key:'catalogue', label:'Каталог',  desc:'Все издания β→α с описаниями и рейтингами',
+        info:'<p>Весь каталог изданий — обложки, метаданные, свободные фрагменты и читательские рейтинги.</p><p>Рейтинг книги взвешенный: голос профессионала (психотерапевт, аналитик) весит больше, чем голос студента. Это не демократия мнений, а экспертный консенсус.</p><p class="hd-flh">↗ В будущем здесь появятся публичные аннотации профессионалов — отмеченные фрагменты с комментарием, видимые другим читателям. Каталог станет живым, не только навигационным.</p>' },
+      { key:'pantheon',  label:'Пантеон',  desc:'Авторы — биографии, труды и связи',
+        info:'<p>Биографии и библиография авторов платформы. Пантеон — не маркетинговые страницы, а интеллектуальный контекст: кто эти люди и откуда пришли их идеи.</p><p>Каждый автор связан с книгами на платформе и с дискуссиями, где на него ссылаются.</p><p class="hd-flh">↗ В планах: связь между авторами — кто на кого ссылается, кто продолжает чью традицию. Интеллектуальный граф, а не просто биографии.</p>' },
+      { key:'producers', label:'Издатели', desc:'Издательства и их книжные каталоги',
+        info:'<p>Издательства-партнёры, чьи книги представлены на платформе. Сейчас только β→α, в Stage 3 список расширится.</p><p>Каждый издатель видит свою аналитику: кто читал, сколько, до какой страницы. Это основа честного расчёта роялти.</p><p class="hd-flh">↗ Модель выплат: 50% платформе, остальное — правообладателям пропорционально реальному чтению каждого пользователя. Не общий пул Spotify, а индивидуальная атрибуция.</p>' },
+      { key:'collection',label:'Подборки', desc:'Тематические коллекции от редакции',
+        info:'<p>Тематические подборки — ручная работа редакции, не алгоритм. Подборка — это утверждение: эти книги разговаривают друг с другом.</p><p>«Итальянская школа», «Наследие Биона», «Клиника и техника» — каждая создаёт читательский маршрут.</p><p class="hd-flh">↗ В будущем подборки смогут создавать и участники сообщества — кураторские коллекции со своим предисловием. Один из наиболее ожидаемых форматов.</p>' }
     ];
     var SAVED_KEY = 'lib-tab';
 
@@ -298,8 +343,9 @@
     function showTab(key){
       var host = document.getElementById('lib-tab-content');
       var ed = document.getElementById('lib-editorial');
+      _activeTab = key;
       host.innerHTML = '';
-      renderTabs(key);
+      renderTabs(key); renderTabCol(key);
       try { BA.store.set(SAVED_KEY, key); } catch(e){}
       var url = new URL(location.href); url.searchParams.set('tab', key); history.replaceState(null,'',url);
       /* Editorial collection shows only on the Catalogue tab, members only */
@@ -311,8 +357,71 @@
       else { renderCollections(host); }
     }
 
+    var _activeTab = 'catalogue';
+    function renderTabCol(key){
+      var t = TABS.find(function(x){ return x.key===key; }) || TABS[0];
+      document.getElementById('lib-tab-col').innerHTML =
+        '<p class="lib-tab-lbl">Раздел</p>' +
+        '<p class="lib-tab-name">'+esc(t.label)+'</p>' +
+        '<p class="lib-tab-desc">'+esc(t.desc)+'</p>' +
+        '<button class="hd-info-btn" data-hd-info="tab" aria-label="О разделе" aria-expanded="false">i</button>';
+    }
+    function renderHero(){
+      var books = BA.bookData.SLUGS.length;
+      var authors = BA.authorData.ids().length;
+      document.getElementById('lib-stats').innerHTML =
+        '<div class="lib-stat"><span class="lib-stat-val">'+books+'</span><span class="lib-stat-lbl">'+
+          plural(books,'книга','книги','книг')+'</span></div>' +
+        '<div class="lib-stat"><span class="lib-stat-val">'+authors+'</span><span class="lib-stat-lbl">'+
+          plural(authors,'автор','автора','авторов')+'</span></div>' +
+        '<button class="hd-info-btn" data-hd-info="stats" aria-label="О статистике" aria-expanded="false">i</button>';
+    }
+
     document.addEventListener('DOMContentLoaded', function(){
       BA.frame.init({ page: 'library' });
+      renderHero();
+      /* ── info flyover ── */
+      var _fly = document.createElement('div'); _fly.className='hd-flyover'; _fly.setAttribute('hidden','');
+      document.body.appendChild(_fly);
+      var _flyBtn = null;
+      var LIB_INFO = {
+        page: '<h3 class="hd-flt">Библиотека</h3><div class="hd-flb"><p>Каталог профессиональных изданий β→α по психотерапии и психоанализу. Сейчас семь книг: Бион, Ферро, Николи — три голоса, формирующих современную аналитическую традицию.</p><p>Книги публикуются только в PDF. Профессиональные издания верстаются в InDesign, и типографика там — часть смысла. Конвертация в EPUB это ломает.</p><p>Каждая книга имеет несколько версий с нарастающим объёмом: бесплатный фрагмент открыт всем, полное издание — участникам с подпиской.</p><p class="hd-flh">↗ В Stage 3 библиотека откроется для других издательств — при сохранении кураторского стандарта. Каждая версия несёт уникальный book_version_id, фиксируемый в академических цитатах.</p></div>',
+        stats: '<h3 class="hd-flt">Статистика библиотеки</h3><div class="hd-flb"><p>Книги — изданий в каталоге (с метаданными, обложками и хотя бы одним доступным фрагментом). Авторы — уникальные авторы или ответственные редакторы основных томов.</p><p>Три автора — намеренная концентрация: глубина важнее широты на старте. Бион формирует теоретическую рамку, Ферро и Николи показывают, как она живёт в клиническом кабинете.</p><p class="hd-flh">↗ Аналитика за этими числами — кто читал, сколько страниц, в каких сессиях — передаётся правообладателям в агрегированном виде. Это основа честного роялти-расчёта.</p></div>'
+      };
+      function _hdContent(id){
+        if (id==='tab'){
+          var t=TABS.find(function(x){return x.key===_activeTab;})||TABS[0];
+          return '<h3 class="hd-flt">'+esc(t.label)+'</h3><div class="hd-flb">'+t.info+'</div>';
+        }
+        return LIB_INFO[id]||'';
+      }
+      function _openFly(btn, html){
+        if (_flyBtn===btn){_closeFly();return;}
+        if (_flyBtn) _flyBtn.setAttribute('aria-expanded','false');
+        _flyBtn=btn; btn.setAttribute('aria-expanded','true');
+        _fly.innerHTML=html; _fly.removeAttribute('hidden');
+        var r=btn.getBoundingClientRect(), fw=300;
+        var left=Math.min(r.right-fw, window.innerWidth-fw-12); if(left<12)left=12;
+        _fly.style.left=left+'px'; _fly.style.top=''; _fly.style.bottom='';
+        var top=r.bottom+6;
+        _fly.style.display='block';
+        var fh=_fly.offsetHeight;
+        _fly.style.display='';
+        if(top+fh+12>window.innerHeight) top=r.top-fh-6;
+        _fly.style.top=top+'px';
+      }
+      function _closeFly(){
+        _fly.setAttribute('hidden','');
+        if(_flyBtn)_flyBtn.setAttribute('aria-expanded','false');
+        _flyBtn=null;
+      }
+      document.addEventListener('click',function(e){
+        if(!e.target.closest('.hd-info-btn')&&!e.target.closest('.hd-flyover'))_closeFly();
+      });
+      document.querySelector('.lib-hero').addEventListener('click',function(e){
+        var btn=e.target.closest('.hd-info-btn'); if(!btn)return;
+        e.stopPropagation(); _openFly(btn,_hdContent(btn.getAttribute('data-hd-info')));
+      });
       document.getElementById('lib-tabs').addEventListener('click', function(e){
         var t = e.target.closest('.lib-tab'); if (t) showTab(t.getAttribute('data-tab'));
       });
@@ -321,6 +430,13 @@
       var initial = params.get('tab') || saved || 'catalogue';
       if (!visibleTabs().some(function(t){ return t.key===initial; })) initial = 'catalogue';
       showTab(initial);
+      (function(){
+        var tabBar = document.querySelector('.lib-tabs');
+        var banner = document.querySelector('.lib-hero');
+        function _chk(){ tabBar.classList.toggle('is-stuck', banner.getBoundingClientRect().bottom <= 0); }
+        window.addEventListener('scroll', _chk, { passive: true });
+        _chk();
+      })();
     });
   </script>
 </body>
